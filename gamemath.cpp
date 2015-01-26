@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "glm/glm.hpp"
 #include "gamemath.h"
 
 
@@ -39,3 +40,15 @@ bool approximatelyEqual(float a, float b)
     return ((a - b) < 0.00001 && (a - b) > -0.00001) ? true : false;
 }
 
+bool parallel(glm::vec3 v1, glm::vec3 v2)
+{
+	glm::vec3 thisAsUnitVector = glm::normalize(v1);
+	glm::vec3 vUnitVector = glm::normalize(v2);
+	glm::vec3 vCopy(vUnitVector.x * -1, vUnitVector.y * -1, vUnitVector.z * -1);
+	return thisAsUnitVector == vCopy || thisAsUnitVector == vUnitVector;
+}
+
+bool perpendicular(glm::vec3 v1, glm::vec3 v2)
+{
+	return approximatelyEqual(glm::dot(v1, v2), 0);
+}

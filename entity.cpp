@@ -163,17 +163,17 @@ void Entity::rotate(glm::vec3 amounts)
 
 glm::vec3 Entity::getRotation()
 {
-    camera.getRotation();
+    return camera.getRotation();
 }
 
 glm::vec3 Entity::getPosition()
 {
-    camera.getPosition();
+    return camera.getPosition();
 }
 
 AABB Entity::getAABB()
 {
-    boundingBox;
+    return boundingBox;
 }
 
 void Entity::onGameTick()

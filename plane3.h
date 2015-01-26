@@ -4,6 +4,8 @@
 class Polygon3;
 
 #include <string>
+#include <memory>
+#include <vector>
 #include "glm/vec3.hpp"
 #include "ilinevariant.h"
 #include "polygon3.h"
@@ -82,7 +84,7 @@ public:
 	 * @return A glm::vec3 representing the point on the plane at which the line variant intersects.
 	 * NULL if no intersection occurs.
 	 */
-	glm::vec3 lineIntersectPoint(ILineVariant &line);
+	std::shared_ptr<glm::vec3> lineIntersectPoint(ILineVariant &line);
 	/**
 	 * Returns a general equation for the plane as a Vector4, in the form <a,b,c,d>
 	 * for the equation aX + bY + cZ + d = 0

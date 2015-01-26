@@ -13,7 +13,7 @@ AABS::AABS(float x, float y, float z, float radius) : x(x), y(y), z(z), radius(r
 
 float AABS::surfaceArea()
 {
-    return 4.0 * PI * radius * radius;
+    return 4.0f * PI * radius * radius;
 }
 
 float AABS::volume()

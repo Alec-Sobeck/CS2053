@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifdef linux
+
 #include <GL/glx.h>    /* this includes the necessary X headers */
 #include <GL/gl.h>
 
@@ -235,3 +237,12 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+#else 
+
+int main(int argc, char **argv)
+{
+	return 0;
+}
+
+#endif

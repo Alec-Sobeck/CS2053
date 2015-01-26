@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include <stdexcept>
 #include <sstream>
 #include "glm/glm.hpp"
@@ -6,7 +7,8 @@
 #include "polygon3.h"
 #include "gamemath.h"
 
-Polygon3::Polygon3(std::vector<glm::vec3> points) {
+Polygon3::Polygon3(std::vector<glm::vec3> points)
+{
     if(points.size() < 3)
     {
         std::stringstream ss;
@@ -16,12 +18,14 @@ Polygon3::Polygon3(std::vector<glm::vec3> points) {
     this->points = points;
     computeNormal();
     computeIsCoplanar();
-    if(!isCoplanar)
-        throw std::invalid_argument("A Polygon3 must be coplanar. The provided glm::vec3[] does not describe a coplanar polygon.");
+	if (!isCoplanar)
+	{
+		throw std::invalid_argument("A Polygon3 must be coplanar. The provided glm::vec3[] does not describe a coplanar polygon.");
+	}
 }
 
 void Polygon3::computeIsCoplanar() {
-    for (int i = 2; i < points.size(); i++){
+	for (int i = 2; i < static_cast<int>(points.size()); i++){
         if (!approximatelyEqual(glm::dot(normal, points[i] - points[0]), 0)){
             isCoplanar = false;
             return;
@@ -38,7 +42,7 @@ void Polygon3::computeNormal()
 }
 
 void Polygon3::cullNthPoint(int n){
-    if(n > points.size())
+	if (n > static_cast<int>(points.size()))
     {
         std::stringstream ss;
         ss << "Index not in range of the points array: " << n;
@@ -49,7 +53,7 @@ void Polygon3::cullNthPoint(int n){
 
     std::vector<glm::vec3> replacement;
     replacement.reserve(points.size() - 1);
-    for (int i = 0; i < points.size(); i++){
+    for (int i = 0; i < static_cast<int>(points.size()); i++){
         if (i < n){
             replacement[i] = points[i];
         }
@@ -60,92 +64,107 @@ void Polygon3::cullNthPoint(int n){
     this->points = replacement;
 }
 
-
 glm::vec3 Polygon3::getNormal(){
     return normal;
 }
 
 glm::vec3 Polygon3::getUnitNormal(){
-    return normal.normalize();
+	return glm::normalize(normal);
 }
 
 double Polygon3::area() {
     // TODO: test this more thoroughly
-    if (isCoplanar && points.length >= 3) {
-        glm::vec3 total = new glm::vec3();
-        for (int i = 0; i < points.length; i++) {
+    if (isCoplanar && points.size() >= 3)
+	{
+        glm::vec3 total(0, 0, 0);
+		for (int i = 0; i < static_cast<int>(points.size()); i++) 
+		{
             glm::vec3 vi1 = points[i];
             glm::vec3 vi2;
-            if (i == points.length - 1)
+            if (i == points.size() - 1)
                 vi2 = points[0];
             else
                 vi2 = points[i + 1];
-            glm::vec3 prod = vi1.crossProduct(vi2);
-            total = new glm::vec3(total.getX() + prod.getX(), total.getY() + prod.getY(), total.getZ() + prod.getZ());
+            glm::vec3 prod = glm::cross(vi1, vi2);
+            total = glm::vec3(total.x + prod.x, total.y + prod.y, total.z + prod.z);
         }
-        double result = total.dot(normal.normalize());
-        return Math.abs(result / 2);
+		double result = glm::dot(total, glm::normalize(normal));
+        return abs(result / 2);
     }
     return -1;
 }
 
-Plane3 Polygon3::getPlane(){
-    if (!this.isCoplanar || this.normal == null){
-        return null;
+Plane3 Polygon3::getPlane()
+{
+    if (!isCoplanar || (normal.x == 0 && normal.y == 0 && normal.z == 0)/*normal == null*/)
+	{
+		throw std::invalid_argument("No plane exists for this Polygon3.");
     }
-    return new Plane3(points[0], this.normal);
+    return Plane3(points.at(0), normal);
 }
 
-bool Polygon3::does_intersect_line(ILineVariant line){
+bool Polygon3::does_intersect_line(ILineVariant &line)
+{
     bool coplanar = false;
-    if (this.isCoplanar){
-        if (!this.getPlane().does_intersect_line(line))
+    if (isCoplanar)
+	{
+        if (!getPlane().does_intersect_line(line))
             return false;
         coplanar = true;
     }
 
-    for(int i = 0; i < this.points.length - 2; i++){
-        if (line_does_intersect_triangle(this.points[i], this.points[i+1], this.points[i + 2], coplanar, line)){
+	for (int i = 0; i < static_cast<int>(points.size()) - 2; i++)
+	{
+        if (line_does_intersect_triangle(points.at(i), points.at(i + 1), points.at(i + 2), coplanar, line))
+		{
             return true;
         }
     }
     return false;
 }
 
-bool Polygon3::line_does_intersect_triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, bool coplanar, ILineVariant line){
-    glm::vec3 p2;
-    if (!coplanar){
-        Plane3 plane = new Plane3(v0, v1, v2);
-        if (!plane.does_intersect_line(line)) return false;
-        else p2 = plane.lineIntersectPoint(line);
+bool Polygon3::line_does_intersect_triangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, bool coplanar, ILineVariant &line){
+    std::shared_ptr<glm::vec3> p2;
+    if (!coplanar)
+	{
+        Plane3 plane(v0, v1, v2);
+        if (!plane.does_intersect_line(line)) 
+			return false;
+        else 
+			p2 = plane.lineIntersectPoint(line);
     }
-    else{
-        glm::vec3 point = this.getPlane().lineIntersectPoint(line);
-        if(point == null)
+    else
+	{
+		std::shared_ptr<glm::vec3> point = getPlane().lineIntersectPoint(line);
+        if(point == nullptr)
             return false;
         p2 = point;
     }
 
-    glm::vec3 u = v1.subtract(v0).asglm::vec3();
-    glm::vec3 v = v2.subtract(v0).asglm::vec3();
-    glm::vec3 w = p2.subtract(v0).asglm::vec3();
+    glm::vec3 u = v1 - v0;
+    glm::vec3 v = v2 - v0;
+    glm::vec3 w = (*p2) - v0;
 
-    double denom = Math.pow(u.dot(v), 2) - (u.dot(u) * v.dot(v));
-    double s = ((u.dot(v) * w.dot(v)) - (v.dot(v) * w.dot(u)))/denom;
-    double t = ((u.dot(v) * w.dot(u)) - (u.dot(u) * w.dot(v)))/denom;
+	double denom = pow(glm::dot(u, v), 2) - (glm::dot(u, u) * glm::dot(v, v));
+	double s = ((glm::dot(u, v) * glm::dot(w, v)) - (glm::dot(v, v) * glm::dot(w, u))) / denom;
+	double t = ((glm::dot(u, v) * glm::dot(w, u)) - (glm::dot(u, u) * glm::dot(w, v))) / denom;
     if (s >= 0 && t >= 0 && s + t <= 1) return true;
     return false;
 }
 
-glm::vec3 Polygon3::line_intersect_point(ILineVariant line){
-    if (does_intersect_line(line)){
-        return this.getPlane().lineIntersectPoint(line);
-    }
-    else return null;
+std::shared_ptr<glm::vec3> Polygon3::line_intersect_point(ILineVariant &line){
+    if (does_intersect_line(line))
+	{
+        return getPlane().lineIntersectPoint(line);
+	}
+	else
+	{
+		return std::shared_ptr<glm::vec3>(nullptr);
+	}
 }
 
 bool Polygon3::does_intersect_poly(Polygon3 poly){
-    return (this.getPlane().doesIntersectPoly(poly) && poly.getPlane().doesIntersectPoly(this));
+    return (getPlane().doesIntersectPoly(poly) && poly.getPlane().doesIntersectPoly(*this));
 }
 
 std::vector<glm::vec3> Polygon3::getVertices()

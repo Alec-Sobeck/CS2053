@@ -1,6 +1,8 @@
 #ifndef GAMEMATH_H
 #define GAMEMATH_H
 
+#include <glm/vec3.hpp>
+
 const float PI = 3.14159265359f;
 const double PI_D = 3.14159265359;
 
@@ -20,5 +22,15 @@ double toDeg(int rad);
 */
 
 bool approximatelyEqual(float, float);
+
+/**
+* Checks to see if a Vector is parallel to another, which is to say that the vectors share a direction.
+* @return a boolean, true if the Vectors are parallel, or false otherwise
+*/
+bool parallel(glm::vec3, glm::vec3);
+/**
+* Checks to see if two Vectors are perpendicular.
+*/
+bool perpendicular(glm::vec3, glm::vec3);
 
 #endif

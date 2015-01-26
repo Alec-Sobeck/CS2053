@@ -59,7 +59,7 @@ public:
 	 * @param line the ILineVariant to check
 	 * @return A Vector3 if an intersection exists, null if one does not.
 	 */
-	glm::vec3 line_intersect_point(ILineVariant &line);
+	std::shared_ptr<glm::vec3> line_intersect_point(ILineVariant &line);
 	/**
 	 * Determines if two polygons intersect
 	 * @param poly the polygon against which to check
@@ -76,9 +76,9 @@ public:
 	 * @return an int which is the total number of points in this Polygon3. This value should be greater than or equal to 3
 	 */
 	int getVertexCount();
-protected:
 	std::vector<glm::vec3> points;
 	glm::vec3 normal;
+protected:
 	void cullNthPoint(int n);
 private:
     /**
