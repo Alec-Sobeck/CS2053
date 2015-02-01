@@ -1,5 +1,5 @@
 
-#include "line3.h"
+#include "math/line3.h"
 
 /**
  * Constructs a new Line3 instance, which requires a two glm::vec3.

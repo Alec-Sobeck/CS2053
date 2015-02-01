@@ -3,8 +3,8 @@
 #include "glm/glm.hpp"
 #include "glm/vec3.hpp"
 #include "physics/aabs.h"
-#include "polygon3.h"
-#include "gamemath.h"
+#include "math/polygon3.h"
+#include "math/gamemath.h"
 
 
 AABS::AABS(float x, float y, float z, float radius) : x(x), y(y), z(z), radius(radius)

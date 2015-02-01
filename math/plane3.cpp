@@ -1,13 +1,13 @@
 
 #include <sstream>
 #include <cmath>
-#include "plane3.h"
 #include "glm/glm.hpp"
 #include "glm/vec4.hpp"
-#include "gamemath.h"
-#include "linesegment3.h"
-#include "line3.h"
-#include "ray3.h"
+#include "math/gamemath.h"
+#include "math/linesegment3.h"
+#include "math/line3.h"
+#include "math/ray3.h"
+#include "math/plane3.h"
 
 Plane3::Plane3(glm::vec3 pointOnPlane, glm::vec3 normal) : normal(normal), pointOnPlane(pointOnPlane)
 {

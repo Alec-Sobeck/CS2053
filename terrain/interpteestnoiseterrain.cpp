@@ -2,7 +2,7 @@
 #include <cmath>
 #include "interpteestnoiseterrain.h"
 #include "utils/random.h"
-#include "interpolators.h"
+#include "math/interpolators.h"
 
 
 InterpTestNoiseTerrain::InterpTestNoiseTerrain(int numVal, float maxVal, int lod, float size) : heightMap(buildNoise(numVal)), maxVal(maxVal)

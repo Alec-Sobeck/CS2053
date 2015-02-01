@@ -4,8 +4,8 @@
 class Plane3;
 
 #include <vector>
-#include "plane3.h"
-#include "ilinevariant.h"
+#include "math/plane3.h"
+#include "math/ilinevariant.h"
 
 /**
  * Describes a generic polygon in 3-space. Contains a list of points, and a

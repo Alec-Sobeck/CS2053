@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include "glm/glm.hpp"
-#include "gamemath.h"
+#include "math/gamemath.h"
 
 
 double toRad(double deg)

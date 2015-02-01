@@ -2,7 +2,7 @@
 #define LINESEGMENT3_H
 
 #include "glm/vec3.hpp"
-#include "linesegment.h"
+#include "math/linesegment.h"
 
 class LineSegment3 : public LineSegment
 {

@@ -1,7 +1,7 @@
 
 #include <cmath>
-#include "gamemath.h"
-#include "interpolators.h"
+#include "math/gamemath.h"
+#include "math/interpolators.h"
 
 /**
  * Lerps between value a and value b. Returns a value based on t.

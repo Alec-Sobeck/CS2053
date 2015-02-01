@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include "camera.h"
-#include "gamemath.h"
+#include "math/gamemath.h"
 
 Camera::Camera(glm::vec3 pos, glm::vec3 rot) : position(pos), rotation(rot), maxAngle(85.0f), minZoom(0.5f), maxZoom(1.5f), currentZoom(1.0f)
 {

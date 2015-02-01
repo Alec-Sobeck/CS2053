@@ -2,7 +2,7 @@
 #define LINESEGMENT_H
 
 #include <string>
-#include "ilinevariant.h"
+#include "math/ilinevariant.h"
 
 //TODO error checking to ensure both points are of the same dimension
 //TODO test the line segment classes

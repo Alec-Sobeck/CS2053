@@ -3,7 +3,7 @@
 
 #include <string>
 #include "glm/vec3.hpp"
-#include "ilinevariant.h"
+#include "math/ilinevariant.h"
 
 /**
 * Ray3 represents a ray in 3D space. A ray has one defined point and continues on to

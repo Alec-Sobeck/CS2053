@@ -2,7 +2,7 @@
 #define LINE3_H
 
 #include "glm/vec3.hpp"
-#include "ilinevariant.h"
+#include "math/ilinevariant.h"
 
 /**
 * Line3 represents a line in 3D space. A line has one defined point and continues on to

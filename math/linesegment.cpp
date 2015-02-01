@@ -1,5 +1,5 @@
 
-#include "linesegment.h"
+#include "math/linesegment.h"
 #include "glm/glm.hpp"
 
 LineSegment::LineSegment(glm::vec3 point1, glm::vec3 point2) : point1(point1), point2(point2)
@@ -33,7 +33,7 @@ glm::vec3 LineSegment::getAsVec3()
 
 int LineSegment::getDimension()
 {
-	return 3; 
+	return 3;
 	// (point2.getDimension() == point1.getDimension()) ? point1.getDimension() : -1;
 }
 

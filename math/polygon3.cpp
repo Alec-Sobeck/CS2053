@@ -4,8 +4,8 @@
 #include <sstream>
 #include "glm/glm.hpp"
 #include "glm/vec3.hpp"
-#include "polygon3.h"
-#include "gamemath.h"
+#include "math/polygon3.h"
+#include "math/gamemath.h"
 
 Polygon3::Polygon3(std::vector<glm::vec3> points)
 {

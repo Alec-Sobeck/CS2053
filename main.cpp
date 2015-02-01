@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef linux
+//#ifdef __linux__
 
 #include <GL/glx.h>    /* this includes the necessary X headers */
 #include <GL/gl.h>
@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     if (vi == NULL) fatalError("no RGB visual with depth buffer");
     doubleBuffer = GL_FALSE;
   }
-  if(vi->class != TrueColor)
+  if(vi->c_class != TrueColor)
     fatalError("TrueColor visual required for this program");
 
   /*** (4) create an OpenGL rendering context  ***/
@@ -238,11 +238,9 @@ int main(int argc, char **argv)
   return 0;
 }
 
-#else 
-
+/*
 int main(int argc, char **argv)
 {
 	return 0;
 }
-
-#endif
+*/

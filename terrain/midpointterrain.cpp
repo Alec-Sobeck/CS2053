@@ -2,7 +2,7 @@
 #include <cmath>
 #include "midpointterrain.h"
 #include "utils/random.h"
-#include "interpolators.h"
+#include "math/interpolators.h"
 
 MidPointTerrain::MidPointTerrain(int iterations, float roughness, int lod, float size) : roughness(roughness)
 {

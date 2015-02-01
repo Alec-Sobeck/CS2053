@@ -3,8 +3,8 @@
 
 #include "glm/vec3.hpp"
 #include "utils/flexarray.h"
-#include "polygon3.h"
-#include "ioctreeelement.h"
+#include "math/polygon3.h"
+#include "math/ioctreeelement.h"
 #include "physics/aabb.h"
 
 /**

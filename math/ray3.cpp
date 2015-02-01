@@ -1,6 +1,6 @@
 
 #include <sstream>
-#include "ray3.h"
+#include "math/ray3.h"
 
 /**
 * Constructs a new Ray3 instance, which requires a two glm::vec3.

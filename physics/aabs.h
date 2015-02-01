@@ -2,7 +2,7 @@
 #define AABS_H
 
 #include "glm/vec3.hpp"
-#include "polygon3.h"
+#include "math/polygon3.h"
 
 /**
  * AABS - "Axis Aligned Bounding Sphere" is a sphere that is used to bound a model or object for the purposes

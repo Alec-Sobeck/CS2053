@@ -7,8 +7,8 @@ class Polygon3;
 #include <memory>
 #include <vector>
 #include "glm/vec3.hpp"
-#include "ilinevariant.h"
-#include "polygon3.h"
+#include "math/ilinevariant.h"
+#include "math/polygon3.h"
 
 /**
  * Plane3 implements a plane that exists in the third dimension. A plane can be
