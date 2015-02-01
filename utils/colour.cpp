@@ -2,12 +2,19 @@
 #include <sstream>
 #include "colour.h"
 
+Colour::Colour() : r(0), g(0), b(0), a(0), name("undefined_colour_name")
+{
+}
 
 Colour::Colour(double r, double g, double b, double a) : r(r), g(g), b(b), a(a), name("undefined_colour_name")
 {
 }
 
 Colour::Colour(std::string name, double r, double g, double b, double a) : r(r), g(g), b(b), a(a), name(name)
+{
+}
+
+Colour::Colour(const Colour& other) : r(other.r), g(other.g), b(other.b), a(other.a), name(other.name)
 {
 }
 
@@ -42,3 +49,14 @@ std::string Colour::getName()
 {
 	return name;
 }
+
+Colour& Colour::operator=(Colour other)
+{
+    std::swap(r, other.r);
+    std::swap(g, other.g);
+    std::swap(b, other.b);
+    std::swap(a, other.a);
+    std::swap(name, other.name);
+    return *this;
+}
+

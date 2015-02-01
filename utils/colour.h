@@ -3,17 +3,20 @@
 
 #include <string>
 
-struct Colour 
+struct Colour
 {
 public:
-	const double r;
-	const double g;
-	const double b;
-	const double a;
-	const std::string name;
+	double r;
+	double g;
+	double b;
+	double a;
+	std::string name;
+	Colour();
 	Colour(double r, double g, double b, double a);
 	Colour(std::string name, double r, double g, double b, double a);
+	Colour(const Colour&);
 	std::string toString();
+	Colour& operator=(Colour other);
 	float getR();
 	float getG();
 	float getB();

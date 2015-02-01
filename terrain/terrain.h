@@ -6,15 +6,16 @@
 #include "glm/vec3.hpp"
 #include "utils/colour.h"
 #include "terrain/terraindata.h"
+#include "utils/flexarray.h"
 
 class Terrain
 {
 protected:
 	int lod;
 	float width;
-	std::vector<glm::vec3> vertices;
-	std::vector<Colour> colours;
-	std::vector<glm::vec2> uvs;
+	FlexArray<glm::vec3> vertices;
+	FlexArray<Colour> colours;
+	FlexArray<glm::vec2> uvs;
 
 public:
 	virtual void generateTerrain(int LoD, float size);
