@@ -35,9 +35,10 @@ void MidPointTerrain::buildHeightMap(float randomizerValue, int x1, int y1, int 
 {
     int xm = (x1 + x2) / 2;
     int ym = (y1 + y2) / 2;
-    int numPoints = 4;
     if (xm == x1 && ym == y1)
+    {
         return;
+    }
 
     // Diamond
     heightMap[xm][ym] = (getRandomFloat() * 2 * randomizerValue - randomizerValue) +

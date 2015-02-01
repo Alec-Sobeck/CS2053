@@ -3,7 +3,7 @@
 #include "physics/aabb.h"
 
 AABB::AABB(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
- : xMin(xMin), yMin(yMin), zMin(zMin), xMax(xMax), yMax(yMax), zMax(zMax)
+ : xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), zMin(zMin), zMax(zMax)
 {
 }
 

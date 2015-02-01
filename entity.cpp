@@ -15,8 +15,9 @@ int getNextEntityID()
 // Define methods in Entity class
 //
 
-Entity::Entity() : acceleration(glm::vec3(0, 0, 0)), velocity(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), entityID(getNextEntityID()),
-    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5)))
+Entity::Entity() : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(getNextEntityID()),
+    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
+    isAffectedByGravity(false), isNoClipActive(false)
 {
 }
 
@@ -26,8 +27,9 @@ Entity::Entity() : acceleration(glm::vec3(0, 0, 0)), velocity(glm::vec3(0, 0, 0)
  * @param entityID an int which must uniquely identify this Entity. It is suggested that this
  * be a value generated from {@link #getNextEntityID()}
  */
-Entity::Entity(int entityID) : acceleration(glm::vec3(0, 0, 0)), velocity(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), entityID(entityID),
-    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5)))
+Entity::Entity(int entityID) : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(entityID),
+    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
+    isAffectedByGravity(false), isNoClipActive(false)
 {
 }
 
@@ -38,8 +40,8 @@ Entity::Entity(int entityID) : acceleration(glm::vec3(0, 0, 0)), velocity(glm::v
  * @param model a Model that will be used for this entity
  * @param camera a Camera that will be used for this entity
  */
-Entity::Entity(int entityID, Model model, Camera camera) : acceleration(glm::vec3(0, 0, 0)), velocity(glm::vec3(0, 0, 0)),
-    maxMoveSpeed(0.5f), entityID(entityID), camera(camera), model(model), boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5)))
+Entity::Entity(int entityID, Model model, Camera camera) : boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))),
+    entityID(entityID), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f)
 {
 }
 

@@ -6,7 +6,7 @@
  * @param point
  * @param direction
  */
-Line3::Line3(glm::vec3 point, glm::vec3 direction) : point(point), direction(direction)
+Line3::Line3(glm::vec3 point, glm::vec3 direction) : direction(direction), point(point)
 {
 }
 

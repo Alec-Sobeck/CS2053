@@ -3,7 +3,7 @@
 
 
 TerrainPolygon::TerrainPolygon(std::vector<glm::vec3> vertices, FlexArray<float> colour, FlexArray<float> textureCoords)
- : Polygon3(vertices), colour(colour), textureCoords(textureCoords), polygonBounds(generateBounds())
+ : Polygon3(vertices), polygonBounds(generateBounds()), colour(colour), textureCoords(textureCoords)
 {
 }
 
@@ -13,7 +13,7 @@ FlexArray<float> TerrainPolygon::getRawData()
     float ny = normal.y;
     float nz = normal.z;
     FlexArray<float> combinedData(points.size() * (TOTAL_ROW_SIZE));
-    for(int i = 0; i < points.size(); i++)
+    for(int i = 0; i < static_cast<int>(points.size()); i++)
     {
         combinedData[(i * TOTAL_ROW_SIZE) + 0] = points[i].x;
         combinedData[(i * TOTAL_ROW_SIZE) + 1] = points[i].y;
@@ -74,7 +74,7 @@ AABB TerrainPolygon::generateBounds()
     double yMax = points[1].y;
     double zMin = points[2].z;
     double zMax = points[2].z;
-    for(int i = 1; i < points.size(); i++)
+    for(int i = 1; i < static_cast<int>(points.size()); i++)
     {
         //xMin
         if(points[i].x < xMin)

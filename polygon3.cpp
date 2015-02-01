@@ -77,14 +77,18 @@ double Polygon3::area() {
     if (isCoplanar && points.size() >= 3)
 	{
         glm::vec3 total(0, 0, 0);
-		for (int i = 0; i < static_cast<int>(points.size()); i++) 
+		for (int i = 0; i < static_cast<int>(points.size()); i++)
 		{
             glm::vec3 vi1 = points[i];
             glm::vec3 vi2;
-            if (i == points.size() - 1)
+            if (i == static_cast<int>(points.size()) - 1)
+            {
                 vi2 = points[0];
+            }
             else
+            {
                 vi2 = points[i + 1];
+            }
             glm::vec3 prod = glm::cross(vi1, vi2);
             total = glm::vec3(total.x + prod.x, total.y + prod.y, total.z + prod.z);
         }
@@ -128,9 +132,9 @@ bool Polygon3::line_does_intersect_triangle(glm::vec3 v0, glm::vec3 v1, glm::vec
     if (!coplanar)
 	{
         Plane3 plane(v0, v1, v2);
-        if (!plane.does_intersect_line(line)) 
+        if (!plane.does_intersect_line(line))
 			return false;
-        else 
+        else
 			p2 = plane.lineIntersectPoint(line);
     }
     else

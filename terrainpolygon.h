@@ -23,8 +23,8 @@ public:
 	const int TOTAL_ROW_SIZE = 3/*Vert*/ + 4/*Colour*/ + 2/*Texture-Coord*/ + 3/*Normal*/;
 	AABB polygonBounds;
 	FlexArray<int> IBOIndexes;
-	FlexArray<float> textureCoords;
 	FlexArray<float> colour;
+	FlexArray<float> textureCoords;
 	/**
 	 * Constructs a new TerrainPolygon and constructs the AABB that is associated with it.
 	 * @param associatedPolygon a Polygon3 that will be used to construct an AABB

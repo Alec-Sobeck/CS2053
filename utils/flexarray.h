@@ -11,9 +11,8 @@ template<class T>
 class FlexArray
 {
 private:
-    T* memory;
     int arraySize;
-
+    T* memory;
 public:
     FlexArray() : arraySize(0), memory(new T[0])
     {

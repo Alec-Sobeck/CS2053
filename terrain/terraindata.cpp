@@ -25,7 +25,7 @@ std::vector<TerrainPolygon> TerrainData::getPolygons()
 {
     std::vector<TerrainPolygon> polygons;
 
-    for (int i = 0; i < faceVerts.size(); i++)
+    for (int i = 0; i < static_cast<int>(faceVerts.size()); i++)
     {
         glm::vec3 faceVertVals = faceVerts.at(i);
         glm::vec3 faceUVVals = faceTextures.at(i);
@@ -91,7 +91,7 @@ void TerrainData::exportToOBJ(std::string filePath)
     glm::vec3 *faceNormal = nullptr;
     glm::vec3 *faceTexture = nullptr;
 
-    for (int i = 0; i < faceVerts.size(); i++)
+    for (int i = 0; i < static_cast<int>(faceVerts.size()); i++)
     {
         ss << "f ";
         faceVert = &faceVerts.at(i);

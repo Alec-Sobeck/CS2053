@@ -4,16 +4,16 @@
 #include "plane3.h"
 #include "glm/glm.hpp"
 #include "glm/vec4.hpp"
-#include "gamemath.h"	
+#include "gamemath.h"
 #include "linesegment3.h"
 #include "line3.h"
 #include "ray3.h"
 
-Plane3::Plane3(glm::vec3 pointOnPlane, glm::vec3 normal) : pointOnPlane(pointOnPlane), normal(normal)
+Plane3::Plane3(glm::vec3 pointOnPlane, glm::vec3 normal) : normal(normal), pointOnPlane(pointOnPlane)
 {
 }
 
-Plane3::Plane3(glm::vec3 pointOnPlane, std::vector<glm::vec3> directions) : 
+Plane3::Plane3(glm::vec3 pointOnPlane, std::vector<glm::vec3> directions) :
 //TODO ensure this calculation works properly
 	pointOnPlane(pointOnPlane)
 {
@@ -56,7 +56,7 @@ bool Plane3::does_intersect_line(ILineVariant &line){
 	{
 		return false;
 	}
-	else 
+	else
 	{
 		if (dynamic_cast<Line3*>(&line) != 0)
 		{
@@ -98,8 +98,10 @@ bool Plane3::doesIntersectPoly(Polygon3 &poly)
 		}
 
 	}
-	if (abs(count) != poly.points.size()) 
+	if (abs(count) != static_cast<int>(poly.points.size()))
+	{
 		return true;
+	}
 	return false;
 }
 
@@ -134,7 +136,7 @@ double Plane3::distanceToPoint(glm::vec3 vector)
 		planeEquation.z * vector.z +
 		planeEquation.w;
 
-	result /= glm::length(planeEquation); 
+	result /= glm::length(planeEquation);
 	return result;
 }
 
@@ -156,7 +158,7 @@ glm::vec3 Plane3::getPointOnPlane()
 std::string Plane3::toString()
 {
 	std::stringstream ss;
-	ss << "Plane3[point=<" << pointOnPlane.x << "," << pointOnPlane.y << "," << pointOnPlane.z << ">, normal=<" 
+	ss << "Plane3[point=<" << pointOnPlane.x << "," << pointOnPlane.y << "," << pointOnPlane.z << ">, normal=<"
 		<< normal.x << ", " << normal.y << ", " << normal.z << ">]";
 	return ss.str();
 }
