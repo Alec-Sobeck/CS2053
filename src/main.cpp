@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#ifdef __linux__
+#ifdef __linux__312
 
 #include <GL/glx.h>    /* this includes the necessary X headers */
 #include <GL/gl.h>
@@ -238,9 +238,23 @@ int main(int argc, char **argv)
   return 0;
 }
 
-/*
+#endif
+
+#include <GL/freeglut.h>
+
 int main(int argc, char **argv)
 {
-	return 0;
+// init GLUT and create Window
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition(100,100);
+	glutInitWindowSize(320,320);
+	glutCreateWindow("Lighthouse3D- GLUT Tutorial");
+
+	while(1){
+
+	}
+
+	return 1;
 }
-*/
+
