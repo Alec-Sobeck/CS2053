@@ -1,31 +1,7 @@
-/* A simple program to show how to set up an X window for OpenGL rendering.
- * X86 compilation: gcc -o -L/usr/X11/lib   main main.c -lGL -lX11
- * X64 compilation: gcc -o -L/usr/X11/lib64 main main.c -lGL -lX11
- */
-#include <stdio.h>
-#include <stdlib.h>
 
 #ifdef __linux__312
 
-#include <GL/glx.h>    /* this includes the necessary X headers */
-#include <GL/gl.h>
-
-#include <X11/X.h>    /* X11 constant (e.g. TrueColor) */
-#include <X11/keysym.h>
-
-static int snglBuf[] = {GLX_RGBA, GLX_DEPTH_SIZE, 16, None};
-static int dblBuf[]  = {GLX_RGBA, GLX_DEPTH_SIZE, 16, GLX_DOUBLEBUFFER, None};
-
-Display   *dpy;
-Window     win;
 GLfloat    xAngle = 42.0, yAngle = 82.0, zAngle = 112.0;
-GLboolean  doubleBuffer = GL_TRUE;
-
-void fatalError(char *message)
-{
-  fprintf(stderr, "main: %s\n", message);
-  exit(1);
-}
 
 void redraw(void)
 {
@@ -74,10 +50,6 @@ void redraw(void)
     glEndList();
     displayListInited = GL_TRUE;
   }
-  if (doubleBuffer)
-    glXSwapBuffers(dpy, win);/* buffer swap does implicit glFlush */
-  else
-    glFlush();  /* explicit flush for single buffered case */
 }
 
 int main(int argc, char **argv)
@@ -161,11 +133,6 @@ int main(int argc, char **argv)
   /* pedantic, full window size is default viewport */
   glViewport(0, 0, 300, 300);
 
-  printf( "Press left mouse button to rotate around X axis\n" );
-  printf( "Press middle mouse button to rotate around Y axis\n" );
-  printf( "Press right mouse button to rotate around Z axis\n" );
-  printf( "Press ESC to quit the application\n" );
-
   /*** (9) dispatch X events ***/
 
   while (1)
@@ -237,24 +204,214 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
 #endif
 
+#include <stdlib.h>
+#include <string>
+#include <iostream>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <GL/freeglut.h>
+
+bool initFreeglut(int argc, char **argv);
+bool createWindow(int x, int y, int width, int height, std::string windowTitle);
+void changeSize(int w, int h);
+void processNormalKeys(unsigned char key, int x, int y);
+void processSpecialKeys(int key, int x, int y);
+void renderScene(void);
+void handleMouseClick(int button, int state, int x, int y);
+void handleMouseMovementWhileClicked(int x,int y);
+void handleMouseMovementWhileNotClicked(int x, int y);
+void processSpecialKeys(int key, int x, int y);
+
+
+float angle = 0.0f, red = 1, green = 1, blue = 1;
+void renderScene(void) {
+
+	// Clear Color and Depth Buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Reset transformations
+
+	glLoadIdentity();
+	// Set the camera
+	gluLookAt(	0.0f, 0.0f, 10.0f,
+			0.0f, 0.0f,  0.0f,
+			0.0f, 1.0f,  0.0f);
+
+        glRotatef(angle, 0.0f, 1.0f, 0.0f);
+
+        // the function responsible for setting the color
+    std::cout << red << ' ' << green << ' ' << blue << std::endl;
+	glColor3f(red,green,blue);
+	glBegin(GL_TRIANGLES);
+		glVertex3f(-2.0f,-2.0f, 0.0f);
+		glVertex3f( 2.0f, 0.0f, 0.0);
+		glVertex3f( 0.0f, 2.0f, 0.0);
+	glEnd();
+	angle+=0.1f;
+
+	glutSwapBuffers();
+}
+
+bool initFreeglut(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+
+    return true;
+}
+
+bool createWindow(int x, int y, int width, int height, std::string windowTitle)
+{
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	glutInitWindowPosition(100,100);
+	glutInitWindowSize(320,320);
+	glutCreateWindow(windowTitle.c_str());
+    return true;
+}
+
+void changeSize(int w, int h)
+{
+
+	// Prevent a divide by zero, when window is too short
+	// (you cant make a window of zero width).
+	if (h == 0)
+		h = 1;
+
+	float ratio =  w * 1.0 / h;
+
+	// Use the Projection Matrix
+	glMatrixMode(GL_PROJECTION);
+
+	// Reset Matrix
+	glLoadIdentity();
+
+	// Set the viewport to be the entire window
+	glViewport(0, 0, w, h);
+
+	// Set the correct perspective.
+	gluPerspective(45,ratio,1,100);
+
+	// Get Back to the Modelview
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void processNormalKeys(unsigned char key, int x, int y)
+{
+    // to check for a key modifier use:
+    //       int glutGetModifiers(void);
+    // The return value for this function is either one of three predefined constants or any bitwise OR combination of them. The constants are:
+    //       GLUT_ACTIVE_SHIFT - Set if either you press the SHIFT key, or Caps Lock is on. Note that if they are both on then the constant is not set.
+    //       GLUT_ACTIVE_CTRL - Set if you press the CTRL key.
+    //       GLUT_ACTIVE_ALT - Set if you press the ALT key.
+
+
+    if (key == 27)
+		exit(0);
+	else if (key=='r') {
+		int mod = glutGetModifiers();
+		if (mod == GLUT_ACTIVE_ALT)
+			red = 0.0;
+		else
+			red = 1.0;
+	}
+}
+
+/*
+The first relates to which button was pressed, or released. This argument can have one of three values:
+
+    GLUT_LEFT_BUTTON
+    GLUT_MIDDLE_BUTTON
+    GLUT_RIGHT_BUTTON
+
+The second argument relates to the state of the button when the callback was generated, i.e. pressed or released. The possible values are:
+
+    GLUT_DOWN
+    GLUT_UP
+*/
+void handleMouseClick(int button, int state, int x, int y)
+{
+    // do stuff
+
+    if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
+    {
+        red += 0.04f;
+    }
+
+}
+
+/*
+There are two types of motion that GLUT handles: active and passive motion.
+Active motion occurs when the mouse is moved and a button is pressed.
+*/
+// "active mouse movement"
+void handleMouseMovementWhileClicked(int x,int y)
+{
+    // Do stuff with the mouse clicked then dragged
+
+}
+
+// "passive mouse movement"
+void handleMouseMovementWhileNotClicked(int x, int y)
+{
+    // Do stuff while the mouse isn't clicked, but dragged
+
+}
+
+void processSpecialKeys(int key, int x, int y)
+{
+	int mod;
+	switch(key)
+	{
+		case GLUT_KEY_F1:
+		   mod = glutGetModifiers();
+		   if (mod == (GLUT_ACTIVE_CTRL | GLUT_ACTIVE_ALT))
+		   {   // <-- on a linux computer this will open a console you can close with control-alt-F7
+		   	   red = 1.0; green = 0.0; blue = 0.0;
+		   }
+		   break;
+		case GLUT_KEY_F2:
+		   red = 0.0;
+		   green = 1.0;
+		   blue = 0.0;
+		   break;
+		case GLUT_KEY_F3:
+		   red = 0.0;
+		   green = 0.0;
+		   blue = 1.0;
+		   break;
+	}
+}
 
 int main(int argc, char **argv)
 {
-// init GLUT and create Window
+	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(320,320);
-	glutCreateWindow("Lighthouse3D- GLUT Tutorial");
+	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
 
-	while(1){
+	// register callbacks
+	glutDisplayFunc(renderScene);
+	glutReshapeFunc(changeSize);
 
-	}
+	glutIdleFunc(renderScene);
 
-	return 1;
+	// here are the new entries
+	glutKeyboardFunc(processNormalKeys);
+	glutSpecialFunc(processSpecialKeys);
+
+
+    glutMouseFunc(handleMouseClick);
+    glutMotionFunc(handleMouseMovementWhileClicked);
+    glutPassiveMotionFunc(handleMouseMovementWhileNotClicked);
+
+
+
+
+	// enter GLUT event processing loop
+	glutMainLoop();
+
+	return 0;
 }
 
