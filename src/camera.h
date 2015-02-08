@@ -18,6 +18,7 @@ public:
 	float minZoom;
 	float maxZoom;
 	float currentZoom;
+	Camera();
 	/**
 	 * Creates a new Camera with the provided position and rotation.
 	 * @param pos a Point3 that is the initial position of the Camera

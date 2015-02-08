@@ -1,6 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <memory>
 #include "glm/vec3.hpp"
 #include "physics/aabb.h"
 #include "physics/aabs.h"
@@ -42,7 +43,8 @@ class Entity
 	 * @param model a Model that will be used for this entity
 	 * @param camera a Camera that will be used for this entity
 	 */
-    Entity(int entityID, Model model, Camera camera);
+    Entity(int entityID, std::shared_ptr<Model> model, Camera camera);
+    ~Entity();
     float getX();
 	float getY();
 	float getZ();
@@ -51,9 +53,9 @@ class Entity
     bool affectedByGravity();
 	void setAffectedByGravity(bool isAffectedByGravity);
 	int getEntityID();
-	Model getModel();
+	std::shared_ptr<Model> getModel();
 	AABB getAABB();
-    void setModel(Model &newModel);
+    void setModel(std::shared_ptr<Model> newModel);
     Camera getCamera();
 	void setCamera(Camera camera);
 	/**
@@ -69,7 +71,7 @@ class Entity
 
 protected:
 	/** A model somehow associated to this entity. */
-    Model model;
+    std::shared_ptr<Model> model;
     /** A camera which controls the movement of this entity. */
     Camera camera;
     glm::vec3 velocity;

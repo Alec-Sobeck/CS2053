@@ -24,9 +24,14 @@ void Model::onAABBCollision(AABB &boundsCollidedWith)
  * Constructs a new Model with the specified ModelData object.
  * @param data a ModelData object that can be used to construct this Model
  */
-Model::Model(ModelData &data) : origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
-        data(data), aabb(rotateAABB(data.getAABB())), scale(glm::vec3(1.0f, 1.0f, 1.0f)), modelID(getNextModelID())
+Model::Model(ModelData &data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
+        data(data), aabb(rotateAABB(data.getAABB())), scale(glm::vec3(1.0f, 1.0f, 1.0f))
 {
+}
+
+Model::~Model()
+{
+
 }
 
 AABB Model::rotateAABB(AABB aabb)

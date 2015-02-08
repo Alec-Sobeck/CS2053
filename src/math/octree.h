@@ -29,9 +29,10 @@ private:
 	 * Creates an Octree with no elements
 	 * @param bounds - the bounding box for the tree
 	 */
-	Octree(AABB bounds, int depth) : boundary(bounds), CURRENT_DEPTH(depth), elements(std::set<T>()), isLeaf(true)
+	Octree(AABB bounds, int depth) : elements(std::set<T>()), isLeaf(true), boundary(bounds), CURRENT_DEPTH(depth)
     {
     }
+
 	/**
 	 * Fills the children array by splitting the current AABB into 8 chunks based off the midpoint
 	 */
@@ -82,7 +83,7 @@ public:
 	 * @param elements - the elements to attempt to place inside the tree
 	 */
 	Octree(AABB bounds, std::vector<T> elements, int depth)
-        : boundary(bounds), CURRENT_DEPTH(depth), elements(std::set<T>()), isLeaf(true)
+        : elements(std::set<T>()), isLeaf(true), boundary(bounds), CURRENT_DEPTH(depth),
     {
         //Adds all the initial elements to the tree. This is no longer a method as that makes it prone to bugs.
         for(auto e : elements)
@@ -119,6 +120,7 @@ public:
             return std::set<T>();
         }
     }
+
 	/**
 	 * Inserts an element into the appropriate branch of the tree, splitting if needed
 	 * @param allElements - all of the elements attempted to be placed in the tree
