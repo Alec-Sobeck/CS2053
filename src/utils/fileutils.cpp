@@ -2,11 +2,18 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include "fileutils.h"
 
 std::string readTextFile(std::string filepath)
 {
     std::ifstream infile(filepath.c_str());
+    if(infile.fail())
+    {
+        std::stringstream ss;
+        ss << "Failure to open file at " << filepath;
+        throw std::runtime_error(ss.str());
+    }
     std::string line;
     std::stringstream content;
     while (std::getline(infile, line))
@@ -19,6 +26,12 @@ std::string readTextFile(std::string filepath)
 void writeTextFile(std::string filepath, std::string contents)
 {
     std::ofstream file(filepath.c_str());
+    if(file.fail())
+    {
+        std::stringstream ss;
+        ss << "Failure to open file at " << filepath;
+        throw std::runtime_error(ss.str());
+    }
     file << contents;
     file.close();
 }

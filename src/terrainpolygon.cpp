@@ -109,3 +109,10 @@ AABB TerrainPolygon::generateBounds()
     }
     return AABB(xMin, yMin, zMin, xMax, yMax, zMax);
 }
+
+
+
+
+
+
+

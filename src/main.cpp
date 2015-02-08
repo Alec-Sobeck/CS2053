@@ -209,6 +209,7 @@ int main(int argc, char **argv)
 #include <stdlib.h>
 #include <string>
 #include <iostream>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
@@ -223,7 +224,6 @@ void handleMouseClick(int button, int state, int x, int y);
 void handleMouseMovementWhileClicked(int x,int y);
 void handleMouseMovementWhileNotClicked(int x, int y);
 void processSpecialKeys(int key, int x, int y);
-
 
 float angle = 0.0f, red = 1, green = 1, blue = 1;
 void renderScene(void) {
@@ -256,22 +256,20 @@ void renderScene(void) {
 bool initFreeglut(int argc, char **argv)
 {
     glutInit(&argc, argv);
-
     return true;
 }
 
 bool createWindow(int x, int y, int width, int height, std::string windowTitle)
 {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowPosition(x, y);
+	glutInitWindowSize(width, height);
 	glutCreateWindow(windowTitle.c_str());
     return true;
 }
 
 void changeSize(int w, int h)
 {
-
 	// Prevent a divide by zero, when window is too short
 	// (you cant make a window of zero width).
 	if (h == 0)
@@ -384,6 +382,12 @@ void processSpecialKeys(int key, int x, int y)
 
 int main(int argc, char **argv)
 {
+    GLenum err = glewInit();
+    if (GLEW_OK != err)
+    {
+      /* Problem: glewInit failed, something is seriously wrong. */
+      fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    }
 	// init GLUT and create window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

@@ -60,6 +60,7 @@ public:
 	void setIBOIndexes(FlexArray<int> &iBOIndexes);
 	FlexArray<float> getTextureCoords();
 	FlexArray<float> getColour();
+
 private:
 	/**
 	 * Approximates the bounds of the Polygon3 associated to this TerrainPolygon.
@@ -70,5 +71,9 @@ private:
 	AABB generateBounds();
 };
 
+inline bool operator<(const TerrainPolygon &first, const TerrainPolygon &other)
+{
+    return false;
+}
 
 #endif
