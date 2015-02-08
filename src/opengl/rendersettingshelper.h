@@ -50,7 +50,13 @@ int getViewportX();
  * @return an int which is the y position of the current glViewport
  */
 int getViewportY();
+/**
+ * Width in pixels of the current window.
+ */
 int getWindowWidth();
+/**
+ * Height in pixels of the current window.
+ */
 int getWindowHeight();
 
 

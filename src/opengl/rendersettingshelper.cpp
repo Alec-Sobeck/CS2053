@@ -1,6 +1,7 @@
 
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/freeglut.h>
 #include "opengl/rendersettingshelper.h"
 
 const int virtual_width = 1280;
@@ -138,8 +139,9 @@ float getAspectRatio()
  */
 int getViewportWidth()
 {
-    // TODO -- black magic here
-    return -1;
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[2];
 }
 
 /**
@@ -148,8 +150,9 @@ int getViewportWidth()
  */
 int getViewportHeight()
 {
-    // TODO -- black magic here
-    return -1;
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[3];
 }
 
 /**
@@ -158,8 +161,9 @@ int getViewportHeight()
  */
 int getViewportX()
 {
-    // TODO -- black magic here
-    return -1;
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[0];
 }
 
 /**
@@ -168,18 +172,17 @@ int getViewportX()
  */
 int getViewportY()
 {
-    // TODO -- black magic here
-    return -1;
+    GLint viewport[4];
+    glGetIntegerv( GL_VIEWPORT, viewport );
+    return viewport[1];
 }
 
 int getWindowWidth()
 {
-    // TODO -- black magic here
-    return -1;
+    return glutGet(GLUT_WINDOW_WIDTH);
 }
 
 int getWindowHeight()
 {
-    // TODO -- black magic here
-    return -1;
+    return glutGet(GLUT_WINDOW_HEIGHT);
 }
