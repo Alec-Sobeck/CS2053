@@ -6,6 +6,7 @@
 #include <sstream>
 #include <algorithm>
 #include <stdexcept>
+#include <initializer_list>
 
 template<class T>
 class FlexArray
@@ -27,6 +28,16 @@ public:
         memory = new T[arraySize];
     }
 
+    FlexArray(std::initializer_list<T> parameters) : arraySize(parameters.size()), memory(new T[parameters.size()])
+    {
+        int index = 0;
+        for(auto it = parameters.begin(); it != parameters.end(); it++)
+        {
+            memory[index] = *it;
+            index++;
+        }
+    }
+
     FlexArray(const FlexArray<T> &other)
     {
         this->arraySize = other.arraySize;
@@ -35,6 +46,11 @@ public:
         {
             memory[i] = T(other.memory[i]);
         }
+    }
+
+    T* getRawArray()
+    {
+        return this->memory;
     }
 
     T& operator[](const int &position)

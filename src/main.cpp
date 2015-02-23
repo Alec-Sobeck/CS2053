@@ -206,13 +206,16 @@ int main(int argc, char **argv)
 }
 #endif
 
+#include <memory>
 #include <stdlib.h>
 #include <string>
 #include <iostream>
+#include <soil/SOIL.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/freeglut.h>
+#include "utils/textureloader.h"
 
 bool initFreeglut(int argc, char **argv);
 bool createWindow(int x, int y, int width, int height, std::string windowTitle);
@@ -226,29 +229,43 @@ void handleMouseMovementWhileNotClicked(int x, int y);
 void processSpecialKeys(int key, int x, int y);
 
 float angle = 0.0f, red = 1, green = 1, blue = 1;
-void renderScene(void) {
+void renderScene(void)
+{
+    static bool loadTexture = false;
+    static std::shared_ptr<Texture> texture(nullptr);
+    if(!loadTexture)
+    {
+        loadTexture = true;
+        texture = getTexture(
+            "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/img_test.png"
+        );
+    }
 
 	// Clear Color and Depth Buffers
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Reset transformations
-
 	glLoadIdentity();
 	// Set the camera
 	gluLookAt(	0.0f, 0.0f, 10.0f,
-			0.0f, 0.0f,  0.0f,
-			0.0f, 1.0f,  0.0f);
-
-        glRotatef(angle, 0.0f, 1.0f, 0.0f);
+			    0.0f, 0.0f,  0.0f,
+			    0.0f, 1.0f,  0.0f);
+    glRotatef(angle, 0.0f, 1.0f, 0.0f);
 
         // the function responsible for setting the color
-    std::cout << red << ' ' << green << ' ' << blue << std::endl;
-	glColor3f(red,green,blue);
-	glBegin(GL_TRIANGLES);
-		glVertex3f(-2.0f,-2.0f, 0.0f);
-		glVertex3f( 2.0f, 0.0f, 0.0);
-		glVertex3f( 0.0f, 2.0f, 0.0);
+//    std::cout << red << ' ' << green << ' ' << blue << std::endl;
+//	glColor3f(red,green,blue);
+
+    glEnable(GL_TEXTURE_2D);
+    texture->bind();
+
+	glBegin(GL_QUADS);
+	  glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
+      glTexCoord2f(0, 1); glVertex3f(0, 10, 0);
+      glTexCoord2f(1, 1); glVertex3f(10, 10, 0);
+      glTexCoord2f(1, 0); glVertex3f(10, 0, 0);
 	glEnd();
-	angle+=0.1f;
+
+	angle += 0.1f;
 
 	glutSwapBuffers();
 }

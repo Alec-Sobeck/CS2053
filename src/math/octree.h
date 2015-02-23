@@ -83,7 +83,7 @@ public:
 	 * @param elements - the elements to attempt to place inside the tree
 	 */
 	Octree(AABB bounds, std::vector<T> elements, int depth)
-        : elements(std::set<T>()), isLeaf(true), boundary(bounds), CURRENT_DEPTH(depth),
+        : elements(std::set<T>()), isLeaf(true), boundary(bounds), CURRENT_DEPTH(depth)
     {
         //Adds all the initial elements to the tree. This is no longer a method as that makes it prone to bugs.
         for(auto e : elements)
