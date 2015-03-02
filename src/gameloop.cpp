@@ -47,9 +47,8 @@ class KeyManager
 public:
     static const int VALID_NUMBER_OF_CHARS = 1000000;
     static const int VALID_NUMBER_OF_SPECIALS = 1000;
-    static const unsigned char JUST_PRESSED = 0;
     static const unsigned char RELEASED = 1;
-    static const unsigned char STILL_PRESSED = 2;
+    static const unsigned char PRESSED = 2;
     static const int KEY_F1 = 3;
     static const int KEY_F2 = 4;
     static const int KEY_F3 = 5;
@@ -104,7 +103,11 @@ public:
     int rightMouseButtonState;
     int x;
     int y;
+    bool grabbed;
+    glm::vec3 relativeGrabDirection;
     MouseManager();
+    void setGrabbed(bool);
+    glm::vec3 getRelativeGrabDirection();
 };
 
 void mouseManagerHandleMouseClick(int button, int state, int x, int y);
@@ -369,30 +372,30 @@ void processKeyboardInput()
     KeyManager *manager = &gameLoopObject.keyManager;
     manager->update();
 
-    if (manager->getKeyState(27) == KeyManager::STILL_PRESSED) // Escape key
+    if (manager->getKeyState(27) == KeyManager::PRESSED) // Escape key
 	{
 		exit(0);
 	}
 
-    if(manager->getKeyState('w') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState('w') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 -cos(gameLoopObject.player.getCamera()->rotation.y)));
     }
-    if(manager->getKeyState('s') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState('s') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(-sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 cos(gameLoopObject.player.getCamera()->rotation.y)));
     }
-    if(manager->getKeyState('a') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState('a') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 -sin(gameLoopObject.player.getCamera()->rotation.y)));
     }
-    if(manager->getKeyState('d') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState('d') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
@@ -423,28 +426,28 @@ void processKeyboardInput()
     {
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
-    /*
-    if(Keyboard.isKeyDown(Keyboard.KEY_TAB) && !isTabDown){
-        isTabDown = true;
-        if (Mouse.isGrabbed()){
-            Mouse.setGrabbed(false);
-        }
-        else Mouse.setGrabbed(true);
-    }
-    else if(!Keyboard.isKeyDown(Keyboard.KEY_TAB)){
-        isTabDown = false;
-    }
 
+    static bool keylockTab = false;
+    if(manager->getKeyState('\t') == KeyManager::PRESSED && !keylockTab)
+    {
+        keylockTab = true;
+        gameLoopObject.mouseManager.setGrabbed(!gameLoopObject.mouseManager.grabbed);
+    }
+    if(manager->getKeyState('\t') == KeyManager::RELEASED)
+    {
+        keylockTab = false;
+    }
+    /*
     if(Keyboard.isKeyDown(Keyboard.KEY_PERIOD)){
         shouldTether = !shouldTether;
     }
     */
 
-    if(manager->getKeyState(' ') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState(' ') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(0, 1, 0));
     }
-    if(manager->getKeyState('x') == KeyManager::STILL_PRESSED)
+    if(manager->getKeyState('x') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(0, -1, 0));
     }
@@ -487,7 +490,29 @@ void processKeyboardInput()
 
 void processMouseInput()
 {
+    MouseManager *manager = &gameLoopObject.mouseManager;
+    Camera *cam = gameLoopObject.player.getCamera();
 
+    if(manager->grabbed)
+    {
+        glm::vec3 *grabDir = &manager->relativeGrabDirection;
+        if (grabDir->x < -2)
+        {
+            cam->rotate(glm::vec3(0, -0.01, 0));
+        }
+        else if (grabDir->x > 2)
+        {
+            cam->rotate(glm::vec3(0, 0.01, 0));
+        }
+        if (grabDir->y < -2)
+        {
+            cam->rotate(glm::vec3(-0.01, 0, 0));
+        }
+        else if (grabDir->y > 2)
+        {
+            cam->rotate(glm::vec3(0.01, 0, 0));
+        }
+    }
 }
 
 void entryCall(int argc, char **argv)
@@ -507,6 +532,7 @@ void entryCall(int argc, char **argv)
 	glutKeyboardUpFunc(keyManagerKeyUp);
 	glutSpecialFunc(keyManagerKeySpecial);
 	glutSpecialUpFunc(keyManagerKeySpecialUp);
+//	glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
 	//glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
 	//glutKeyboardFunc(processNormalKeys);
 	//glutSpecialFunc(processSpecialKeys);
@@ -581,14 +607,7 @@ void keyManagerKeyPressed(unsigned char key, int x, int y)
     {
         return;
     }
-    if(gameLoopObject.keyManager.keystates[key] == KeyManager::RELEASED)
-    {
-        gameLoopObject.keyManager.keystates[key] = KeyManager::JUST_PRESSED;
-    }
-    if(gameLoopObject.keyManager.keystates[key] == KeyManager::JUST_PRESSED)
-    {
-        gameLoopObject.keyManager.keystates[key] = KeyManager::STILL_PRESSED;
-    }
+    gameLoopObject.keyManager.keystates[key] = KeyManager::PRESSED;
 }
 
 void keyManagerKeyUp(unsigned char key, int x, int y)
@@ -610,15 +629,7 @@ void keyManagerKeySpecial(int key, int x, int y)
     {
         return;
     }
-
-    if(gameLoopObject.keyManager.specialKeystates[key] == KeyManager::RELEASED)
-    {
-        gameLoopObject.keyManager.specialKeystates[key] = KeyManager::JUST_PRESSED;
-    }
-    if(gameLoopObject.keyManager.specialKeystates[key] == KeyManager::JUST_PRESSED)
-    {
-        gameLoopObject.keyManager.specialKeystates[key] = KeyManager::STILL_PRESSED;
-    }
+    gameLoopObject.keyManager.specialKeystates[key] = KeyManager::PRESSED;
 }
 
 void keyManagerKeySpecialUp(int key, int x, int y)
@@ -652,13 +663,13 @@ unsigned char KeyManager::getSpecialState(int key)
 
 unsigned char KeyManager::isKeyDown(unsigned char key)
 {
-    return getKeyState(key) == JUST_PRESSED || getKeyState(key) == STILL_PRESSED;
+    return getKeyState(key) == PRESSED;
 }
 
 ///
 /// Define MouseManager functions/methods
 ///
-MouseManager::MouseManager() : leftMouseButtonState(MOUSE_RELEASED), middleMouseButtonState(MOUSE_RELEASED), rightMouseButtonState(MOUSE_RELEASED), x(0), y(0)
+MouseManager::MouseManager() : leftMouseButtonState(MOUSE_RELEASED), middleMouseButtonState(MOUSE_RELEASED), rightMouseButtonState(MOUSE_RELEASED), x(0), y(0), grabbed(false)
 {
 }
 
@@ -714,15 +725,90 @@ The second argument relates to the state of the button when the callback was gen
 void mouseManagerHandleMouseMovementWhileClicked(int x, int y)
 {
     // Do stuff with the mouse clicked then dragged
-    gameLoopObject.mouseManager.x = x;
-    gameLoopObject.mouseManager.y = y;
+    static bool warped = false;
+    if(warped)
+    {
+        warped = false;
+        return;
+    }
+    if(gameLoopObject.mouseManager.grabbed)
+    {
+        warped = true;
+        int width = getWindowWidth();
+        int height = getWindowHeight();
+        int centerX = (float)width / 2.0;
+        int centerY = (float)height / 2.0;
+        int deltaX = (x - centerX);
+        int deltaY = (y - centerY);
+        glm::vec3 dir(deltaX , deltaY , 0);
+        gameLoopObject.mouseManager.relativeGrabDirection = dir;
+        glutWarpPointer( glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2 );
+        gameLoopObject.mouseManager.x = x;
+        gameLoopObject.mouseManager.y = y;
+    }
+    else
+    {
+        gameLoopObject.mouseManager.x = x;
+        gameLoopObject.mouseManager.y = y;
+    }
 }
 
 // passive mouse movement: movement that occurs when the mouse is not clicked.
 void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y)
 {
     // Do stuff while the mouse isn't clicked, but dragged
-    gameLoopObject.mouseManager.x = x;
-    gameLoopObject.mouseManager.y = y;
+    static bool warped = false;
+    if(warped)
+    {
+        warped = false;
+        return;
+    }
+    if(gameLoopObject.mouseManager.grabbed)
+    {
+        warped = true;
+        int width = getWindowWidth();
+        int height = getWindowHeight();
+        int centerX = (float)width / 2.0;
+        int centerY = (float)height / 2.0;
+        int deltaX = (x - centerX);
+        int deltaY = (y - centerY);
+        glm::vec3 dir(deltaX , deltaY , 0);
+        gameLoopObject.mouseManager.relativeGrabDirection = dir;
+        glutWarpPointer( glutGet(GLUT_WINDOW_WIDTH) / 2, glutGet(GLUT_WINDOW_HEIGHT) / 2 );
+        gameLoopObject.mouseManager.x = x;
+        gameLoopObject.mouseManager.y = y;
+    }
+    else
+    {
+        gameLoopObject.mouseManager.x = x;
+        gameLoopObject.mouseManager.y = y;
+    }
 }
+
+void MouseManager::setGrabbed(bool grabbed)
+{
+    this->grabbed = grabbed;
+    if(grabbed)
+    {
+        glutSetCursor(GLUT_CURSOR_NONE);
+    }
+    else
+    {
+        glutSetCursor(GLUT_CURSOR_LEFT_SIDE);
+    }
+}
+
+glm::vec3 MouseManager::getRelativeGrabDirection()
+{
+    if(grabbed)
+    {
+        return this->relativeGrabDirection;
+    }
+    else
+    {
+        return glm::vec3(0, 0, 0);
+    }
+}
+
+
 
