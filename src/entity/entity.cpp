@@ -101,9 +101,9 @@ void Entity::setModel(std::shared_ptr<Model> newModel)
     this->model = newModel;
 }
 
-Camera Entity::getCamera()
+Camera* Entity::getCamera()
 {
-    return camera;
+    return &camera;
 }
 
 void Entity::setCamera(Camera camera)
@@ -152,6 +152,13 @@ void Entity::setCamera(Camera camera)
             velocity = glm::vec3(velocity.x, velocity.y, -maxMoveSpeed);
         }
     }
+
+    auto temp = (camera.position + velocity);
+    //std::cout << ":" << temp.x << " " << temp.y << " " << temp.z << std::endl;
+    std::cout << "p:" << camera.position.x << " " << camera.position.y << " " << camera.position.z << std::endl;
+    std::cout << "v:" << velocity.x << " " << velocity.y << " " << velocity.z << std::endl;
+    std::cout << "a:" << acceleration.x << " " << acceleration.y << " " << acceleration.z << std::endl;
+
 
     camera.setPosition(camera.getPosition() + velocity);
     boundingBox.move(velocity);

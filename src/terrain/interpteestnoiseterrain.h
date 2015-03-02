@@ -8,11 +8,11 @@
 class InterpTestNoiseTerrain : public Terrain
 {
 private:
-	FlexArray<FlexArray<float>> heightMap;
+	std::shared_ptr<Flex2D<float>> heightMap;
 	float maxVal;
 public:
 	InterpTestNoiseTerrain(int numVal, float maxVal, int lod, float size);
-	FlexArray<FlexArray<float>> buildNoise(int width);
+    std::shared_ptr<Flex2D<float>> buildNoise(int width);
 	float getHeight(double x, double y);
     Colour getColour(double x, double y);
 };

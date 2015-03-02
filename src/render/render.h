@@ -2,10 +2,10 @@
 #define ENGINE_RENDER_H
 
 #include <map>
-#include <GL/gl.h>
+#include <glbinding/gl/gl.h>
 #include "render/texture.h"
-#include "camera.h"
-#include "opengl/gluhelper.h"
+#include "graphics/camera.h"
+#include "graphics/gluhelper.h"
 #include "utils/textureloader.h"
 
 /**
@@ -44,9 +44,9 @@ public:
 	 * @return a Texture created from the provided file path
 	 */
 	Texture* loadTexture(std::string ref);
-	void renderAxes(Camera &cam);
+
 };
 
-
+void renderAxes(Camera  *cam);
 
 #endif

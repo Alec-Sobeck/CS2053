@@ -1,8 +1,8 @@
 
 #include "world/map.h"
 
-
-Map::Map() : models(std::vector<Model>()), data(TerrainData()), terrainOctree(nullptr), modelOctree(nullptr)
+Map::Map() : models(std::vector<Model>()), data(std::shared_ptr<TerrainData>(new TerrainData())),
+        terrainOctree(nullptr), modelOctree(nullptr)
 {
     //TODO fix the issue where no octree bounds can be defined immediately
 //		terrainOctree = new Octree<TerrainPolygon>(absoluteMapBoundary, new ArrayList<TerrainPolygon>(), 0);
@@ -26,7 +26,8 @@ Map::~Map()
  * of terrain Polygons, and an Octree empty for the models and terrain.
  * @param absoluteMapBoundary the AABB that bounds the entire map-
  */
-Map::Map(AABB absoluteMapBoundary) : models(std::vector<Model>()), data(TerrainData())
+Map::Map(AABB absoluteMapBoundary) : models(std::vector<Model>()),
+        data(std::shared_ptr<TerrainData>(new TerrainData()))
 {
     terrainOctree = new Octree<TerrainPolygon>(absoluteMapBoundary, std::vector<TerrainPolygon>(), 0);
     modelOctree = new Octree<Model>(absoluteMapBoundary, std::vector<Model>(), 0);
@@ -42,17 +43,17 @@ void Map::addModel(Model &model)
     modelOctree->insertElement(model);
 }
 
-void Map::setTerrain(TerrainData &terrainData)
+void Map::setTerrain(std::shared_ptr<TerrainData> terrainData)
 {
     this->data = terrainData;
-    std::vector<TerrainPolygon> polys = terrainData.getPolygons();
-    for (unsigned int i = 0; i < polys.size(); i++)
+    std::shared_ptr<FlexArray<TerrainPolygon>> polys = terrainData->getPolygons();
+    for (unsigned int i = 0; i < polys->size(); i++)
     {
-        this->terrainOctree->insertElement(polys[i]);
+        this->terrainOctree->insertElement(polys->at(i));
     }
 }
 
-TerrainData Map::getData()
+std::shared_ptr<TerrainData> Map::getData()
 {
     return data;
 }

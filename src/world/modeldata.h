@@ -2,6 +2,7 @@
 #define MODEL_DATA_H
 
 #include <string>
+#include <glbinding/gl/gl.h>
 #include "physics/aabb.h"
 #include "utils/flexarray.h"
 
@@ -14,24 +15,24 @@ class ModelData
 {
 public:
 	const std::string associatedTextureName;
-	const int glRenderMode;
+	const gl::GLenum glRenderMode;
 	const int stride;
 	const int vertexSize;
 	const int vertexOffset;
 	/** Corresponds to a GL constant type like GL11.GL_FLOAT, or GL11.GL_BYTE*/
-	const int vertexType;
+	const gl::GLenum vertexType;
 	const int normalSize;
 	const int normalOffset;
 	/** Corresponds to a GL constant type like GL11.GL_FLOAT, or GL11.GL_BYTE*/
-	const int normalType;
+	const gl::GLenum normalType;
 	const int colourSize;
 	const int colourOffset;
 	/** Corresponds to a GL constant type like GL11.GL_FLOAT, or GL11.GL_BYTE*/
-	const int colourType;
+	const gl::GLenum colourType;
 	const int textureCoordSize;
 	const int textureCoordOffset;
 	/** Corresponds to a GL constant type like GL11.GL_FLOAT, or GL11.GL_BYTE*/
-	const int textureCoordType;
+	const gl::GLenum textureCoordType;
 	/** The total number of elements associated to one vertex*/
 	const int elementsPerRowOfCombinedData;
 	FlexArray<float> combinedData;
@@ -57,13 +58,13 @@ public:
 	 * @param combinedData
 	 */
 	ModelData(
-			int glRenderMode,
+			gl::GLenum glRenderMode,
 			int vertexPerFace,
 			int stride,
 			int elementsPerRowOfCombinedData,
-			int vertexSize, int vertexOffset, int vertexType,
-			int normalSize, int normalOffset, int normalType,
-			int colourSize, int colourOffset, int colourType,
+			int vertexSize, int vertexOffset, gl::GLenum vertexType,
+			int normalSize, int normalOffset, gl::GLenum normalType,
+			int colourSize, int colourOffset, gl::GLenum colourType,
 			FlexArray<float> combinedData
         );
 	/**
@@ -89,15 +90,15 @@ public:
 	 * @param combinedData
 	 */
 	ModelData(
-			int glRenderMode,
+			gl::GLenum glRenderMode,
 			int vertexPerFace,
 			std::string associatedTextureName,
 			int stride,
 			int elementsPerRowOfCombinedData,
-			int vertexSize, int vertexOffset, int vertexType,
-			int normalSize, int normalOffset, int normalType,
-			int colourSize, int colourOffset, int colourType,
-			int textureCoordSize, int textureCoordOffset, int textureCoordType,
+			int vertexSize, int vertexOffset, gl::GLenum vertexType,
+			int normalSize, int normalOffset, gl::GLenum normalType,
+			int colourSize, int colourOffset, gl::GLenum colourType,
+			int textureCoordSize, int textureCoordOffset, gl::GLenum textureCoordType,
 			FlexArray<float> combinedData
         );
 	/**

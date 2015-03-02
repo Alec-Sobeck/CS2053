@@ -1,9 +1,12 @@
 
 #include <sstream>
 #include "shaders/lightingshaderdemo.h"
+#include "graphics/gluhelper.h"
+#include "graphics/windowhelper.h"
 
 void LightingShaderDemo::render()
 {
+    using namespace gl;
     startRenderCycle();
     glLoadIdentity();
     //Draw
@@ -19,24 +22,22 @@ void LightingShaderDemo::render()
     glEnd();
     shader1->releaseShader();
 
-   	glutSwapBuffers();
+   	swapBuffers();
    	endRenderCycle();
 }
 
 void LightingShaderDemo::init(int argc, char **argv)
 {
+    using namespace gl;
     int w = 1024;
     int h = 768;
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(w, h);
-	glutCreateWindow("Shader Demo");
+    initFreeglut(argc, argv);
+    createWindow(100, 100, w, h, "Shader Demo");
 
     glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
+    setGluPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glShadeModel(GL_SMOOTH);
@@ -44,8 +45,7 @@ void LightingShaderDemo::init(int argc, char **argv)
     glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT,
-    GL_NICEST);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     initLights();
 

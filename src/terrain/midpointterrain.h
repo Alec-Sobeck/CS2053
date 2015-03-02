@@ -14,7 +14,7 @@ private:
 	float maxHeight = 0.1f;
 
 public:
-    FlexArray<FlexArray<float>> heightMap;
+    std::shared_ptr<Flex2D<float>> heightMap;
 	MidPointTerrain(int iterations, float roughness, int lod, float size);
 	void buildHeightMap(float randomizerValue, int x1, int y1, int x2, int y2);
     float getHeight(double x, double y);

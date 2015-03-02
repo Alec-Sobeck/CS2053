@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <GL/glew.h>
+#include <glbinding/gl/gl.h>
 #include "utils/fileutils.h"
 #include "shaders/shader.h"
 
@@ -172,9 +172,9 @@ void _printProgramInfoLog(GLuint obj)
  * @param shaderType the type of the shader to use - either GL_FRAGMENT_SHADER_ARB or GL_VERTEX_SHADER_ARB depending on the shader type
  * @return an GLuint which uniquely identifies this shader within the program.
  */
-int createShader(std::string filename, GLint shaderType)
+int createShader(std::string filename, GLenum shaderType)
 {
-    int shader = 0;
+    GLint shader = 0;
     try
     {
         shader = glCreateShader(shaderType);
@@ -186,9 +186,9 @@ int createShader(std::string filename, GLint shaderType)
         std::string fileContents = readTextFile(filename);
         glShaderSourceARB(shader, 1, (const GLcharARB**)fileContents.c_str(), nullptr);
         glCompileShaderARB(shader);
-        int ret = 0;
+        GLint ret = 0;
         glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &ret);
-        if (ret == GL_FALSE)
+        if (ret == 0)
         {
             std::cout << "Error creating shader: " << std::endl << "Program Info Log:" << std::endl;
             _printProgramInfoLog(shader);
@@ -249,9 +249,9 @@ std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std:
     }
 
     glLinkProgramARB(program);
-    int ret = 0;
+    GLint ret = 0;
     glGetObjectParameterivARB(program, GL_OBJECT_LINK_STATUS_ARB, &ret);
-    if (ret == GL_FALSE)
+    if (ret == 0)
     {
         std::cout << "Error creating shader: " << std::endl << "Program Info Log:" << std::endl;
         _printProgramInfoLog(program);
@@ -262,7 +262,7 @@ std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std:
 
     glValidateProgramARB(program);
     glGetObjectParameterivARB(program, GL_OBJECT_VALIDATE_STATUS_ARB, &ret);
-    if (ret == GL_FALSE)
+    if (ret == 0)
     {
         std::cout << "Error creating shader: " << std::endl << "Program Info Log:" << std::endl;
         _printProgramInfoLog(program);

@@ -19,19 +19,19 @@
  * @param combinedData
  */
 ModelData::ModelData(
-        int glRenderMode,
+        gl::GLenum glRenderMode,
         int vertexPerFace,
         int stride,
         int elementsPerRowOfCombinedData,
-        int vertexSize, int vertexOffset, int vertexType,
-        int normalSize, int normalOffset, int normalType,
-        int colourSize, int colourOffset, int colourType,
+        int vertexSize, int vertexOffset, gl::GLenum vertexType,
+        int normalSize, int normalOffset, gl::GLenum normalType,
+        int colourSize, int colourOffset, gl::GLenum colourType,
         FlexArray<float> combinedData
     ) : associatedTextureName(""), glRenderMode(glRenderMode), stride(stride),
     vertexSize(vertexSize), vertexOffset(vertexOffset), vertexType(vertexType),
     normalSize(normalSize), normalOffset(normalOffset), normalType(normalType),
     colourSize(colourSize), colourOffset(colourOffset), colourType(colourType),
-    textureCoordSize(0), textureCoordOffset(0), textureCoordType(0),
+    textureCoordSize(0), textureCoordOffset(0), textureCoordType(gl::GL_FLOAT),
     elementsPerRowOfCombinedData(elementsPerRowOfCombinedData), combinedData(combinedData),
     vertexPerFace(vertexPerFace), hasTextureData(false)
 {
@@ -60,15 +60,15 @@ ModelData::ModelData(
  * @param combinedData
  */
 ModelData::ModelData(
-        int glRenderMode,
+        gl::GLenum glRenderMode,
         int vertexPerFace,
         std::string associatedTextureName,
         int stride,
         int elementsPerRowOfCombinedData,
-        int vertexSize, int vertexOffset, int vertexType,
-        int normalSize, int normalOffset, int normalType,
-        int colourSize, int colourOffset, int colourType,
-        int textureCoordSize, int textureCoordOffset, int textureCoordType,
+        int vertexSize, int vertexOffset, gl::GLenum vertexType,
+        int normalSize, int normalOffset, gl::GLenum normalType,
+        int colourSize, int colourOffset, gl::GLenum colourType,
+        int textureCoordSize, int textureCoordOffset, gl::GLenum textureCoordType,
         FlexArray<float> combinedData
     ) : associatedTextureName(associatedTextureName), glRenderMode(glRenderMode), stride(stride),
     vertexSize(vertexSize), vertexOffset(vertexOffset), vertexType(vertexType),

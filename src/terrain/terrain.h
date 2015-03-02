@@ -1,6 +1,7 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
+#include <memory>
 #include <vector>
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -19,7 +20,7 @@ protected:
 
 public:
 	virtual void generateTerrain(int LoD, float size);
-	virtual TerrainData exportToTerrainData();
+	virtual std::shared_ptr<TerrainData> exportToTerrainData();
 	virtual float getHeight(double x, double y) = 0;
 	virtual Colour getColour(double x, double y) = 0;
 };

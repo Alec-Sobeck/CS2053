@@ -7,7 +7,7 @@
 #include "math/polygon3.h"
 #include "math/gamemath.h"
 
-Polygon3::Polygon3(std::vector<glm::vec3> points)
+Polygon3::Polygon3(FlexArray<glm::vec3> points)
 {
     if(points.size() < 3)
     {
@@ -23,10 +23,20 @@ Polygon3::Polygon3(std::vector<glm::vec3> points)
 		throw std::invalid_argument("A Polygon3 must be coplanar. The provided glm::vec3[] does not describe a coplanar polygon.");
 	}
 }
-
-void Polygon3::computeIsCoplanar() {
-	for (int i = 2; i < static_cast<int>(points.size()); i++){
-        if (!approximatelyEqual(glm::dot(normal, points[i] - points[0]), 0)){
+#include <iostream>
+void Polygon3::computeIsCoplanar()
+{
+	for (int i = 2; i < static_cast<int>(points.size()); i++)
+	{
+        float val = glm::dot(normal, points[i] - points[0]);
+        if (fabs(val) > 0.01)
+        {
+            std::cout << points.size() << std::endl;
+            std::cout << glm::dot(normal, points[i] - points[0]) << std::endl;
+            std::cout << normal.x << " " << normal.y << " " << normal.z << std::endl;
+            std::cout << (points[i] - points[0]).x << " " <<
+            (points[i] - points[0]).y << " "
+             << (points[i] - points[0]).z << " " << std::endl;
             isCoplanar = false;
             return;
         }
@@ -51,8 +61,7 @@ void Polygon3::cullNthPoint(int n){
     if(n == 3)
         throw std::logic_error("Culling a point from this Polygon3 would make the polygon degenerate.");
 
-    std::vector<glm::vec3> replacement;
-    replacement.reserve(points.size() - 1);
+    FlexArray<glm::vec3> replacement(points.size() - 1);
     for (int i = 0; i < static_cast<int>(points.size()); i++){
         if (i < n){
             replacement[i] = points[i];
@@ -104,7 +113,7 @@ Plane3 Polygon3::getPlane()
 	{
 		throw std::invalid_argument("No plane exists for this Polygon3.");
     }
-    return Plane3(points.at(0), normal);
+    return Plane3(points[0], normal);
 }
 
 bool Polygon3::does_intersect_line(ILineVariant &line)
@@ -171,7 +180,7 @@ bool Polygon3::does_intersect_poly(Polygon3 poly){
     return (getPlane().doesIntersectPoly(poly) && poly.getPlane().doesIntersectPoly(*this));
 }
 
-std::vector<glm::vec3> Polygon3::getVertices()
+FlexArray<glm::vec3> Polygon3::getVertices()
 {
     return points;
 }

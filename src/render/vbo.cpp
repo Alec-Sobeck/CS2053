@@ -1,20 +1,18 @@
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
 #include "vbo.h"
 #include "render/render.h"
+#include <iostream>
 
 /**
  * Convience method to create a VBOID. Equivalent to a call to GL15.glGenBuffers().
  * @return a unique int ID that can be used to access a VBO that has been allocated to VRAM
  */
-int createVBOID()
+gl::GLuint createVBOID()
 {
-    GLuint output[1];
-    glGenBuffers(1, output);
-    return output[0];
+    gl::GLuint output;
+    gl::glGenBuffers(1, &output);
+    return output;
 }
-
 
 /**
  * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.
@@ -22,6 +20,7 @@ int createVBOID()
  */
 VBO::VBO(ModelData &data)
 {
+    using namespace gl;
    // TODO: texture loading in VBO's is NYI
     this->associatedTexture = nullptr;  //Render::getTexture(data.associatedTextureName);
     this->glRenderMode = data.glRenderMode;
@@ -70,6 +69,7 @@ VBO::VBO(ModelData &data)
  */
 void VBO::draw(Camera &camera)
 {
+    using namespace gl;
     if(!hasTextureData)
     {
         glDisable(GL_TEXTURE_2D);
@@ -91,9 +91,10 @@ void VBO::draw(Camera &camera)
 
 VBO::~VBO()
 {
+    // TODO - fix this method
     // Deletes the VBO from VRAM
-    GLuint *buffers = new GLuint[1];
-    buffers[0] = static_cast<GLuint>(vertexBufferID);
-    glDeleteBuffers(1, buffers);
+    gl::GLuint *buffers = new gl::GLuint[1];
+    buffers[0] = static_cast<gl::GLuint>(vertexBufferID);
+    gl::glDeleteBuffers(1, buffers);
     delete[] buffers;
 }

@@ -1,14 +1,11 @@
 #include "textureloader.h"
 
 #include <soil/SOIL.h>
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-
+#include <glbinding/gl/gl.h>
 
 std::shared_ptr<Texture> getTexture(std::string resourceName)
 {
+    using namespace gl;
     return std::shared_ptr<Texture>(new Texture(
         resourceName,
         static_cast<GLuint>(SOIL_load_OGL_texture(

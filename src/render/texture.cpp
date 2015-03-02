@@ -1,6 +1,8 @@
 
-#include <GL/gl.h>
+#include <glbinding/gl/gl.h>
 #include "texture.h"
+
+using namespace gl;
 
 /**
  * Constructs a new Texture object, storing the specified textureID for binding

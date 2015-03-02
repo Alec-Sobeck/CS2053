@@ -3,11 +3,12 @@
 
 #include <string>
 #include <memory>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <glbinding/gl/gl.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+
+using namespace gl;
 
 /**
  * Shader contains the relevant information and methods to bind and release an OpenGL shader, and to assign values to the uniform

@@ -8,7 +8,7 @@
 #include <string>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <GL/gl.h>
+#include <glbinding/gl/gl.h>
 #include "utils/colour.h"
 #include "render/vbo.h"
 #include "world/modeldata.h"

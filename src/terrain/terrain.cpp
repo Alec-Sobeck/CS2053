@@ -19,18 +19,19 @@ void Terrain::generateTerrain(int LoD, float size)
 		{
 			float x = (i * step) - width / 2;
 			float z = (j * step) - width / 2;
-			vertices[i*lod + j] = glm::vec3(x, getHeight(x, z), z);
+			vertices[i * lod + j] = glm::vec3(x, getHeight(x, z), z);
             Colour colour = getColour(x, z);
-			colours[i*lod + j] = colour;
+			colours[i * lod + j] = colour;
 		}
 	}
+	std::cout << numVerts << std::endl;
 	uvs[0] = glm::vec2(1, 1);
 	uvs[1] = glm::vec2(0, 1);
 	uvs[2] = glm::vec2(0, 0);
 	uvs[3] = glm::vec2(1, 0);
 }
 
-TerrainData Terrain::exportToTerrainData()
+std::shared_ptr<TerrainData> Terrain::exportToTerrainData()
 {
 	std::vector<glm::vec3> vertices = toVector(this->vertices);
 	std::vector<glm::vec3> normals;
@@ -52,5 +53,5 @@ TerrainData Terrain::exportToTerrainData()
 		faceTextures.push_back(glm::vec3(1, 2, 3));
 	}
 
-	return TerrainData(vertices, normals, colours, textureCoords, faceVerts, faceNormals, faceTextures);
+	return std::shared_ptr<TerrainData>(new TerrainData(vertices, normals, colours, textureCoords, faceVerts, faceNormals, faceTextures));
 }

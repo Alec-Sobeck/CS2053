@@ -60,8 +60,9 @@ Texture* Render::getTexture(std::string name)
     return nullptr;//new Texture("", 10);
 }
 
- void Render::renderAxes(Camera &cam)
+ void renderAxes(Camera *cam)
 {
+    using namespace gl;
     glLoadIdentity();
     setGluLookAt(cam);
     glDisable(GL_TEXTURE_2D);

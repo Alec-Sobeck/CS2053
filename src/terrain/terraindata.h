@@ -1,11 +1,12 @@
 #ifndef TERRAIN_DATA_H
 #define TERRAIN_DATA_H
 
+#include <memory>
 #include <vector>
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 #include "utils/colour.h"
-#include "terrainpolygon.h"
+#include "graphics/terrainpolygon.h"
 
 /**
  * Contains the data required to reconstruct the terrain of a world. Currently, this is
@@ -38,7 +39,7 @@ public:
 	 * Gets the List of TerrainPolygons in this TerrainData.
 	 * @return a List<TerrainPolygon> that belong to this TerrainData
 	 */
-	std::vector<TerrainPolygon> getPolygons();
+	std::shared_ptr<FlexArray<TerrainPolygon>> getPolygons();
 	/**
 	 * The total number of vertices of all the polygons in the TerrainData. It is expected that this value
 	 * should be in the interval [0, INF]

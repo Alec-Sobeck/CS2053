@@ -1,10 +1,11 @@
 #ifndef GAME_MAP_H
 #define GAME_MAP_H
 
+#include <memory>
 #include <vector>
 #include "physics/aabb.h"
 #include "math/octree.h"
-#include "model.h"
+#include "graphics/model.h"
 #include "terrain/terraindata.h"
 
 /**
@@ -21,7 +22,7 @@ private:
 public:
 	const std::string FILE_EXTENSION = ".mapdat";
     std::vector<Model> models;
-	TerrainData data;
+	std::shared_ptr<TerrainData> data;
 	Octree<TerrainPolygon> *terrainOctree;
 	Octree<Model> *modelOctree;
 	Map();
@@ -37,8 +38,8 @@ public:
 	 * @param model a Model to add to this Map
 	 */
 	void addModel(Model &model);
-	void setTerrain(TerrainData &terrainData);
-	TerrainData getData();
+	void setTerrain(std::shared_ptr<TerrainData>);
+	std::shared_ptr<TerrainData> getData();
 };
 
 #endif
