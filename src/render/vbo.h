@@ -53,7 +53,7 @@ public:
 	/**
 	 * Draws the VBO's contents.
 	 */
-	void draw(Camera &camera);
+	void draw(Camera *camera);
 	~VBO();
 };
 

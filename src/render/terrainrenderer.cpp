@@ -89,13 +89,13 @@ TerrainRenderer::TerrainRenderer() : terrainPolygons(FlexArray<TerrainPolygon>(1
 {
 }
 
-void TerrainRenderer::create(std::shared_ptr<TerrainData> terrain)
+void TerrainRenderer::create(std::shared_ptr<TerrainData> terrain, std::shared_ptr<Texture> terrainTexture)
 {
     std::shared_ptr<FlexArray<TerrainPolygon>> polys = terrain->getPolygons();
-    vbo->create(polys);
+    vbo->create(polys, terrainTexture);
 }
 
-void TerrainRenderer::draw(Camera &cam)
+void TerrainRenderer::draw(Camera *cam)
 {
     vbo->draw(cam);
 }

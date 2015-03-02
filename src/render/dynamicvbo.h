@@ -29,11 +29,11 @@ private:
 	gl::GLuint indexBufferID;
 	int indicesCount;
 	int vertCount;
-	int* ibo;
+	unsigned int* ibo;
 	float* vbo;
 	bool initialized;
 public:
-    Texture *texture;
+    std::shared_ptr<Texture> texture;
 	/**
 	 * Creates a new DynamicVBO but does not invoke the create(...) method.
 	 * The create(...) method must be invoked prior to drawing, adding, or
@@ -51,14 +51,14 @@ public:
 	 * functionally impossible to remove the TerrainPolygon from any VBOs but the last, a
 	 * pseudo memory leak</b>
 	 */
-	void create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys);
+	void create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::shared_ptr<Texture> texture);
 	/**
 	 * Draws the terrain as specified by the index buffer object associated with this terrain renderer.
 	 * @param cam the Camera that will be used to properly display the terrain
 	 * @throws IllegalStateException - the create(...) method has not been called so there is no data
 	 * in the buffer to draw
 	 */
-	void draw(Camera &cam);
+	void draw(Camera *cam);
 	/**
      * <i> Javadoc comment pending finalized functionality. </i><br>
 	 * Iteration 1: the number of vertices to remove is not strictly enforced

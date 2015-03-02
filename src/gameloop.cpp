@@ -42,6 +42,9 @@ void gameUpdateTick();
 ///
 /// Define the KeyManager class. Because GLUT is a C library, unfortunately we have to write this is a fairly C-like style.
 ///
+/// Special Usage Note: KeyManager class has some problems with the isShiftDown, isControlDown, and isAltDown fields not updating. The state of these keys cannot be queried until another
+/// key event happens [this is an OS restriction - there might be a workaround?]. Their state only updates when another key is pressed or released.
+///
 class KeyManager
 {
 public:
@@ -152,7 +155,7 @@ void GameLoop::buildSampleTerrain()
 //	shader.glUniform3v("iResolution", v);
 //  shader.glUniform1f("iGlobalTime", 0.0f);
 //  terrain = new TrigTerrain(10, 100);
-    std::shared_ptr<Terrain> terrain(new MidPointTerrain(2, 0.6f, 50, 200));
+    std::shared_ptr<Terrain> terrain(new MidPointTerrain(3, 0.6f, 50, 200));
 //  terrain = new InterpTestNoiseTerrain(10, 10, 50, 400);
     //map.setTerrain(terrain->exportToTerrainData());
 //  Set<TerrainPolygon> polys = map.getTerrainOctree().getRange(new AABB(-10, -10, -10, 10, 10, 10));
@@ -164,10 +167,10 @@ void GameLoop::buildSampleTerrain()
 //  defaultMap.addTerrain(new TerrainPolygon());
 //  defaultMap.buildTerrainRenderer();
     //createTerrainRenderer(terrain->exportToTerrainData());
-
+    auto tex = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
     auto terrainExp = terrain->exportToTerrainData();
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
-    this->terrainRenderer->create(terrainExp);
+    this->terrainRenderer->create(terrainExp, tex);
 
 }
 
@@ -233,7 +236,7 @@ void gameUpdateTick()
         renderAxes(cam);
 
         gameLoopObject.player.move();
-//      gameLoopObject.terrainRenderer->draw(cam);
+        gameLoopObject.terrainRenderer->draw(cam);
 
         //std::cout << cam << ":" << cam->position.x << " " << cam->position.y << " " << cam->position.z << std::endl;
 
@@ -375,6 +378,31 @@ void processKeyboardInput()
         gameLoopObject.player.accel(glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 sin(gameLoopObject.player.getCamera()->rotation.y)));
+    }
+
+    if(manager->isKeyDown('1'))
+    {
+        camera->rotate(glm::vec3(0.01f, 0, 0));
+    }
+    if(manager->isKeyDown('2'))
+    {
+        camera->rotate(glm::vec3(-.01f, 0, 0));
+    }
+    if(manager->isKeyDown('3'))
+    {
+        camera->rotate(glm::vec3(0, 0.01f, 0));
+    }
+    if(manager->isKeyDown('4'))
+    {
+        camera->rotate(glm::vec3(0, -.01f, 0));
+    }
+    if(manager->isKeyDown('5'))
+    {
+        camera->rotate(glm::vec3(0, 0, 0.01f));
+    }
+    if(manager->isKeyDown('6'))
+    {
+        camera->rotate(glm::vec3(0, 0, -.01f));
     }
     /*
     if(Keyboard.isKeyDown(Keyboard.KEY_TAB) && !isTabDown){

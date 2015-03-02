@@ -182,7 +182,7 @@ void start3DRenderCycle()
 
     glMatrixMode(GL_PROJECTION);
     gl::glLoadIdentity();
-    setGluPerspective(45.0f, getAspectRatio(), 0.1f, 100.0f);
+    setGluPerspective(45.0f, getAspectRatio(), 0.1f, 1000.0f);
     glMatrixMode(GL_MODELVIEW);
     gl::glLoadIdentity();
     gl::glPushMatrix();

@@ -2,6 +2,88 @@
 #include <glbinding/gl/gl.h>
 #include "render/dynamicvbo.h"
 
+
+TerrainPolygon _p(
+        FlexArray<glm::vec3>({
+                glm::vec3(3.0f,  1.0f, -1.0f),
+                glm::vec3(3.0f,  1.0f,  1.0f),
+                glm::vec3(3.0f, -1.0f,  1.0f),
+                glm::vec3(3.0f, -1.0f, -1.0f)
+        }),
+        FlexArray<float>({
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f
+        }),
+        FlexArray<float>({
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f
+        })
+);
+TerrainPolygon _p1(
+        FlexArray<glm::vec3>({
+                glm::vec3(5.0f,  1.0f, -1.0f),
+                glm::vec3(5.0f,  1.0f,  1.0f),
+                glm::vec3(5.0f, -1.0f,  1.0f),
+                glm::vec3(5.0f, -1.0f, -1.0f)
+        }),
+        FlexArray<float>({
+                0.0f,0.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f
+        }),
+        FlexArray<float>({
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f
+        })
+);
+TerrainPolygon _p2(
+        FlexArray<glm::vec3>({
+                glm::vec3(7.0f,  1.0f, -1.0f),
+                glm::vec3(7.0f,  1.0f,  1.0f),
+                glm::vec3(7.0f, -1.0f,  1.0f),
+                glm::vec3(7.0f, -1.0f, -1.0f)
+        }),
+        FlexArray<float>({
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f
+        }),
+        FlexArray<float>({
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f
+        })
+);
+TerrainPolygon _p3(
+        FlexArray<glm::vec3> {
+                glm::vec3(10.0f,  1.0f, -1.0f),
+                glm::vec3(10.0f,  1.0f,  1.0f),
+                glm::vec3(10.0f, -1.0f,  1.0f),
+                glm::vec3(10.0f, -1.0f, -1.0f)
+        },
+        FlexArray<float>({
+                0.0f,0.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f,
+                0.0f,1.0f,1.0f,1.0f
+        }),
+        FlexArray<float>({
+                1.0f, 1.0f,
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f
+        })
+);
+
 using namespace gl;
 
 int *constructRange(int a, int b)
@@ -15,7 +97,7 @@ int *constructRange(int a, int b)
 }
 
 DynamicVBO::DynamicVBO() : vertexBufferID(0), indexBufferID(0),
-    indicesCount(0), vertCount(0), texture(nullptr), initialized(false)
+    indicesCount(0), vertCount(0), texture(std::shared_ptr<Texture>(nullptr)), initialized(false)
 {
 }
 
@@ -29,8 +111,11 @@ DynamicVBO::DynamicVBO() : vertexBufferID(0), indexBufferID(0),
  * functionally impossible to remove the TerrainPolygon from any VBOs but the last, a
  * pseudo memory leak</b>
  */
-void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
+void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::shared_ptr<Texture> terrainTexture)
 {
+    this->texture = terrainTexture;
+//    polys = std::shared_ptr<FlexArray<TerrainPolygon>>(new FlexArray<TerrainPolygon>({_p, _p1, _p2, _p3}));
+
     int vertexCount = 0;
     for(int i = 0; i < polys->size(); i++)
     {
@@ -42,11 +127,24 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
     //std::cout << "!" << totalNumberOfElements << std::endl;
     float *rawData = new float[totalNumberOfElements];
     int IBOIndexCounter = 0;
+
+
     int j = 0; //Raw Data Indexer
     for(int i = 0; i < polys->size(); i++)
     {
         TerrainPolygon *p = &polys->at(i);
         RawPolygonData f = p->getRawData();
+
+        /*
+        if(p->getVertexCount() > 0)
+        {
+            rawData[6] = 1.0f;
+            rawData[7] = 1.0f;
+            rawData[8] = 1.0f;
+            rawData[9] = 1.0f;
+        }
+*/
+
         for(int i = 0; i < f.size; i++,j++)
         {
             rawData[j] = f.data[i];
@@ -57,7 +155,7 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
         // THIS IS A SERIOUS MEMORY LEAK
         //delete[] f.data;
     }
-    float* vertex_buffer_data = new float[2 * totalNumberOfElements]/*rawData.length*/;
+    float* vertex_buffer_data = new float[totalNumberOfElements]/*rawData.length*/;
     for(int i = 0; i < totalNumberOfElements/*rawData's size*/; i++)
     {
         vertex_buffer_data[i] = rawData[i];
@@ -66,8 +164,8 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
     //vertex_buffer_data.rewind();
     vbo = vertex_buffer_data;
 
-    int* intBuffer = new int[100000000] /*IBOIndexCounter*/;
-    for(int i = 0; i < IBOIndexCounter; i++)
+    unsigned int* intBuffer = new unsigned int[vertexCount] /*IBOIndexCounter*/;
+    for(unsigned int i = 0; i < IBOIndexCounter; i++)
         intBuffer[i] = i;
     //intBuffer.rewind();
     ibo = intBuffer;
@@ -76,13 +174,13 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
     vertexBufferID = createVBOID();
     indexBufferID = createVBOID();
 
-
    // std::cout << "!" << glBindBuffer << ":" << vertexBufferID << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    glBufferData(GL_ARRAY_BUFFER, totalNumberOfElements/*rawData's size*/, vertex_buffer_data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, totalNumberOfElements * sizeof(float)/*rawData's size*/, vertex_buffer_data, GL_DYNAMIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, IBOIndexCounter, intBuffer, GL_DYNAMIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+    std::cout << "DynamicVBO[SIZE]>" << totalNumberOfElements << std::endl;
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, vertexCount * sizeof(unsigned int), intBuffer, GL_DYNAMIC_DRAW);
     initialized = true;
 
     delete[] rawData;
@@ -94,7 +192,7 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys)
  * @throws IllegalStateException - the create(...) method has not been called so there is no data
  * in the buffer to draw
  */
-void DynamicVBO::draw(Camera &cam)
+void DynamicVBO::draw(Camera *cam)
 {
     if(!initialized)
     {
@@ -108,28 +206,44 @@ void DynamicVBO::draw(Camera &cam)
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glLoadIdentity();
+    glEnable(GL_TEXTURE_2D);
+    glColor3f(1.0f, 1.0f, 1.0f);
     // Translate to model co-ordinates, based on the origin of the shape
-    setGluLookAt(&cam);
-    if(texture != nullptr)
+    setGluLookAt(cam);
+    if(texture)
     {
         texture->bind(); // terrain texture?
     }
+    else
+    {
+        std::cout << "failure to bind texture: nullptr" << std::endl;
+    }
+    int firstVert = 0;
     int firstNormal = 12;
     int firstColour = 24;
     int firstTextureCoord = 40;
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    glVertexPointer(3, GL_FLOAT, 48, 0);
-    glNormalPointer(GL_FLOAT, 48, &firstNormal);
-    glColorPointer(4, GL_FLOAT, 48, &firstColour);
-    glTexCoordPointer(2, GL_FLOAT, 48, &firstTextureCoord);
+    glVertexPointer(3, GL_FLOAT, 48, (void*)(0));
+    glNormalPointer(GL_FLOAT, 48, (void*)(12));
+    glColorPointer(4, GL_FLOAT, 48, (void*)(24));
+    glTexCoordPointer(2, GL_FLOAT, 48, (void*)(40));
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-    glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+    //std::cout << "Error1:" << glGetError() << std::endl;
+  //  glDrawElements(GL_TRIANGLES, vertCount, GL_UNSIGNED_INT, 0);
+    //std::cout << "Error2:" << glGetError() << std::endl;
+
+    glDrawArrays(GL_TRIANGLES, 0, vertCount);
+  //  std::cout << "Error!:" << glGetError() << std::endl;
+//
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+   // std::cout << "Error3:" << glGetError() << std::endl;
 }
 
 /**

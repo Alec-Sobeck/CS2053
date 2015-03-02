@@ -67,7 +67,7 @@ VBO::VBO(ModelData &data)
 /**
  * Draws the VBO's contents.
  */
-void VBO::draw(Camera &camera)
+void VBO::draw(Camera *camera)
 {
     using namespace gl;
     if(!hasTextureData)
