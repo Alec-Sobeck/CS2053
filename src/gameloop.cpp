@@ -30,10 +30,7 @@ void initializeEngine();
 /// Input functions
 ///
 void processKeyboardInput();
-void handleMouseClick(int button, int state, int x, int y);
-void handleMouseMovementWhileClicked(int x,int y);
-void handleMouseMovementWhileNotClicked(int x, int y);
-void processSpecialKeys(int key, int x, int y);
+void processMouseInput();
 ///
 /// Game update/rendering functions
 ///
@@ -94,6 +91,26 @@ void keyManagerKeySpecial(int key, int x, int y);
 void keyManagerKeySpecialUp(int key, int x, int y);
 void updateModifierState();
 ///
+/// Define the MouseManager class. Similarly to KeyManager this is in a fairly C-like style because GLUT is a C library.
+///
+
+class MouseManager
+{
+public:
+    static const int MOUSE_RELEASED = 0;
+    static const int MOUSE_PRESSED = 1;
+    int leftMouseButtonState;
+    int middleMouseButtonState;
+    int rightMouseButtonState;
+    int x;
+    int y;
+    MouseManager();
+};
+
+void mouseManagerHandleMouseClick(int button, int state, int x, int y);
+void mouseManagerHandleMouseMovementWhileClicked(int x,int y);
+void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y);
+///
 /// Define the GameLoop class.
 ///
 class GameLoop
@@ -107,6 +124,7 @@ public:
     long startTime;
     std::shared_ptr<TerrainRenderer> terrainRenderer;
     KeyManager keyManager;
+    MouseManager mouseManager;
 
     GameLoop();
     void buildSampleTerrain();
@@ -219,6 +237,7 @@ void gameUpdateTick()
     //    }
 
         processKeyboardInput();
+        processMouseInput();
 
         //Draw here
         startRenderCycle();
@@ -466,32 +485,9 @@ void processKeyboardInput()
     */
 }
 
-void handleMouseClick(int button, int state, int x, int y)
+void processMouseInput()
 {
-/*
-The first relates to which button was pressed, or released. This argument can have one of three values:
-    GLUT_LEFT_BUTTON
-    GLUT_MIDDLE_BUTTON
-    GLUT_RIGHT_BUTTON
-The second argument relates to the state of the button when the callback was generated, i.e. pressed or released. The possible values are:
-    GLUT_DOWN
-    GLUT_UP
-*/
-    if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-    {
-    }
-}
 
-// active mouse movement: active motion occurs when the mouse is moved and a button is pressed.
-void handleMouseMovementWhileClicked(int x, int y)
-{
-    // Do stuff with the mouse clicked then dragged
-}
-
-// passive mouse movement: movement that occurs when the mouse is not clicked.
-void handleMouseMovementWhileNotClicked(int x, int y)
-{
-    // Do stuff while the mouse isn't clicked, but dragged
 }
 
 void entryCall(int argc, char **argv)
@@ -514,9 +510,9 @@ void entryCall(int argc, char **argv)
 	//glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
 	//glutKeyboardFunc(processNormalKeys);
 	//glutSpecialFunc(processSpecialKeys);
-    glutMouseFunc(handleMouseClick);
-    glutMotionFunc(handleMouseMovementWhileClicked);
-    glutPassiveMotionFunc(handleMouseMovementWhileNotClicked);
+    glutMouseFunc(mouseManagerHandleMouseClick);
+    glutMotionFunc(mouseManagerHandleMouseMovementWhileClicked);
+    glutPassiveMotionFunc(mouseManagerHandleMouseMovementWhileNotClicked);
     // load opengl functions beyond version 1.1
     glbinding::Binding::initialize(true);
     // Initialize the engine.
@@ -659,5 +655,74 @@ unsigned char KeyManager::isKeyDown(unsigned char key)
     return getKeyState(key) == JUST_PRESSED || getKeyState(key) == STILL_PRESSED;
 }
 
+///
+/// Define MouseManager functions/methods
+///
+MouseManager::MouseManager() : leftMouseButtonState(MOUSE_RELEASED), middleMouseButtonState(MOUSE_RELEASED), rightMouseButtonState(MOUSE_RELEASED), x(0), y(0)
+{
+}
 
+void mouseManagerHandleMouseClick(int button, int state, int x, int y)
+{
+/*
+The first relates to which button was pressed, or released. This argument can have one of three values:
+    GLUT_LEFT_BUTTON
+    GLUT_MIDDLE_BUTTON
+    GLUT_RIGHT_BUTTON
+The second argument relates to the state of the button when the callback was generated, i.e. pressed or released. The possible values are:
+    GLUT_DOWN
+    GLUT_UP
+*/
+    if(button == GLUT_LEFT_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            gameLoopObject.mouseManager.leftMouseButtonState = MouseManager::MOUSE_PRESSED;
+        }
+        if(state == GLUT_UP)
+        {
+            gameLoopObject.mouseManager.leftMouseButtonState = MouseManager::MOUSE_RELEASED;
+        }
+    }
+    if(button == GLUT_MIDDLE_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_PRESSED;
+        }
+        if(state == GLUT_UP)
+        {
+            gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_RELEASED;
+        }
+    }
+    if(button == GLUT_RIGHT_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_PRESSED;
+        }
+        if(state == GLUT_UP)
+        {
+            gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_RELEASED;
+        }
+    }
+    gameLoopObject.mouseManager.x = x;
+    gameLoopObject.mouseManager.y = y;
+}
+
+// active mouse movement: active motion occurs when the mouse is moved and a button is pressed.
+void mouseManagerHandleMouseMovementWhileClicked(int x, int y)
+{
+    // Do stuff with the mouse clicked then dragged
+    gameLoopObject.mouseManager.x = x;
+    gameLoopObject.mouseManager.y = y;
+}
+
+// passive mouse movement: movement that occurs when the mouse is not clicked.
+void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y)
+{
+    // Do stuff while the mouse isn't clicked, but dragged
+    gameLoopObject.mouseManager.x = x;
+    gameLoopObject.mouseManager.y = y;
+}
 
