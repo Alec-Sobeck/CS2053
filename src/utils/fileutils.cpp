@@ -35,3 +35,21 @@ void writeTextFile(std::string filepath, std::string contents)
     file << contents;
     file.close();
 }
+
+std::vector<std::string> readTextFileAsLines(std::string filepath)
+{
+    std::vector<std::string> out;
+    std::ifstream infile(filepath.c_str());
+    if(infile.fail())
+    {
+        std::stringstream ss;
+        ss << "Failure to open file at " << filepath;
+        throw std::runtime_error(ss.str());
+    }
+    std::string line;
+    while (std::getline(infile, line))
+    {
+        out.push_back(line);
+    }
+    return out;
+}

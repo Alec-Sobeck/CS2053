@@ -14,6 +14,7 @@
 #include "graphics/rendersettingshelper.h"
 #include "utils/timehelper.h"
 #include "terrain/midpointterrain.h"
+#include "terrain/flatterrain.h"
 #include "graphics/gluhelper.h"
 #include "render/render.h"
 
@@ -176,8 +177,14 @@ void GameLoop::buildSampleTerrain()
 //	shader.glUniform3v("iResolution", v);
 //  shader.glUniform1f("iGlobalTime", 0.0f);
 //  terrain = new TrigTerrain(10, 100);
-    std::shared_ptr<Terrain> terrain(new MidPointTerrain(3, 0.6f, 50, 200));
-//  terrain = new InterpTestNoiseTerrain(10, 10, 50, 400);
+
+
+    //std::shared_ptr<Terrain> terrain(new MidPointTerrain(3, 0.6f, 50, 200));
+
+    std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
+
+
+    //terrain = new InterpTestNoiseTerrain(10, 10, 50, 400);
     //map.setTerrain(terrain->exportToTerrainData());
 //  Set<TerrainPolygon> polys = map.getTerrainOctree().getRange(new AABB(-10, -10, -10, 10, 10, 10));
 //  monkeyModel3.scaleModel(1.0f, true, true, true);

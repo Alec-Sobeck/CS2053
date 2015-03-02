@@ -1,24 +1,19 @@
 #include "modeldatabuilder.h"
 
-
-#ifndef MODEL_DATA_BUILDER_H
-#define MODEL_DATA_BUILDER_H
-
 #include <stdexcept>
 #include <string>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
-#include <glbinding/gl/gl.h>
 #include "utils/colour.h"
 #include "render/vbo.h"
 #include "world/modeldata.h"
 
-ModelData createModelDataFromParsedOBJ(int glRenderMode,
+ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         std::string associatedTextureName,
-        int vertexSize, int vertexType,
-        int normalType,
-        int colourSize, int colourType,
-        int textureCoordSize, int textureCoordType,
+        int vertexSize, gl::GLenum vertexType,
+        gl::GLenum normalType,
+        int colourSize, gl::GLenum colourType,
+        int textureCoordSize, gl::GLenum textureCoordType,
         FlexArray<glm::vec3> vertexData,
         FlexArray<glm::vec3> faceVerts,
         FlexArray<glm::vec3> normalData,
@@ -27,6 +22,7 @@ ModelData createModelDataFromParsedOBJ(int glRenderMode,
         FlexArray<glm::vec2> textureData,
         FlexArray<glm::vec3> faceTextures)
 {
+    using namespace gl;
     const int vertsPerFace = 3;
 
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
@@ -142,18 +138,19 @@ ModelData createModelDataFromParsedOBJ(int glRenderMode,
 
 }
 
-ModelData createModelData(int glRenderMode,
+ModelData createModelData(gl::GLenum glRenderMode,
         int vertexPerFace,
         std::string associatedTextureName,
-        int vertexSize, int vertexType,
-        int normalType,
-        int colourSize, int colourType,
-        int textureCoordSize, int textureCoordType,
+        int vertexSize, gl::GLenum vertexType,
+        gl::GLenum normalType,
+        int colourSize, gl::GLenum colourType,
+        int textureCoordSize, gl::GLenum textureCoordType,
         FlexArray<float> vertexData,
         FlexArray<float> normalData,
         FlexArray<float> colourData,
         FlexArray<float> textureCoordData)
 {
+    using namespace gl;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
     //but because they havent been tested it's not worth the risk.
     if (glRenderMode == GL_POINTS || glRenderMode == GL_LINES || glRenderMode == GL_LINE_STRIP ||
@@ -224,15 +221,16 @@ ModelData createModelData(int glRenderMode,
             colourType, textureCoordSize, textureCoordOffset, textureCoordType, combinedBuffer);
 }
 
-ModelData createModelDataNoTexture(int glRenderMode,
+ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
         int vertexPerFace,
-        int vertexSize, int vertexType,
-        int normalType,
-        int colourSize, int colourType,
+        int vertexSize, gl::GLenum vertexType,
+        gl::GLenum normalType,
+        int colourSize, gl::GLenum colourType,
         FlexArray<float> vertexData,
         FlexArray<float> normalData,
         FlexArray<float> colourData)
 {
+    using namespace gl;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
     //but because they havent been tested it's not worth the risk.
     if (glRenderMode == GL_POINTS || glRenderMode == GL_LINES || glRenderMode == GL_LINE_STRIP ||
@@ -313,6 +311,7 @@ ModelData createModelDataNoTexture(int glRenderMode,
  */
 ModelData getDerpyDefaultData()
 {
+    using namespace gl;
     FlexArray<float> vertexData = {
         //   x      y      z
         // back quad
@@ -487,5 +486,3 @@ ModelData getDerpyDefaultData()
 }
 
 
-
-#endif
