@@ -17,6 +17,7 @@
 #include "terrain/flatterrain.h"
 #include "graphics/gluhelper.h"
 #include "render/render.h"
+#include "terrain/grass.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -129,6 +130,7 @@ public:
     std::shared_ptr<TerrainRenderer> terrainRenderer;
     KeyManager keyManager;
     MouseManager mouseManager;
+    Grass *grass; // TODO => [LEAK]this is never deleted
 
     GameLoop();
     void buildSampleTerrain();
@@ -155,7 +157,13 @@ GameLoop gameLoopObject;
 ///***********************************************************************
 void initializeEngine()
 {
+    using namespace gl;
      ///// TODO -- initializeTextures()
+    initializeViewport();
+
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+
     gameLoopObject.buildSampleTerrain();
 }
 
@@ -164,8 +172,12 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
+
+///
+/// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
+///
 GameLoop::GameLoop() : gameIsRunning(true), player(Entity()), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
-        terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr))
+        terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr)
 {
     player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
 }
@@ -200,6 +212,8 @@ void GameLoop::buildSampleTerrain()
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
     this->terrainRenderer->create(terrainExp, tex);
 
+    auto grassTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
+    gameLoopObject.grass = new Grass(50, glm::vec3(0,0,0), 50, grassTexture);
 }
 
 ///***********************************************************************
@@ -265,7 +279,9 @@ void gameUpdateTick()
         renderAxes(cam);
 
         gameLoopObject.player.move();
-        gameLoopObject.terrainRenderer->draw(cam);
+        //gameLoopObject.terrainRenderer->draw(cam);
+        gameLoopObject.grass->update(cam);
+        gameLoopObject.grass->draw(cam);
 
         //std::cout << cam << ":" << cam->position.x << " " << cam->position.y << " " << cam->position.z << std::endl;
 

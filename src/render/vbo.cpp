@@ -18,11 +18,11 @@ gl::GLuint createVBOID()
  * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.
  * @param data a ModelData object that contains the values required to initialize this VBO
  */
-VBO::VBO(ModelData &data)
+VBO::VBO(ModelData &data, std::shared_ptr<Texture> associatedTexture)
 {
     using namespace gl;
    // TODO: texture loading in VBO's is NYI
-    this->associatedTexture = nullptr;  //Render::getTexture(data.associatedTextureName);
+    this->associatedTexture = associatedTexture;  //Render::getTexture(data.associatedTextureName);
     this->glRenderMode = data.glRenderMode;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
     //but because they haven't been tested it's not worth the risk.
@@ -51,17 +51,23 @@ VBO::VBO(ModelData &data)
     this->textureCoordType = data.textureCoordType;
     this->elementsPerRowOfCombinedData = data.elementsPerRowOfCombinedData;
     this->stride = data.stride;
-    this->combinedData = data.combinedData;
+   /// this->combinedData = data.combinedData;
     //Generate applicable buffers
     //Put the values in a FloatBuffer
     //float* vertex_buffer_data = new float[combinedData.size()];
     //vertex_buffer_data.put(combinedData);
     //vertex_buffer_data.rewind();
-    float* rawArray = this->combinedData.getRawArray();
+    float* rawArray = data.combinedData.getRawArray();
     //Create the VBO
     vertexBufferID = createVBOID();
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    glBufferData(GL_ARRAY_BUFFER, this->combinedData.size(), rawArray, GL_STATIC_DRAW);
+    #include <iostream>
+    std::cout << "CDS:" << data.combinedData.size() << std::endl;
+    totalNumberOfValues = data.combinedData.size();
+    glBufferData(GL_ARRAY_BUFFER, data.combinedData.size() * sizeof(float), rawArray, GL_STATIC_DRAW);
+
+
+    // TODO - [LEAK] Memory leaked here - float* rawArray?
 }
 
 /**
@@ -81,12 +87,14 @@ void VBO::draw(Camera *camera)
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     // render the cube
-    glVertexPointer(vertexSize, vertexType, stride, &vertexOffset);
-    glNormalPointer(normalType, stride, &normalOffset);
-    glColorPointer(colourSize, colourType, stride, &colourOffset);
-    glTexCoordPointer(textureCoordSize, textureCoordType, stride, &textureCoordOffset);
+  //  std::cout << vertexSize << " " << colourSize << " " << textureCoordSize << " " << stride << " " <<
+   //     vertexOffset << " " << normalOffset << " " << colourOffset << " " << textureCoordOffset << std::endl;
+    glVertexPointer(vertexSize, vertexType, stride, (void*)(vertexOffset));
+    glNormalPointer(normalType, stride, (void*)(normalOffset));
+    glColorPointer(colourSize, colourType, stride, (void*)(colourOffset));
+    glTexCoordPointer(textureCoordSize, textureCoordType, stride, (void*)(textureCoordOffset));
 
-    glDrawArrays(glRenderMode, 0, combinedData.size() / elementsPerRowOfCombinedData);
+    glDrawArrays(glRenderMode, 0, totalNumberOfValues / elementsPerRowOfCombinedData);
 }
 
 VBO::~VBO()

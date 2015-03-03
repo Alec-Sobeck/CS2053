@@ -61,7 +61,7 @@ public:
 	 * attributeName, in the shader.
 	 */
 	void glUniform3(std::string attributeName, glm::vec3 v);
-	void glUniform3(std::string attributeName, GLint v0, GLint v1, GLint v2);
+	void glUniform3(std::string attributeName, GLint v0, GLint v1, GLint v2);0
 	void glUniform4(std::string attributeName, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
 	/**
 	 * Assigns the values in a Vector4 to one of the variables in this Shader. The variable in the shader

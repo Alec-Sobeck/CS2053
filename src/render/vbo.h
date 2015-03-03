@@ -1,6 +1,7 @@
 #ifndef ENGINE_VBO_H
 #define ENGINE_VBO_H
 
+#include <memory>
 #include <glbinding/gl/gl.h>
 #include "render/texture.h"
 #include "graphics/camera.h"
@@ -18,7 +19,7 @@ class VBO
 {
 private:
 // TODO -- reinstate these const modifiers for all parameters
-	Texture* associatedTexture;
+	std::shared_ptr<Texture> associatedTexture;
 	 gl::GLenum glRenderMode;
 	 int stride;
 	 int vertexSize;
@@ -40,16 +41,19 @@ private:
 	/** The total number of elements associated to one vertex*/
 	 int elementsPerRowOfCombinedData;
 	/** The total size of the combined vertex, colour, normal, and texture data in bytes. */
-	 FlexArray<float> combinedData;
+	// FlexArray<float> combinedData;
 	 gl::GLuint vertexBufferID;
-	bool hasTextureData;
+
 
 public:
+    bool hasTextureData;
+    int totalNumberOfValues;
+
 	/**
 	 * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.
 	 * @param data a ModelData object that contains the values required to initialize this VBO
 	 */
-	VBO(ModelData &data);
+	VBO(ModelData &data, std::shared_ptr<Texture> texture);
 	/**
 	 * Draws the VBO's contents.
 	 */

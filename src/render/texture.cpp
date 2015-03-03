@@ -1,5 +1,4 @@
 
-#include <glbinding/gl/gl.h>
 #include "texture.h"
 
 using namespace gl;
@@ -8,7 +7,7 @@ using namespace gl;
  * Constructs a new Texture object, storing the specified textureID for binding
  * @param textureID the Integer representing the texture that can be bound
  */
-Texture::Texture(std::string associatedFileName, unsigned int textureID) : textureID(textureID), associatedFileName(associatedFileName)
+Texture::Texture(std::string associatedFileName, gl::GLuint textureID) : textureID(textureID), associatedFileName(associatedFileName)
 {
 }
 
