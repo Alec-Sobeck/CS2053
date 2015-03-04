@@ -6,6 +6,7 @@
 #include "graphics/camera.h"
 #include "render/vbo.h"
 #include "render/texture.h"
+#include "shaders/shader.h"
 
 class Grass
 {
@@ -23,6 +24,7 @@ private:
     float timeUntilNextBurst;
     unsigned long long previousTime;
     unsigned long long deltaTime;
+    std::shared_ptr<Shader> grassShader;
     float getWindPower();
     void generateNewWind();
     void createVBO(glm::vec3 center, float range);

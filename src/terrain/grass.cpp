@@ -56,7 +56,18 @@ void Grass::draw(Camera *camera)
         // Translate to model co-ordinates, based on the origin of the shape
         setGluLookAt(camera);
 
+        if(grassShader)
+        {
+            grassShader->bindShader();
+        }
         vbo->draw(camera);
+        if(grassShader)
+        {
+            grassShader->releaseShader();
+        }
+        else{
+            std::cout << "No such grass shaderz"<<std::endl;
+        }
         glEnable(GL_CULL_FACE);
     //}
 
@@ -326,6 +337,9 @@ void Grass::createVBO(glm::vec3 center, float range)
     );
     this->vbo = std::shared_ptr<VBO>(new VBO(data, this->texture));
     this->vbo->hasTextureData = true;
+    std::string vertPath = "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grassy_wind.vert";
+    std::string fragPath = "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grassy_wind.frag";
+    this->grassShader = createShader(&vertPath, &fragPath);
 }
 
 

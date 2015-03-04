@@ -1,98 +1,97 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <glbinding/gl/gl.h>
 #include "utils/fileutils.h"
 #include "shaders/shader.h"
 
-void _printShaderInfoLog(GLuint obj);
-void _printProgramInfoLog(GLuint obj);
+void _printShaderInfoLog(gl::GLuint obj);
+void _printProgramInfoLog(gl::GLuint obj);
 
-Shader::Shader(GLuint programID)
+Shader::Shader(gl::GLhandleARB programID) : programID(programID)
 {
-    this->programID = programID;
+    std::cout << "CREATE_SHADER:" << programID << std::endl;
 }
 
 void Shader::bindShader()
 {
-    glUseProgramObjectARB(programID);
+    gl::glUseProgramObjectARB(programID);
 }
 
 void Shader::releaseShader()
 {
-    glUseProgramObjectARB(0);
+    gl::glUseProgramObjectARB(0);
 }
 
-void Shader::glUniform1(std::string attributeName, GLfloat v)
+void Shader::glUniform1(std::string attributeName, gl::GLfloat v)
 {
-    glUseProgram(programID);
-    ::glUniform1f(glGetUniformLocation(programID, attributeName.c_str()), v);
+    gl::glUseProgram(programID);
+    gl::glUniform1f(gl::glGetUniformLocation(programID, attributeName.c_str()), v);
 }
 
-void Shader::glUniform1(std::string attributeName, GLint v)
+void Shader::glUniform1(std::string attributeName, gl::GLint v)
 {
-    glUseProgram(programID);
-    glUniform1i(glGetUniformLocation(programID, attributeName.c_str()), v);
+    gl::glUseProgram(programID);
+    gl::glUniform1i(gl::glGetUniformLocation(programID, attributeName.c_str()), v);
 }
 
 void Shader::glUniform1(std::string attributeName, bool v)
 {
-    glUseProgram(programID);
-    glUniform1i(glGetUniformLocation(programID, attributeName.c_str()), v);
+    gl::glUseProgram(programID);
+    gl::glUniform1i(gl::glGetUniformLocation(programID, attributeName.c_str()), v);
 }
 
-void Shader::glUniform2(std::string attributeName, GLfloat v0, GLfloat v1)
+void Shader::glUniform2(std::string attributeName, gl::GLfloat v0, gl::GLfloat v1)
 {
-    glUseProgram(programID);
-    glUniform2f(glGetUniformLocation(programID, attributeName.c_str()), v0, v1);
+    gl::glUseProgram(programID);
+    gl::glUniform2f(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1);
 }
 
 void Shader::glUniform2(std::string attributeName, glm::vec2 v)
 {
-    glUseProgram(programID);
-    glUniform2f(glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y);
+    gl::glUseProgram(programID);
+    gl::glUniform2f(gl::glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y);
 }
 
-void Shader::glUniform2(std::string attributeName, GLint v0, GLint v1)
+void Shader::glUniform2(std::string attributeName, gl::GLint v0, gl::GLint v1)
 {
-    glUseProgram(programID);
-    glUniform2i(glGetUniformLocation(programID, attributeName.c_str()), v0, v1);
+    gl::glUseProgram(programID);
+    gl::glUniform2i(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1);
 }
 
-void Shader::glUniform3(std::string attributeName, GLfloat v0, GLfloat v1, GLfloat v2)
+void Shader::glUniform3(std::string attributeName, gl::GLfloat v0, gl::GLfloat v1, gl::GLfloat v2)
 {
-    glUseProgram(programID);
-    glUniform3f(glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2);
+    gl::glUseProgram(programID);
+    gl::glUniform3f(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2);
 }
 
 void Shader::glUniform3(std::string attributeName, glm::vec3 v)
 {
-    glUseProgram(programID);
-    glUniform3f(glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y, v.z);
+    gl::glUseProgram(programID);
+    gl::glUniform3f(gl::glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y, v.z);
 }
 
-void Shader::glUniform3(std::string attributeName, GLint v0, GLint v1, GLint v2)
+void Shader::glUniform3(std::string attributeName, gl::GLint v0, gl::GLint v1, gl::GLint v2)
 {
-    glUseProgram(programID);
-    glUniform3i(glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2);
+    gl::glUseProgram(programID);
+    gl::glUniform3i(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2);
 }
 
-void Shader::glUniform4(std::string attributeName, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
+void Shader::glUniform4(std::string attributeName, gl::GLfloat v0, gl::GLfloat v1, gl::GLfloat v2, gl::GLfloat v3)
 {
-    glUseProgram(programID);
-    glUniform4f(glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
+    gl::glUseProgram(programID);
+    gl::glUniform4f(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
 }
 
 void Shader::glUniform4(std::string attributeName, glm::vec4 v)
 {
-    glUseProgram(programID);
-    glUniform4f(glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y, v.z, v.w);
+    gl::glUseProgram(programID);
+    gl::glUniform4f(gl::glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y, v.z, v.w);
 }
 
-void Shader::glUniform4(std::string attributeName, GLint v0, GLint v1, GLint v2, GLint v3)
+void Shader::glUniform4(std::string attributeName, gl::GLint v0, gl::GLint v1, gl::GLint v2, gl::GLint v3)
 {
-    glUseProgram(programID);
-    glUniform4i(glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
+    gl::glUseProgram(programID);
+    gl::glUniform4i(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
 }
 /*
 void Shader::glUniformMatrix2(std::string attributeName, boolean transpose, java.nio.FloatBuffer matrices)
@@ -116,14 +115,12 @@ void Shader::glUniformMatrix4(std::string attributeName, boolean transpose, java
 
 void Shader::printShaderInfoLog()
 {
-    GLuint obj = static_cast<GLuint>(this->programID);
-    _printShaderInfoLog(obj);
+    _printShaderInfoLog(this->programID);
 }
 
 void Shader::printProgramInfoLog()
 {
-    GLuint obj = static_cast<GLuint>(this->programID);
-    _printProgramInfoLog(obj);
+    _printProgramInfoLog(this->programID);
 }
 
 //***********************************************************************************************************************************
@@ -132,8 +129,9 @@ void Shader::printProgramInfoLog()
 //***********************************************************************************************************************************
 //***********************************************************************************************************************************
 
-void _printShaderInfoLog(GLuint obj)
+void _printShaderInfoLog(gl::GLuint obj)
 {
+    using namespace gl;
     int infologLength = 0;
     int charsWritten  = 0;
     char *infoLog;
@@ -149,13 +147,14 @@ void _printShaderInfoLog(GLuint obj)
     }
 }
 
-void _printProgramInfoLog(GLuint obj)
+void _printProgramInfoLog(gl::GLuint obj)
 {
+    using namespace gl;
     int infologLength = 0;
     int charsWritten  = 0;
     char *infoLog;
 
-    glGetProgramiv(obj, GL_INFO_LOG_LENGTH,&infologLength);
+    glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
 
     if (infologLength > 0)
     {
@@ -170,10 +169,11 @@ void _printProgramInfoLog(GLuint obj)
  * Creates an OpenGL shader.
  * @param filename a String which has the filepath to the GLSL shader file to use
  * @param shaderType the type of the shader to use - either GL_FRAGMENT_SHADER_ARB or GL_VERTEX_SHADER_ARB depending on the shader type
- * @return an GLuint which uniquely identifies this shader within the program.
+ * @return an gl::GLuint which uniquely identifies this shader within the program.
  */
-int createShader(std::string filename, GLenum shaderType)
+int createShader(const std::string *filename, gl::GLenum shaderType)
 {
+    using namespace gl;
     GLint shader = 0;
     try
     {
@@ -183,8 +183,10 @@ int createShader(std::string filename, GLenum shaderType)
             return 0;
         }
 
-        std::string fileContents = readTextFile(filename);
-        glShaderSourceARB(shader, 1, (const GLcharARB**)fileContents.c_str(), nullptr);
+        std::string fileContents = readTextFile((*filename));
+        const char* val = fileContents.c_str();
+        GLint len = static_cast<GLint>(fileContents.length());
+        glShaderSourceARB(shader, 1, const_cast<const GLcharARB**>(&val), &len);
         glCompileShaderARB(shader);
         GLint ret = 0;
         glGetObjectParameterivARB(shader, GL_OBJECT_COMPILE_STATUS_ARB, &ret);
@@ -215,20 +217,21 @@ int createShader(std::string filename, GLenum shaderType)
  */
 std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std::string *fragFilepath)
 {
+    using namespace gl;
     int program = -1;
     int vertShader = -1;
     int fragShader = -1;
-    if(vertFilepath != nullptr)
+    if(vertFilepath)
     {
-        vertShader = createShader((*vertFilepath), GL_VERTEX_SHADER_ARB);
+        vertShader = createShader(vertFilepath, GL_VERTEX_SHADER_ARB);
     }
-    if(fragFilepath != nullptr)
+    if(fragFilepath)
     {
-        fragShader = createShader((*fragFilepath), GL_FRAGMENT_SHADER_ARB);
+        fragShader = createShader(fragFilepath, GL_FRAGMENT_SHADER_ARB);
     }
 
     // Failure case - couldn't create the shader
-    if((vertFilepath != nullptr && vertShader == -1) || (fragFilepath != nullptr && fragShader == -1))
+    if((vertFilepath && vertShader == -1) || (fragFilepath && fragShader == -1))
     {
         return std::shared_ptr<Shader>(nullptr);
     }
@@ -236,14 +239,14 @@ std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std:
     program = glCreateProgramObjectARB();
     if(program == 0)
     {
-        return nullptr;
+        return std::shared_ptr<Shader>(nullptr);
     }
 
-    if(vertFilepath != nullptr)
+    if(vertFilepath)
     {
         glAttachObjectARB(program, vertShader);
     }
-    if(fragFilepath != nullptr)
+    if(fragFilepath)
     {
         glAttachObjectARB(program, fragShader);
     }
