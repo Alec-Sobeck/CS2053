@@ -19,7 +19,6 @@ class VBO
 {
 private:
 // TODO -- reinstate these const modifiers for all parameters
-	std::shared_ptr<Texture> associatedTexture;
 	 gl::GLenum glRenderMode;
 	 int stride;
 	 int vertexSize;
@@ -48,6 +47,8 @@ private:
 public:
     bool hasTextureData;
     int totalNumberOfValues;
+    std::shared_ptr<Texture> associatedTexture;
+
 
 	/**
 	 * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.

@@ -84,6 +84,7 @@ void VBO::draw(Camera *camera)
     {
         glEnable(GL_TEXTURE_2D);
         associatedTexture->bind();
+
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     // render the cube

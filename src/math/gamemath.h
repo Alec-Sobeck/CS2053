@@ -33,4 +33,8 @@ bool parallel(glm::vec3, glm::vec3);
 */
 bool perpendicular(glm::vec3, glm::vec3);
 
+float clamp(float val);
+
+float round2(float val);
+
 #endif

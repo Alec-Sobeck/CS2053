@@ -7,7 +7,9 @@
 #include "graphics/gluhelper.h"
 #include "graphics/terrainpolygon.h"
 
-Grass::Grass(int density, glm::vec3 center, float range, std::shared_ptr<Texture> texture) : texture(texture), density(density), vbo(std::shared_ptr<VBO>(nullptr))
+Grass::Grass(int density, glm::vec3 center, float range, std::shared_ptr<Texture> texture) : texture(texture), density(density), vbo(std::shared_ptr<VBO>(nullptr)),
+    windDirection(glm::vec3(0, 0, 0)), maxTimeOfCurrentBurst(0), remainingTime(0), timeUntilNextBurst(0), previousTime(getCurrentTimeMillis()), deltaTime(0),
+    grassShader(std::shared_ptr<Shader>(nullptr)), maxWindPower(0)
 {
     seedRandomGenerator();
     createVBO(center, range);
@@ -18,7 +20,12 @@ void Grass::update(Camera *camera)
     unsigned long long previousUpdateTime = previousTime;
     unsigned long long currentTime = getCurrentTimeMillis();
     this->deltaTime = currentTime - previousUpdateTime;
-    this->remainingTime -= deltaTime;
+    this->remainingTime -= static_cast<float>(deltaTime) / 1000.0f;
+    this->timeUntilNextBurst -= static_cast<float>(deltaTime) / 1000.0f;
+    if(this->timeUntilNextBurst <= 0)
+    {
+        generateNewWind();
+    }
     this->previousTime = currentTime;
 }
 
@@ -29,6 +36,7 @@ void Grass::generateNewWind()
     timeUntilNextBurst = maxTimeOfCurrentBurst + (getRandomFloat() * 4.66f) + 2.4f;
     float randomAngle = getRandomFloat() * 2 * PI;
     windDirection = glm::vec3(cos(randomAngle), 0, sin(randomAngle));
+    maxWindPower = 0.3f + (getRandomFloat() * 0.5f);
 }
 
 void Grass::draw(Camera *camera)
@@ -58,15 +66,22 @@ void Grass::draw(Camera *camera)
 
         if(grassShader)
         {
+            float power = getWindPower();
+            std::cout << "Wind [" << power << "]" << windDirection.x << "," << windDirection.y << "," << windDirection.z << std::endl;
+            vbo->hasTextureData = false;
+            glEnable(GL_TEXTURE_2D);
             grassShader->bindShader();
+            grassShader->glUniform1("texture1", 0);
+            grassShader->glUniform3("windDirection", windDirection);
+            grassShader->glUniform1("windPower", power);
+            glActiveTexture(GL_TEXTURE0);
+            vbo->associatedTexture->bind();
+
         }
         vbo->draw(camera);
         if(grassShader)
         {
             grassShader->releaseShader();
-        }
-        else{
-            std::cout << "No such grass shaderz"<<std::endl;
         }
         glEnable(GL_CULL_FACE);
     //}
@@ -111,9 +126,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 1 * 12 + 4] = 0.0f;
     combinedData[index + 1 * 12 + 5] = 0.0f;
     // Colour
-    combinedData[index + 1 * 12 + 6] = 1.0f;
-    combinedData[index + 1 * 12 + 7] = 1.0f;
-    combinedData[index + 1 * 12 + 8] = 1.0f;
+    combinedData[index + 1 * 12 + 6] = 0.0f;
+    combinedData[index + 1 * 12 + 7] = 0.0f;
+    combinedData[index + 1 * 12 + 8] = 0.0f;
     combinedData[index + 1 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 1 * 12 + 10] = 1.0f;
@@ -128,9 +143,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 2 * 12 + 4] = 0.0f;
     combinedData[index + 2 * 12 + 5] = 0.0f;
     // Colour
-    combinedData[index + 2 * 12 + 6] = 1.0f;
-    combinedData[index + 2 * 12 + 7] = 1.0f;
-    combinedData[index + 2 * 12 + 8] = 1.0f;
+    combinedData[index + 2 * 12 + 6] = 0.0f;
+    combinedData[index + 2 * 12 + 7] = 0.0f;
+    combinedData[index + 2 * 12 + 8] = 0.0f;
     combinedData[index + 2 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 2 * 12 + 10] = 0.0f;
@@ -182,9 +197,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 5 * 12 + 4] = 0.0f;
     combinedData[index + 5 * 12 + 5] = 1.732f / 1.999956f;
     // Colour
-    combinedData[index + 5 * 12 + 6] = 1.0f;
-    combinedData[index + 5 * 12 + 7] = 1.0f;
-    combinedData[index + 5 * 12 + 8] = 1.0f;
+    combinedData[index + 5 * 12 + 6] = 0.0f;
+    combinedData[index + 5 * 12 + 7] = 0.0f;
+    combinedData[index + 5 * 12 + 8] = 0.0f;
     combinedData[index + 5 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 5 * 12 + 10] = 1.0f;
@@ -199,9 +214,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 6 * 12 + 4] = 0.0f;
     combinedData[index + 6 * 12 + 5] = 1.732f / 1.999956f;
     // Colour
-    combinedData[index + 6 * 12 + 6] = 1.0f;
-    combinedData[index + 6 * 12 + 7] = 1.0f;
-    combinedData[index + 6 * 12 + 8] = 1.0f;
+    combinedData[index + 6 * 12 + 6] = 0.0f;
+    combinedData[index + 6 * 12 + 7] = 0.0f;
+    combinedData[index + 6 * 12 + 8] = 0.0f;
     combinedData[index + 6 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 6 * 12 + 10] = 0.0f;
@@ -253,9 +268,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 9 * 12 + 4] = 0.0f;
     combinedData[index + 9 * 12 + 5] = 1.732f / 1.999956f;
     // Colour
-    combinedData[index + 9 * 12 + 6] = 1.0f;
-    combinedData[index + 9 * 12 + 7] = 1.0f;
-    combinedData[index + 9 * 12 + 8] = 1.0f;
+    combinedData[index + 9 * 12 + 6] = 0.0f;
+    combinedData[index + 9 * 12 + 7] = 0.0f;
+    combinedData[index + 9 * 12 + 8] = 0.0f;
     combinedData[index + 9 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 9 * 12 + 10] = 1.0f;
@@ -270,9 +285,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 10 * 12 + 4] = 0.0f;
     combinedData[index + 10 * 12 + 5] = 1.732f / 1.999956f;
     // Colour
-    combinedData[index + 10 * 12 + 6] = 1.0f;
-    combinedData[index + 10 * 12 + 7] = 1.0f;
-    combinedData[index + 10 * 12 + 8] = 1.0f;
+    combinedData[index + 10 * 12 + 6] = 0.0f;
+    combinedData[index + 10 * 12 + 7] = 0.0f;
+    combinedData[index + 10 * 12 + 8] = 0.0f;
     combinedData[index + 10 * 12 + 9] = 1.0f;
     // Texture
     combinedData[index + 10 * 12 + 10] = 0.0f;
@@ -342,4 +357,36 @@ void Grass::createVBO(glm::vec3 center, float range)
     this->grassShader = createShader(&vertPath, &fragPath);
 }
 
-
+float Grass::getWindPower()
+{
+    float percent = clamp(static_cast<float>(maxTimeOfCurrentBurst - remainingTime) / static_cast<float>(maxTimeOfCurrentBurst));
+    if(percent <= 0.2f)
+    {
+        return (clamp((percent / 0.2f)) * maxWindPower);
+    }
+    else if(percent >= 0.8f)
+    {
+        float powerFactor = clamp((1 - percent) / 0.2);
+        return (powerFactor * maxWindPower);
+    }
+    else
+    {
+        float range = 0.2f;
+        float range2 = range / 2.0f;
+        // Cheap and dirty fmod() calculation
+        while(percent > range)
+        {
+            percent -= 0.2f;
+        }
+        float powerFactor = percent;
+        if(powerFactor < range2)
+        {
+            return (1.0f - 0.3f * clamp(powerFactor / range2)) * maxWindPower;
+        }
+        else
+        {
+            powerFactor -= range2;
+            return (0.7f + clamp(powerFactor / range2) * 0.3f) * maxWindPower;
+        }
+    }
+}

@@ -52,3 +52,13 @@ bool perpendicular(glm::vec3 v1, glm::vec3 v2)
 {
 	return approximatelyEqual(glm::dot(v1, v2), 0);
 }
+
+float clamp(float val)
+{
+    return (val < 0.0f) ? 0.0f : (val > 1.0f) ? 1.0f : val;
+}
+
+float round2(float val)
+{
+    return roundf(val * 100) / 100;
+}

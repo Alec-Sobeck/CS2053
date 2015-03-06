@@ -25,6 +25,7 @@ private:
     unsigned long long previousTime;
     unsigned long long deltaTime;
     std::shared_ptr<Shader> grassShader;
+    float maxWindPower;
     float getWindPower();
     void generateNewWind();
     void createVBO(glm::vec3 center, float range);
