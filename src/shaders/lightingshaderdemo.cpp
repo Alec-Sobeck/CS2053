@@ -37,7 +37,7 @@ void LightingShaderDemo::init(int argc, char **argv)
     glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    setGluPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
+    setPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glShadeModel(GL_SMOOTH);

@@ -119,7 +119,7 @@ void endRenderCycle()
  */
 float getAspectRatio()
 {
-    return static_cast<float>(getViewportWidth()) / getViewportHeight();
+    return static_cast<float>(getWindowWidth()) / getWindowHeight();
 }
 
 /**
@@ -182,7 +182,7 @@ void start3DRenderCycle()
 
     glMatrixMode(GL_PROJECTION);
     gl::glLoadIdentity();
-    setGluPerspective(45.0f, getAspectRatio(), 0.1f, 1000.0f);
+    setPerspective(45.0f, getAspectRatio(), 0.1f, 1000.0f);
     glMatrixMode(GL_MODELVIEW);
     gl::glLoadIdentity();
     gl::glPushMatrix();

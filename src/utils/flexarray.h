@@ -249,9 +249,9 @@ public:
 };
 
 template<class T>
-FlexArray<T> make1DFlex(std::vector<T> val)
+FlexArray<T> make1DFlex(std::vector<T> val, int size = -1)
 {
-    FlexArray<T> flex(val.size());
+    FlexArray<T> flex(((size >= 0) ? size : val.size()));
     for(unsigned int i = 0; i < val.size(); i++)
     {
         flex[i] = val[i];

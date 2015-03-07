@@ -62,12 +62,12 @@ void Grass::draw(Camera *camera)
         glScalef(1.0f,1.0f,1.0f);
         glColor3f(1.0f, 1.0f, 1.0f);
         // Translate to model co-ordinates, based on the origin of the shape
-        setGluLookAt(camera);
+        setLookAt(camera);
 
         if(grassShader)
         {
             float power = getWindPower();
-            std::cout << "Wind [" << power << "]" << windDirection.x << "," << windDirection.y << "," << windDirection.z << std::endl;
+      ///      std::cout << "Wind [" << power << "]" << windDirection.x << "," << windDirection.y << "," << windDirection.z << std::endl;
             vbo->hasTextureData = false;
             glEnable(GL_TEXTURE_2D);
             grassShader->bindShader();

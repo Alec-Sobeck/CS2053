@@ -64,7 +64,7 @@ Texture* Render::getTexture(std::string name)
 {
     using namespace gl;
     glLoadIdentity();
-    setGluLookAt(cam);
+    setLookAt(cam);
     glDisable(GL_TEXTURE_2D);
 
     glColor3f(1, 0, 0);

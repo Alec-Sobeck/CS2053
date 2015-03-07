@@ -30,7 +30,10 @@ double parseDouble(const std::string& s)
    std::stringstream i(s);
    double x;
    if (!(i >> x))
+    {
+       std::cout << "Error: " << s << std::endl;
        return 0;
+    }
    return x;
 }
 
@@ -52,7 +55,7 @@ ModelData ObjParser::exportModel()
             2, GL_FLOAT,
             make1DFlex(vertices),
             make1DFlex(faceVerts),
-            make1DFlex(normals),
+            make1DFlex(normals, vertices.size()),
             make1DFlex(faceNormals),
             FlexArray<Colour>(),
             make1DFlex(textureCoords),
@@ -96,8 +99,12 @@ void ObjParser::loadData()
         }
         else if (line.find("vt ") == 0)
         {
-            textureCoords.push_back(glm::vec2(parseDouble(splitLine.at(1)),
-                    -1.0 * parseDouble(splitLine.at(2))));
+            textureCoords.push_back(
+                glm::vec2(
+                    parseDouble(splitLine.at(1)),
+                    parseDouble(splitLine.at(2))
+                )
+            );
         }
         else if (line.find("f ") == 0)
         {
@@ -109,6 +116,7 @@ void ObjParser::loadData()
                     static_cast<int>(parseDouble(thirdVert.at(0)))));
             faceTextures.push_back(glm::vec3(static_cast<int>(parseDouble(firstVert.at(1))),
                     static_cast<int>(parseDouble(secondVert.at(1))),
+
                     static_cast<int>(parseDouble(thirdVert.at(1)))));
             if (firstVert.size() > 2)
             {
@@ -118,6 +126,15 @@ void ObjParser::loadData()
             }
         }
     }
-    std::cout << "Num verts: " << vertices.size() << " Num normals: " << normals.size() << " Num faces: " << faceVerts.size();
+
+
+    std::cout << "Num verts: " << vertices.size() <<
+                " Num normals: " << normals.size() <<
+                " Num Color: " << colours.size() <<
+                " Num TextureCoord:" << textureCoords.size() <<
+                " Num faces: " << faceVerts.size() <<
+                " Num FaceNorms:" << faceNormals.size() <<
+                " Num FaceTextures" << faceTextures.size()
+                <<std::endl;
 }
 

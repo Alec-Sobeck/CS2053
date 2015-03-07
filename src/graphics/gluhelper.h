@@ -1,25 +1,31 @@
 #ifndef ENGINE_GLU_HELPER_H
 #define ENGINE_GLU_HELPER_H
 
-/**
- * Defines methods to help with GLU usage.
- * @author Alec Sobeck
- * @author Matthew Robertson
- */
+///
+/// gluhelper.h defines functions which do the same thing as functions from the glu library, but instead make
+/// use of glbinding. Do not use the GL/glu.h include as the functions will have no effect.
+///
+#include <glbinding/gl/gl.h>
 #include "camera.h"
 
-/**
- * Calls GLU.gluLookAt using the values in the Camera, to accurately determine where to look at the scene.
- */
-void setGluLookAt(Camera *camera);
 
-void setGluLookAt(float f1, float f2, float f3,
-                    float f4, float f5, float f6,
-                    float f7, float f8, float f9);
+///
+/// Implements gluPerspective() using glbinding. Using the functions defined in GL/glu.h will not work.
+///
+/// \param fov -- takes an angle measure not a radian.
+///
+void setPerspective(gl::GLfloat fov, gl::GLfloat aspect, gl::GLfloat zNear, gl::GLfloat zFar);
+///
+/// Implements gluLookAt() using glbinding. Using the functions defined in GL/glu.h will not work.
+///
+void setLookAt(Camera *camera);
+///
+/// Implements gluLookAt() using glbinding. Using the functions defined in GL/glu.h will not work.
+///
+void setLookAt(gl::GLfloat eyex, gl::GLfloat eyey, gl::GLfloat eyez,
+               gl::GLfloat centerx, gl::GLfloat centery, gl::GLfloat centerz,
+               gl::GLfloat upx, gl::GLfloat upy, gl::GLfloat upz);
 
 void swapBuffers();
-
-void setGluPerspective(float f1, float f2, float f3, float f4);
-
 
 #endif

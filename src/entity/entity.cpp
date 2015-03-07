@@ -153,7 +153,7 @@ void Entity::setCamera(Camera camera)
         }
     }
 
-    auto temp = (camera.position + velocity);
+    //glm::vec3 temp = (camera.position + velocity);
     //std::cout << ":" << temp.x << " " << temp.y << " " << temp.z << std::endl;
     //std::cout << "p:" << camera.position.x << " " << camera.position.y << " " << camera.position.z << std::endl;
     //std::cout << "v:" << velocity.x << " " << velocity.y << " " << velocity.z << std::endl;

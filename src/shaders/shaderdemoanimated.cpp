@@ -3,10 +3,11 @@
 #include "shaders/shaderdemoanimated.h"
 #include "graphics/gluhelper.h"
 #include "graphics/windowhelper.h"
-
+#include "utils/timehelper.h"
 
 void ShaderDemoAnimated::render()
 {
+    using namespace gl;
     startRenderCycle();
     glLoadIdentity();
     draw();
@@ -15,10 +16,8 @@ void ShaderDemoAnimated::render()
 
 void ShaderDemoAnimated::draw()
 {
-    // TODO -- fix me : no system time fetch
-    std::cout << "system time fetch not implemented: returning 0" << std::endl;
-    float timeLeft = static_cast<float>(/*System.currentTimeMillis()*/0 - startTime) / 1000;
-    std::cout << timeLeft << std::endl;
+    using namespace gl;
+    float timeLeft = static_cast<float>(getCurrentTimeMillis() - startTime) / 1000;
     shader1->glUniform1("iGlobalTime", timeLeft);
     shader1->bindShader();
     glLoadIdentity();
@@ -36,6 +35,7 @@ void ShaderDemoAnimated::draw()
 
 void ShaderDemoAnimated::init(int argc, char **argv)
 {
+    using namespace gl;
     int w = 1024;
     int h = 768;
     initFreeglut(argc, argv);
@@ -44,7 +44,7 @@ void ShaderDemoAnimated::init(int argc, char **argv)
     glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    setGluPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
+    setPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glShadeModel(GL_SMOOTH);
@@ -59,9 +59,7 @@ void ShaderDemoAnimated::init(int argc, char **argv)
     glm::vec3 v(getWindowWidth(), getWindowHeight(), 1.0);
     shader1->glUniform3("iResolution", v);
     shader1->glUniform1("iGlobalTime", 0.0f);
-    // TODO -- fix me : no system time fetch
-    std::cout << "system time fetch not implemented: returning 0" << std::endl;
-    startTime = /*System.currentTimeMillis()*/0;
+    startTime = getCurrentTimeMillis();
 }
 
 void ShaderDemoAnimated::run(int argc, char **argv)

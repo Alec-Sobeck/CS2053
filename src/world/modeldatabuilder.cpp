@@ -54,6 +54,14 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
     //Colour stuff
     int colourOffset = runningOffset;
     runningOffset += colourSize * sizeof(colourType);
+    if(colourData.size() == 0)
+    {
+        colourData = FlexArray<Colour>(vertexData.size());
+        for(int i = 0; i < colourData.size(); i++)
+        {
+            colourData[i] = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+    }
     int textureCoordOffset = runningOffset;
     int elementsPerRowOfCombinedData = vertexSize + normalSize + colourSize + textureCoordSize;
     //TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs

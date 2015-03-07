@@ -18,6 +18,8 @@
 #include "graphics/gluhelper.h"
 #include "render/render.h"
 #include "terrain/grass.h"
+#include "graphics/gluhelper.h"
+#include "utils/objparser.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -131,6 +133,7 @@ public:
     KeyManager keyManager;
     MouseManager mouseManager;
     Grass *grass; // TODO => [LEAK]this is never deleted
+    std::shared_ptr<VBO> treeVBO;
 
     GameLoop();
     void buildSampleTerrain();
@@ -214,6 +217,24 @@ void GameLoop::buildSampleTerrain()
 
     auto grassTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
     gameLoopObject.grass = new Grass(50, glm::vec3(0,0,0), 50, grassTexture);
+
+    /// Load tree model(s)
+/*
+    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/oak_tree1/Tree_V9_Final.obj", "bark_tree.jpg");
+    ModelData data = parser.exportModel();
+    auto treeTexture = getTexture(data.associatedTextureName);
+    gameLoopObject.treeVBO = std::shared_ptr<VBO>(new VBO(data, treeTexture));
+
+*/
+
+
+
+///    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree2.obj", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/TreeR1.png");
+    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pyro.obj", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pyroscavengerhunt.jpg");
+    ModelData data = parser.exportModel();
+    auto treeTexture = getTexture(data.associatedTextureName);
+    gameLoopObject.treeVBO = std::shared_ptr<VBO>(new VBO(data, treeTexture));
+
 }
 
 ///***********************************************************************
@@ -265,11 +286,9 @@ void gameUpdateTick()
 
         //Draw here
         startRenderCycle();
-
         glClearDepth(1.0f);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-
 
         Camera *cam = gameLoopObject.player.getCamera();
         startRenderCycle();
@@ -279,12 +298,46 @@ void gameUpdateTick()
         renderAxes(cam);
 
         gameLoopObject.player.move();
-        //gameLoopObject.terrainRenderer->draw(cam);
+        gameLoopObject.terrainRenderer->draw(cam);
+
+
+    /// DRAW -- tree
+
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_NORMAL_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+///        glDisable(GL_BLEND);
+///        glAlphaFunc(GL_GREATER, 0.1f);
+///        glEnable(GL_ALPHA_TEST);
+        //glDisable(GL_CULL_FACE);
+        glLoadIdentity();
+///        glEnable(GL_TEXTURE_2D);
+///        glScalef(1.0f,1.0f,1.0f);
+       /// glColor3f(1.0f, 1.0f, 1.0f);
+        // Translate to model co-ordinates, based on the origin of the shape
+        setLookAt(cam);
+        gameLoopObject.treeVBO->hasTextureData = true;
+///        gameLoopObject.treeVBO->associatedTexture->bind();
+///        std::cout << gameLoopObject.treeVBO->associatedTexture->textureID << std::endl;
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_TEST);
+        glCullFace(GL_BACK);
+        gameLoopObject.treeVBO->draw(cam);
+
+        //glEnable(GL_CULL_FACE);
+///        glDisable(GL_ALPHA_TEST);
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_NORMAL_ARRAY);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
+    /// END DRAW -- tree
         gameLoopObject.grass->update(cam);
         gameLoopObject.grass->draw(cam);
-
-        //std::cout << cam << ":" << cam->position.x << " " << cam->position.y << " " << cam->position.z << std::endl;
-
         end3DRenderCycle();
         endRenderCycle();
 

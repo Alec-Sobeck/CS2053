@@ -209,7 +209,7 @@ void DynamicVBO::draw(Camera *cam)
     glEnable(GL_TEXTURE_2D);
     glColor3f(1.0f, 1.0f, 1.0f);
     // Translate to model co-ordinates, based on the origin of the shape
-    setGluLookAt(cam);
+    setLookAt(cam);
     if(texture)
     {
         texture->bind(); // terrain texture?

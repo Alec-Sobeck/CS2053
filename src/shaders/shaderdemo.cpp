@@ -5,6 +5,7 @@
 
 void ShaderDemo::render()
 {
+    using namespace gl;
     startRenderCycle();
     glLoadIdentity();
     draw();
@@ -13,6 +14,7 @@ void ShaderDemo::render()
 
 void ShaderDemo::draw()
 {
+    using namespace gl;
     shader1->bindShader();
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -1.0f);
@@ -42,6 +44,7 @@ void ShaderDemo::draw()
 
 void ShaderDemo::init(int argc, char **argv)
 {
+    using namespace gl;
     int w = 1024;
     int h = 768;
 
@@ -52,7 +55,7 @@ void ShaderDemo::init(int argc, char **argv)
     glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    setGluPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
+    setPerspective(45.0f, (static_cast<float>(w)/static_cast<float>(h)),0.1f,100.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
