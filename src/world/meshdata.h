@@ -11,7 +11,7 @@
  * @author Alec Sobeck
  * @author Matthew Robertson
  */
-class ModelData
+class MeshData
 {
 public:
 	const std::string associatedTextureName;
@@ -57,7 +57,7 @@ public:
 	 * @param colourType
 	 * @param combinedData
 	 */
-	ModelData(
+	MeshData(
 			gl::GLenum glRenderMode,
 			int vertexPerFace,
 			int stride,
@@ -89,7 +89,7 @@ public:
 	 * @param textureCoordType
 	 * @param combinedData
 	 */
-	ModelData(
+	MeshData(
 			gl::GLenum glRenderMode,
 			int vertexPerFace,
 			std::string associatedTextureName,

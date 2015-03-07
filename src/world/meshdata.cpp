@@ -1,24 +1,6 @@
-#include "world/modeldata.h"
+#include "world/meshdata.h"
 
-/**
- * Builds a new ModelData and disables textures.
- * @param glRenderMode
- * @param vertexPerFace
- * @param associatedTextureName
- * @param stride
- * @param elementsPerRowOfCombinedData
- * @param vertexSize
- * @param vertexOffset
- * @param vertexType
- * @param normalSize
- * @param normalOffset
- * @param normalType
- * @param colourSize
- * @param colourOffset
- * @param colourType
- * @param combinedData
- */
-ModelData::ModelData(
+MeshData::MeshData(
         gl::GLenum glRenderMode,
         int vertexPerFace,
         int stride,
@@ -37,29 +19,7 @@ ModelData::ModelData(
 {
 }
 
-/**
- * Builds a new ModelData and enables textures
- * @param hasTextureData
- * @param glRenderMode
- * @param vertexPerFace
- * @param associatedTextureName
- * @param stride
- * @param elementsPerRowOfCombinedData
- * @param vertexSize
- * @param vertexOffset
- * @param vertexType
- * @param normalSize
- * @param normalOffset
- * @param normalType
- * @param colourSize
- * @param colourOffset
- * @param colourType
- * @param textureCoordSize
- * @param textureCoordOffset
- * @param textureCoordType
- * @param combinedData
- */
-ModelData::ModelData(
+MeshData::MeshData(
         gl::GLenum glRenderMode,
         int vertexPerFace,
         std::string associatedTextureName,
@@ -80,12 +40,7 @@ ModelData::ModelData(
 {
 }
 
-/**
- * This calculates every time.
- * @return an AABB that bounds the entire Model. If for some reason there is no vertex
- * data the bounding box will simply be the origin.
- */
-AABB ModelData::getAABB()
+AABB MeshData::getAABB()
 {
     if(combinedData.size() == 0)
     {

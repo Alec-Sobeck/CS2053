@@ -72,7 +72,9 @@ public:
             ss << arraySize;
             std::string val = ss.str();
             */
-            throw std::out_of_range("out of bounds");
+            std::stringstream ss;
+            ss << "out of bounds: " << position << " ArraySize: " << arraySize;
+            throw std::out_of_range(ss.str());
         }
         return memory[position];
     }

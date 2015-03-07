@@ -1,6 +1,7 @@
 #ifndef MODEL_DATA_BUILDER_H
 #define MODEL_DATA_BUILDER_H
 
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <glm/vec2.hpp>
@@ -8,9 +9,9 @@
 #include <glbinding/gl/gl.h>
 #include "utils/colour.h"
 #include "render/vbo.h"
-#include "world/modeldata.h"
+#include "world/meshdata.h"
 
-ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
+std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
@@ -24,7 +25,7 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         FlexArray<glm::vec2> textureData,
         FlexArray<glm::vec3> faceTextures);
 
-ModelData createModelData(gl::GLenum glRenderMode,
+MeshData createModelData(gl::GLenum glRenderMode,
         int vertexPerFace,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
@@ -36,7 +37,7 @@ ModelData createModelData(gl::GLenum glRenderMode,
         FlexArray<float> colourData,
         FlexArray<float> textureCoordData);
 
-ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
+MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
         int vertexPerFace,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
@@ -45,6 +46,6 @@ ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
         FlexArray<float> normalData,
         FlexArray<float> colourData);
 
-ModelData getDerpyDefaultData();
+MeshData getDerpyDefaultData();
 
 #endif

@@ -24,8 +24,8 @@ void Model::onAABBCollision(AABB &boundsCollidedWith)
  * Constructs a new Model with the specified ModelData object.
  * @param data a ModelData object that can be used to construct this Model
  */
-Model::Model(ModelData &data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
-        data(data), aabb(rotateAABB(data.getAABB())), scale(glm::vec3(1.0f, 1.0f, 1.0f))
+Model::Model(std::vector<std::shared_ptr<MeshData>> data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
+        data(data), aabb(rotateAABB(AABB(0, 0, 0, 10, 10, 10))), scale(glm::vec3(1.0f, 1.0f, 1.0f))
 {
 }
 
@@ -36,7 +36,11 @@ Model::~Model()
 
 AABB Model::rotateAABB(AABB aabb)
 {
-    if(1==1)return data.getAABB();
+    if(1==1)
+    {
+//        return data.getAABB();
+        return AABB(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f);
+    }
     //TODO rotate the AABB
 //		this doesnt work at all - vertices are botched srsly badly
     if(1==1)
@@ -65,7 +69,7 @@ AABB Model::rotateAABB(AABB aabb)
  * @param other another AABB to check for intersection
  * @return a boolean, true if the AABB overlap, otherwise false
  */
-bool Model::intersections(AABB other)
+bool Model::intersections(AABB &other)
 {
     return aabb.overlaps(other);
 }
@@ -144,9 +148,6 @@ void Model::rotate(glm::vec3 rotation)
                                 rotation.z + rotationOnAxes.z));
 }
 
-/**
- * Ensures the rotation falls between 0 and 2PI on each axis
- */
 void Model::reduceRotation()
 {
     setRotationOnAxes(glm::vec3(fmod(rotationOnAxes.x, (2 * PI)),
@@ -154,27 +155,32 @@ void Model::reduceRotation()
                                 fmod(rotationOnAxes.z, (2 * PI))));
 }
 
-/**
- * Sets the Vector3 that controls rotation for this Model to a new Vector3.
- * This will recalculate the AABB for this Model.
- * @param rotationOnAxes a Vector3 that describes the rotation of this Model
- */
 void Model::setRotationOnAxes(glm::vec3 rotationOnAxes)
 {
     this->rotationOnAxes = rotationOnAxes;
-    this->aabb = rotateAABB(data.getAABB());
-}
-
-/**
- * Gets the ModelData associated with this Model. This may not be very useful after the Model has been initialized.
- * @return a ModelData object which describes this Model
- */
-ModelData Model::getData()
-{
-    return data;
+    this->aabb = rotateAABB(AABB(0,0,0,10,10,10));
 }
 
 int Model::getID()
 {
     return modelID;
 }
+
+void Model::createVBOs(std::map<std::string, std::shared_ptr<Texture>> textureMap)
+{
+    for(unsigned int i = 0; i < data.size(); i++)
+    {
+        vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], textureMap[data[i]->associatedTextureName])));
+    }
+}
+
+void Model::draw(Camera *camera)
+{
+    for(unsigned int i = 0; i < vbos.size(); i++)
+    {
+        vbos[i]->draw(camera);
+    }
+}
+
+
+

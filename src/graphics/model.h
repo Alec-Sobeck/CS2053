@@ -1,10 +1,15 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <memory>
+#include <map>
 #include <glm/vec3.hpp>
 #include "math/ioctreeelement.h"
 #include "physics/aabb.h"
-#include "world/modeldata.h"
+#include "world/meshdata.h"
+#include "graphics/camera.h"
+#include "render/vbo.h"
+#include "render/texture.h"
 
 int getNextModelID();
 
@@ -21,12 +26,12 @@ private:
 protected:
 	glm::vec3 origin;
 	glm::vec3 rotationOnAxes;
-	ModelData data;
 	AABB aabb;
 	glm::vec3 scale;
 	AABB rotateAABB(AABB aabb);
-
 public:
+	std::vector<std::shared_ptr<MeshData>> data;
+	std::vector<std::shared_ptr<VBO>> vbos;
 	AABB getAABB();
 	void onAABBCollision(AABB &boundsCollidedWith);
     ~Model();
@@ -34,13 +39,13 @@ public:
 	 * Constructs a new Model with the specified ModelData object.
 	 * @param data a ModelData object that can be used to construct this Model
 	 */
-	Model(ModelData &data);
+	Model(std::vector<std::shared_ptr<MeshData>> data);
 	/**
 	 * Tests this Model's AABB against another AABB for overlap
 	 * @param other another AABB to check for intersection
 	 * @return a boolean, true if the AABB overlap, otherwise false
 	 */
-	bool intersections(AABB other);
+	bool intersections(AABB &other);
 	/**
 	 * Gets the Point3 that describes the relative origin of this Model. That is to say the translation applied
 	 * before drawing the Model.
@@ -94,8 +99,9 @@ public:
 	 * Gets the ModelData associated with this Model. This may not be very useful after the Model has been initialized.
 	 * @return a ModelData object which describes this Model
 	 */
-	ModelData getData();
 	int getID();
+    void createVBOs(std::map<std::string, std::shared_ptr<Texture>> textureMap);
+    void draw(Camera *camera);
 };
 
 inline bool operator<(const Model &first, const Model &other)

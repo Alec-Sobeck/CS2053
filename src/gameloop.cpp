@@ -133,7 +133,7 @@ public:
     KeyManager keyManager;
     MouseManager mouseManager;
     Grass *grass; // TODO => [LEAK]this is never deleted
-    std::shared_ptr<VBO> treeVBO;
+    std::shared_ptr<Model> treeModel;
 
     GameLoop();
     void buildSampleTerrain();
@@ -229,11 +229,17 @@ void GameLoop::buildSampleTerrain()
 
 
 
-///    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree2.obj", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/TreeR1.png");
-    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pyro.obj", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pyroscavengerhunt.jpg");
-    ModelData data = parser.exportModel();
-    auto treeTexture = getTexture(data.associatedTextureName);
-    gameLoopObject.treeVBO = std::shared_ptr<VBO>(new VBO(data, treeTexture));
+    ObjParser parser(
+        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/Tree.obj", "Branches0018_1_S.png"
+    );
+    gameLoopObject.treeModel = parser.exportModel();
+
+    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/BarkDecidious0107_M.jpg");
+    auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/Branches0018_1_S.png");
+    std::map<std::string, std::shared_ptr<Texture>> textures;
+    textures["tree"] = treeTexture;
+    textures["leaves"] = branchTexture;
+    gameLoopObject.treeModel->createVBOs(textures);
 
 }
 
@@ -309,23 +315,24 @@ void gameUpdateTick()
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-///        glDisable(GL_BLEND);
-///        glAlphaFunc(GL_GREATER, 0.1f);
-///        glEnable(GL_ALPHA_TEST);
+        glDisable(GL_BLEND);
+        glAlphaFunc(GL_GREATER, 0.1f);
+        glEnable(GL_ALPHA_TEST);
         //glDisable(GL_CULL_FACE);
         glLoadIdentity();
-///        glEnable(GL_TEXTURE_2D);
-///        glScalef(1.0f,1.0f,1.0f);
-       /// glColor3f(1.0f, 1.0f, 1.0f);
+        glEnable(GL_TEXTURE_2D);
         // Translate to model co-ordinates, based on the origin of the shape
         setLookAt(cam);
-        gameLoopObject.treeVBO->hasTextureData = true;
-///        gameLoopObject.treeVBO->associatedTexture->bind();
-///        std::cout << gameLoopObject.treeVBO->associatedTexture->textureID << std::endl;
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glCullFace(GL_BACK);
-        gameLoopObject.treeVBO->draw(cam);
+
+        glTranslatef(0.0f, 5.0f, 0.0f);
+        for(int i = 0; i < 5; i++)
+        {
+            glTranslatef(5.0f, 0.0f, 0.0f);
+            gameLoopObject.treeModel->draw(cam);
+        }
 
         //glEnable(GL_CULL_FACE);
 ///        glDisable(GL_ALPHA_TEST);

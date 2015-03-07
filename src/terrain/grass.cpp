@@ -335,11 +335,10 @@ void Grass::createVBO(glm::vec3 center, float range)
         {
             int index = i * numberPerDimension + j;
             glm::vec3 v(((range * 2) / numberPerDimension) * i + minX, 0, ((range * 2) / numberPerDimension) * j + minZ );
-            std::cout << v.x <<","<<v.z << std::endl;
             putGrassCluster(combinedData, index * 144, v);
         }
     }
-    ModelData data(GL_QUADS,
+    MeshData data(GL_QUADS,
         4,
         "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png",
         stride,

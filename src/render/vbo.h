@@ -5,7 +5,7 @@
 #include <glbinding/gl/gl.h>
 #include "render/texture.h"
 #include "graphics/camera.h"
-#include "world/modeldata.h"
+#include "world/meshdata.h"
 
 gl::GLuint createVBOID();
 
@@ -42,19 +42,17 @@ private:
 	/** The total size of the combined vertex, colour, normal, and texture data in bytes. */
 	// FlexArray<float> combinedData;
 	 gl::GLuint vertexBufferID;
-
-
 public:
     bool hasTextureData;
     int totalNumberOfValues;
     std::shared_ptr<Texture> associatedTexture;
-
-
 	/**
 	 * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.
 	 * @param data a ModelData object that contains the values required to initialize this VBO
 	 */
-	VBO(ModelData &data, std::shared_ptr<Texture> texture);
+	VBO(MeshData &data, std::shared_ptr<Texture> texture);
+
+	VBO(std::shared_ptr<MeshData> data, std::shared_ptr<Texture> texture);
 	/**
 	 * Draws the VBO's contents.
 	 */

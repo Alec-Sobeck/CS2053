@@ -2,7 +2,7 @@
 #define MAP_DATA_H
 
 #include <vector>
-#include "world/modeldata.h"
+#include "world/meshdata.h"
 #include "terrain/terraindata.h"
 
 /**
@@ -14,14 +14,14 @@
 class MapData
 {
 public:
-	std::vector<ModelData> completeModelDataList;
+	std::vector<MeshData> completeModelDataList;
 	TerrainData data;
 	/**
 	 * Constructs a new MapData and stores references to the List<ModelData> and TerrainData provided.
 	 * @param initialModels a List<ModelData> that should describe the entirety of the models in this MapData
 	 * @param data a TerrainData object that should describe the entirely of the terrain of this MapData
 	 */
-	MapData(std::vector<ModelData> initialModels, TerrainData data);
+	MapData(std::vector<MeshData> initialModels, TerrainData data);
 };
 
 

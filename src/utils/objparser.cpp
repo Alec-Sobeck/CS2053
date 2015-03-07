@@ -1,67 +1,23 @@
 
-
+#include <memory>
 #include <sstream>
 #include <glbinding/gl/gl.h>
 #include "objparser.h"
-#include "world/modeldatabuilder.h"
+#include "world/meshbuilder.h"
 #include "utils/colour.h"
 #include "utils/fileutils.h"
+#include "utils/misc.h"
 
-std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems)
-{
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim))
-    {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-std::vector<std::string> split(const std::string &s, char delim)
-{
-    std::vector<std::string> elems;
-    split(s, delim, elems);
-    return elems;
-}
-
-double parseDouble(const std::string& s)
-{
-   std::stringstream i(s);
-   double x;
-   if (!(i >> x))
-    {
-       std::cout << "Error: " << s << std::endl;
-       return 0;
-    }
-   return x;
-}
-
-ObjParser::ObjParser(std::string fileName, std::string textureName) : vertices(std::vector<glm::vec3>()), normals(std::vector<glm::vec3>()),
-    colours(std::vector<Colour>()), textureCoords(std::vector<glm::vec2>()), faceVerts(std::vector<glm::vec3>()), faceNormals(std::vector<glm::vec3>()),
-    faceTextures(std::vector<glm::vec3>()), fileName(fileName), textureName(textureName), modelName("")
+ObjParser::ObjParser(std::string fileName, std::string textureName) : fileName(fileName), textureName(textureName), modelName("")
 {
     loadData();
 }
 
-ModelData ObjParser::exportModel()
+std::shared_ptr<Model> ObjParser::exportModel()
 {
-    using namespace gl;
-    return createModelDataFromParsedOBJ(GL_TRIANGLES,
-            textureName,
-            3, GL_FLOAT,
-            GL_FLOAT,
-            4,	GL_FLOAT,
-            2, GL_FLOAT,
-            make1DFlex(vertices),
-            make1DFlex(faceVerts),
-            make1DFlex(normals, vertices.size()),
-            make1DFlex(faceNormals),
-            FlexArray<Colour>(),
-            make1DFlex(textureCoords),
-            make1DFlex(faceTextures));
+    return std::shared_ptr<Model>(new Model(meshes));
 }
-
+/*
 std::shared_ptr<TerrainData> ObjParser::exportTerrain()
 {
     for(glm::vec3 data : vertices)
@@ -70,20 +26,58 @@ std::shared_ptr<TerrainData> ObjParser::exportTerrain()
     }
     return std::shared_ptr<TerrainData>(new TerrainData(vertices, normals, colours, textureCoords, faceVerts, faceNormals, faceTextures));
 }
-
+*/
 void ObjParser::loadData()
 {
+    using namespace gl;
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec3> normals;
+	std::vector<Colour> colours;
+	std::vector<glm::vec2> textureCoords;
+	std::vector<glm::vec3> faceVerts;
+	std::vector<glm::vec3> faceNormals;
+	std::vector<glm::vec3> faceTextures;
+
     std::vector<std::string> fileContents = readTextFileAsLines(fileName);
     std::string line;
+
+    bool hasEncounteredMesh = false;
+    std::string meshName = "";
 
     for(unsigned int i = 0; i < fileContents.size(); i++)
     {
         line = fileContents[i];
         std::vector<std::string> splitLine = split(line, ' ');
-
         if (line.find("o ") == 0) // startsWith
         {
-            modelName = splitLine.at(1);
+            if(hasEncounteredMesh)
+            {
+                std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
+                    GL_TRIANGLES,
+                    meshName,
+                    3, GL_FLOAT,
+                    GL_FLOAT,
+                    4,	GL_FLOAT,
+                    2, GL_FLOAT,
+                    make1DFlex(vertices),
+                    make1DFlex(faceVerts),
+                    make1DFlex(normals, vertices.size()),
+                    make1DFlex(faceNormals),
+                    FlexArray<Colour>(),
+                    make1DFlex(textureCoords),
+                    make1DFlex(faceTextures)
+                );
+                meshes.push_back(data);
+              //  vertices = std::vector<glm::vec3>();
+              //  normals = std::vector<glm::vec3>();
+              //  colours = std::vector<Colour>();
+                //textureCoords = std::vector<glm::vec2>();
+                faceVerts = std::vector<glm::vec3>();
+                faceNormals = std::vector<glm::vec3>();
+                faceTextures = std::vector<glm::vec3>();
+            }
+            hasEncounteredMesh = true;
+            meshName = splitLine.at(1);
         }
         else if (line.find("v ") == 0)
         {
@@ -126,15 +120,22 @@ void ObjParser::loadData()
             }
         }
     }
-
-
-    std::cout << "Num verts: " << vertices.size() <<
-                " Num normals: " << normals.size() <<
-                " Num Color: " << colours.size() <<
-                " Num TextureCoord:" << textureCoords.size() <<
-                " Num faces: " << faceVerts.size() <<
-                " Num FaceNorms:" << faceNormals.size() <<
-                " Num FaceTextures" << faceTextures.size()
-                <<std::endl;
+    std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
+        GL_TRIANGLES,
+        meshName,
+        3, GL_FLOAT,
+        GL_FLOAT,
+        4,	GL_FLOAT,
+        2, GL_FLOAT,
+        make1DFlex(vertices),
+        make1DFlex(faceVerts),
+        make1DFlex(normals, vertices.size()),
+        make1DFlex(faceNormals),
+        FlexArray<Colour>(),
+        make1DFlex(textureCoords),
+        make1DFlex(faceTextures)
+    );
+    meshes.push_back(data);
+    std::cout << "Num Meshes:" << meshes.size() << std::endl;
 }
 

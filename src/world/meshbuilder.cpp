@@ -1,4 +1,4 @@
-#include "modeldatabuilder.h"
+#include "meshbuilder.h"
 
 #include <stdexcept>
 #include <string>
@@ -6,9 +6,9 @@
 #include <glm/vec3.hpp>
 #include "utils/colour.h"
 #include "render/vbo.h"
-#include "world/modeldata.h"
+#include "world/meshdata.h"
 
-ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
+std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
@@ -54,6 +54,24 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
     //Colour stuff
     int colourOffset = runningOffset;
     runningOffset += colourSize * sizeof(colourType);
+
+    //if(normalData.size() == 0 || (normalData[0].x == 0 && normalData[0].y == 0 && normalData[0].z == 0) )
+    //{
+    if(faceNormals.size() == 0)
+    {
+        normalData = FlexArray<glm::vec3>(vertexData.size());
+        for(int i = 0; i < normalData.size(); i++)
+        {
+            normalData[i] = glm::vec3(1, 0, 0);
+        }
+        faceNormals = FlexArray<glm::vec3>(faceVerts.size());
+        for(int i = 0; i < faceNormals.size(); i++)
+        {
+            faceNormals[i] = glm::vec3(5, 5, 5);
+        }
+    }
+    //}
+
     if(colourData.size() == 0)
     {
         colourData = FlexArray<Colour>(vertexData.size());
@@ -94,6 +112,7 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].b);
         combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].a);
         // Add in UV textureData
+
         combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.x - 1)].x);
         combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.x - 1)].y);
 
@@ -134,7 +153,7 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.z - 1)].y);
     }
 
-    return ModelData(glRenderMode, vertsPerFace,
+    return std::shared_ptr<MeshData>(new MeshData(glRenderMode, vertsPerFace,
             associatedTextureName,
             stride,
             elementsPerRowOfCombinedData,
@@ -142,11 +161,11 @@ ModelData createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
             normalSize, normalOffset, normalType,
             colourSize, colourOffset, colourType,
             textureCoordSize, textureCoordOffset, textureCoordType,
-            combinedBuffer);
+            combinedBuffer));
 
 }
 
-ModelData createModelData(gl::GLenum glRenderMode,
+MeshData createModelData(gl::GLenum glRenderMode,
         int vertexPerFace,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
@@ -224,12 +243,12 @@ ModelData createModelData(gl::GLenum glRenderMode,
         }
     }
 
-    return ModelData(glRenderMode, vertexPerFace, associatedTextureName, stride, elementsPerRowOfCombinedData,
+    return MeshData(glRenderMode, vertexPerFace, associatedTextureName, stride, elementsPerRowOfCombinedData,
             vertexSize, vertexOffset, vertexType, normalSize, normalOffset, normalType, colourSize, colourOffset,
             colourType, textureCoordSize, textureCoordOffset, textureCoordType, combinedBuffer);
 }
 
-ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
+MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
         int vertexPerFace,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
@@ -298,7 +317,7 @@ ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
 
     }
 
-    return ModelData(glRenderMode,
+    return MeshData(glRenderMode,
             vertexPerFace,
             stride,
             elementsPerRowOfCombinedData,
@@ -317,7 +336,7 @@ ModelData createModelDataNoTexture(gl::GLenum glRenderMode,
 /**
  * Test function
  */
-ModelData getDerpyDefaultData()
+MeshData getDerpyDefaultData()
 {
     using namespace gl;
     FlexArray<float> vertexData = {
