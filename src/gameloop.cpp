@@ -20,6 +20,7 @@
 #include "terrain/grass.h"
 #include "graphics/gluhelper.h"
 #include "utils/objparser.h"
+#include "render/glfont.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -134,9 +135,19 @@ public:
     MouseManager mouseManager;
     Grass *grass; // TODO => [LEAK]this is never deleted
     std::shared_ptr<Model> treeModel;
+    std::shared_ptr<PixelPerfectGLFont> fontRenderer;
 
     GameLoop();
     void buildSampleTerrain();
+    ///
+    /// Draws a basic text string.
+    /// \param val - the string of text to draw
+    /// \param x - the x coordinate of the text
+    /// \param y - the y coordinate of the text
+    /// \param z - the z coordinate of the text. Leave 0 when rendering in 2D.
+    /// \param colour - the colour the text will be rendered.
+    ///
+    bool drawString(std::string val, float x, float y, float z, Colour colour);
 };
 
 
@@ -163,10 +174,22 @@ void initializeEngine()
     using namespace gl;
      ///// TODO -- initializeTextures()
     initializeViewport();
-
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 
+    //Create font
+	GLuint textureName;
+	glGenTextures(1, &textureName);
+	gameLoopObject.fontRenderer = std::shared_ptr<PixelPerfectGLFont>(new PixelPerfectGLFont());
+	try
+	{
+		gameLoopObject.fontRenderer->Create("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/glfont.glf", textureName);
+	}
+	catch(GLFontError::InvalidFile)
+	{
+		std::cout << "Cannot load font" << std::endl;
+		exit(1);
+	}
     gameLoopObject.buildSampleTerrain();
 }
 
@@ -265,6 +288,27 @@ void GameLoop::buildSampleTerrain()
     gameLoopObject.treeModel->createVBOs(textures);
 */
 
+}
+
+bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
+{
+    using namespace gl;
+    try
+    {
+        glEnable(GL_TEXTURE_2D);
+        glColor4f(colour.r, colour.g, colour.b, colour.a);
+        glDisable(GL_BLEND);
+        glAlphaFunc(GL_GREATER, 0.1f);
+        glEnable(GL_ALPHA_TEST);
+        fontRenderer->Begin();
+        fontRenderer->TextOut("hello world", 50, 50, 0);
+        return true;
+    }
+    catch(GLFontError::InvalidFont)
+    {
+        return false;
+    }
+    return false;
 }
 
 ///***********************************************************************
@@ -370,6 +414,10 @@ void gameUpdateTick()
         gameLoopObject.grass->update(cam);
         gameLoopObject.grass->draw(cam);
         end3DRenderCycle();
+
+        start2DRenderCycle();
+        gameLoopObject.drawString("hello world", 50, 50, 0, RED);
+        end2DRenderCycle();
         endRenderCycle();
 
 /*
