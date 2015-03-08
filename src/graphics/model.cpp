@@ -170,7 +170,15 @@ void Model::createVBOs(std::map<std::string, std::shared_ptr<Texture>> textureMa
 {
     for(unsigned int i = 0; i < data.size(); i++)
     {
-        vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], textureMap[data[i]->associatedTextureName])));
+        std::cout << ">" << data[i]->associatedTextureName << "<"<< std::endl;
+        if(overrideTexture)
+        {
+            vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], overrideTexture)));
+        }
+        else
+        {
+            vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], textureMap[data[i]->associatedTextureName])));
+        }
     }
 }
 

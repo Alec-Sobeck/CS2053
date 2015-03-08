@@ -21,6 +21,7 @@ MeshData::MeshData(
 
 MeshData::MeshData(
         gl::GLenum glRenderMode,
+        std::shared_ptr<Material> material,
         int vertexPerFace,
         std::string associatedTextureName,
         int stride,
@@ -36,7 +37,7 @@ MeshData::MeshData(
     colourSize(colourSize), colourOffset(colourOffset), colourType(colourType),
     textureCoordSize(textureCoordSize), textureCoordOffset(textureCoordOffset), textureCoordType(textureCoordType),
     elementsPerRowOfCombinedData(elementsPerRowOfCombinedData), combinedData(combinedData),
-    vertexPerFace(vertexPerFace), hasTextureData(false)
+    vertexPerFace(vertexPerFace), hasTextureData(false), material(material)
 {
 }
 

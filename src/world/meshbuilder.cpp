@@ -8,7 +8,21 @@
 #include "render/vbo.h"
 #include "world/meshdata.h"
 
+inline int fmodp(int num, int mod)
+{
+/*
+    num = num % mod;
+    while(num < 0)
+    {
+        num += mod;
+    }
+    return num;
+*/
+    return (num >= 0) ? num : (num + mod == -1) ? 0 : mod + num;
+}
+
 std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
+        std::shared_ptr<Material> material,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
@@ -99,61 +113,61 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         glm::vec3 facesTextures = faceTextures[i];
         // X
         // Stuff the vert data
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.x - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.x - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.x - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1) , vertexData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].z);
         // Then add associated normal
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.x - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.x - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.x - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].z);
         //Then add associated vert colour
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].r);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].g);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].b);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.x - 1].a);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1) ,colourData.size())].r);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1) ,colourData.size())].g);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1) ,colourData.size())].b);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1) ,colourData.size())].a);
         // Add in UV textureData
 
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.x - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.x - 1)].y);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.x - 1),textureData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.x - 1),textureData.size())].y);
 
         //Y
         // Stuff the vert data
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.y - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.y - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.y - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].z);
         // Then add associated normal
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.y - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.y - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.y - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].z);
         //Then add associated vert colour
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.y - 1].r);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.y - 1].g);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.y - 1].b);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.y - 1].a);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y- 1) ,colourData.size())].r);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y- 1) ,colourData.size())].g);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y- 1) ,colourData.size())].b);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y- 1) ,colourData.size())].a);
         // Add in UV textureData
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.y - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.y - 1)].y);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.y - 1),textureData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.y - 1),textureData.size())].y);
 
         //Z
         // Stuff the vert data
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.z - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.z - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(vertexData[static_cast<int>(facesVerts.z - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].z);
         // Then add associated normal
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.z - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.z - 1)].y);
-        combinedBuffer[k++] = static_cast<float>(normalData[static_cast<int>(facesNormals.z - 1)].z);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].y);
+        combinedBuffer[k++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].z);
         //Then add associated vert colour
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.z - 1].r);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.z - 1].g);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.z - 1].b);
-        combinedBuffer[k++] = static_cast<float>(colourData[facesVerts.z - 1].a);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z- 1) ,colourData.size())].r);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z- 1) ,colourData.size())].g);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z- 1) ,colourData.size())].b);
+        combinedBuffer[k++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z- 1) ,colourData.size())].a);
         // Add in UV textureData
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.z - 1)].x);
-        combinedBuffer[k++] = static_cast<float>(textureData[static_cast<int>(facesTextures.z - 1)].y);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.z - 1),textureData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.z - 1),textureData.size())].y);
     }
 
-    return std::shared_ptr<MeshData>(new MeshData(glRenderMode, vertsPerFace,
+    return std::shared_ptr<MeshData>(new MeshData(glRenderMode, material, vertsPerFace,
             associatedTextureName,
             stride,
             elementsPerRowOfCombinedData,
@@ -243,7 +257,7 @@ MeshData createModelData(gl::GLenum glRenderMode,
         }
     }
 
-    return MeshData(glRenderMode, vertexPerFace, associatedTextureName, stride, elementsPerRowOfCombinedData,
+    return MeshData(glRenderMode, std::shared_ptr<Material>(nullptr), vertexPerFace, associatedTextureName, stride, elementsPerRowOfCombinedData,
             vertexSize, vertexOffset, vertexType, normalSize, normalOffset, normalType, colourSize, colourOffset,
             colourType, textureCoordSize, textureCoordOffset, textureCoordType, combinedBuffer);
 }

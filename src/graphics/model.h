@@ -32,6 +32,8 @@ protected:
 public:
 	std::vector<std::shared_ptr<MeshData>> data;
 	std::vector<std::shared_ptr<VBO>> vbos;
+	std::shared_ptr<Texture> overrideTexture;
+
 	AABB getAABB();
 	void onAABBCollision(AABB &boundsCollidedWith);
     ~Model();

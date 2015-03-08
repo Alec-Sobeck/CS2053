@@ -229,17 +229,41 @@ void GameLoop::buildSampleTerrain()
 
 
 
-    ObjParser parser(
-        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/Tree.obj", "Branches0018_1_S.png"
-    );
-    gameLoopObject.treeModel = parser.exportModel();
 
-    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/BarkDecidious0107_M.jpg");
-    auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/Branches0018_1_S.png");
+    /// Pine tree?
+    ObjParser parser(
+        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
+        "Branches0018_1_S.png", false );
+    gameLoopObject.treeModel = parser.exportModel();
+    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
+    auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
     std::map<std::string, std::shared_ptr<Texture>> textures;
     textures["tree"] = treeTexture;
     textures["leaves"] = branchTexture;
     gameLoopObject.treeModel->createVBOs(textures);
+/*
+    ObjParser parser(
+        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree1/Broad_Leaf_Straight_Trunk.obj", "Broad_Leaf_1.bmp"
+    );
+    gameLoopObject.treeModel = parser.exportModel();
+    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree1/Broad_Leaf_1.bmp");
+    std::map<std::string, std::shared_ptr<Texture>> textures;
+    textures["tree"] = treeTexture;
+    gameLoopObject.treeModel->overrideTexture = treeTexture;
+    gameLoopObject.treeModel->createVBOs(textures);
+*/
+/*
+    ObjParser parser(
+        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/Tree.obj", "Bottom_Trunk.bmp"
+    );
+    gameLoopObject.treeModel = parser.exportModel();
+    auto leafTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/Branches0018_1_S.png");
+    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/BarkDecidious0107_M.jpg");
+    std::map<std::string, std::shared_ptr<Texture>> textures;
+    textures["tree"] = treeTexture;
+    textures["leaves"] = leafTexture;
+    gameLoopObject.treeModel->createVBOs(textures);
+*/
 
 }
 
@@ -323,14 +347,14 @@ void gameUpdateTick()
         glEnable(GL_TEXTURE_2D);
         // Translate to model co-ordinates, based on the origin of the shape
         setLookAt(cam);
-        glEnable(GL_CULL_FACE);
+        glDisable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
-        glCullFace(GL_BACK);
+//        glCullFace(GL_BACK);
 
-        glTranslatef(0.0f, 5.0f, 0.0f);
-        for(int i = 0; i < 5; i++)
+        //glTranslatef(0.0f, 5.0f, 0.0f);
+        for(int i = 0; i < 1; i++)
         {
-            glTranslatef(5.0f, 0.0f, 0.0f);
+        //    glTranslatef(5.0f, 0.0f, 0.0f);
             gameLoopObject.treeModel->draw(cam);
         }
 

@@ -2,9 +2,11 @@
 #define MODEL_DATA_H
 
 #include <string>
+#include <memory>
 #include <glbinding/gl/gl.h>
 #include "physics/aabb.h"
 #include "utils/flexarray.h"
+#include "world/material.h"
 
 /**
  * Contains data to create a VBO to draw a model. That is, vertex data, normals, colour, and texture coordinates.
@@ -38,6 +40,7 @@ public:
 	FlexArray<float> combinedData;
 	const int vertexPerFace;
 	bool hasTextureData;
+    std::shared_ptr<Material> material;
 
 	/**
 	 * Builds a new ModelData and disables textures.
@@ -91,6 +94,7 @@ public:
 	 */
 	MeshData(
 			gl::GLenum glRenderMode,
+			std::shared_ptr<Material> material,
 			int vertexPerFace,
 			std::string associatedTextureName,
 			int stride,

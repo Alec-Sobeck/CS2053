@@ -339,6 +339,7 @@ void Grass::createVBO(glm::vec3 center, float range)
         }
     }
     MeshData data(GL_QUADS,
+        std::shared_ptr<Material>(nullptr),
         4,
         "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png",
         stride,

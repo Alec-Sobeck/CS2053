@@ -12,6 +12,7 @@
 #include "world/meshdata.h"
 
 std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
+        std::shared_ptr<Material> material,
         std::string associatedTextureName,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
