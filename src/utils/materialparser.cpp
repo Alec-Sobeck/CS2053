@@ -15,14 +15,14 @@ std::map<std::string, std::shared_ptr<Material>> MaterialParser::parseMaterials(
     std::string line;
 
     bool hasEncounteredNewMaterial = false;
-    std::string materialName;
-    glm::vec3 ambientColour; /// Ka field
-    glm::vec3 diffuseColour; /// Kd field
-    glm::vec3 specularColour; /// Ks field
+    std::string materialName = "null";
+    glm::vec3 ambientColour(0, 0, 0); /// Ka field
+	glm::vec3 diffuseColour(0, 0, 0); /// Kd field
+	glm::vec3 specularColour(0, 0, 0); /// Ks field
     float specularPower; ///Ns field
-    float d; /// d field
-    float Tr; /// Tr field
-    float illum;
+	float d = 0.0f; /// d field
+    float Tr = 0.0f; /// Tr field
+    float illum = 0.0f;
 
     for(unsigned int i = 0; i < fileContents.size(); i++)
     {

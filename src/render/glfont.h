@@ -1,79 +1,38 @@
 #ifndef _glfonth_
 #define _glfonth_
 
-//*********************************************************
-//GLFONT.H -- Header for GLFONT.CPP
-//Copyright (c) 1998 Brad Fish
-//Copyright (c) 2002 Henri Kyrki
-//See glFont.txt for terms of use
-//10.5 2002
-//*********************************************************
-
-#ifndef TRUE
-#define TRUE	1
-#endif
-
-#ifndef FALSE
-#define FALSE	0
-#endif
-
 #include <string>
+#include <map>
+#include <memory>
 #include <glbinding/gl/gl.h>
+#include "render/texture.h"
 
-namespace GLFontError {
+namespace GLFontError 
+{
 	struct InvalidFile{};
 	struct InvalidFont{};
 }
 
-class GLFontBase {
+class GLFontChar
+{
 public:
-	GLFontBase();
-	void Begin();
-	virtual ~GLFontBase();
-protected:
-
-	void CreateImpl(const std::string &FileName, gl::GLuint Tex, bool PixelPerfect = FALSE);
-
-	typedef struct
-	{
-	union {
-		float dx;
-		int width;
-	};
-	union {
-		float dy;
-		int height;
-	};
-	float tx1, ty1;
-	float tx2, ty2;
-	} GLFONTCHAR;
-
-	typedef struct
-	{
-	int Tex;
-	int TexWidth, TexHeight;
-	int IntStart, IntEnd;
-	GLFONTCHAR *Char;
-	} GLFONT;
-
-	GLFONT Font;
-	bool ok;
-private:
-	void FreeResources();
+	float tx1, tx2, ty1, ty2;
+	float width, height;
 };
 
-class GLFont : public GLFontBase {
+class GLFont 
+{
 public:
 	GLFont();
-	void Create(const std::string &FileName, gl::GLuint Tex);
-	void TextOut (std::string String, float x, float y, float z);
-};
+	~GLFont();
+	const int textureWidth = 256;
+	const int textureHeight = 256;
+	std::map<char, GLFontChar> characters;
+	std::shared_ptr<Texture> fontTexture;
+	bool ok;
 
-class PixelPerfectGLFont : public GLFontBase {
-public:
-	PixelPerfectGLFont();
-	void Create(const std::string &FileName, gl::GLuint Tex);
-	void TextOut (std::string String, int x, int y, int z);
+	void Create(std::shared_ptr<Texture> tex);
+	void TextOut(std::string String, float x, float y, float z);
 };
 
 #endif

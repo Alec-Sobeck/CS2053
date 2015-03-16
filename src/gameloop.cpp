@@ -135,11 +135,15 @@ public:
     MouseManager mouseManager;
     Grass *grass; // TODO => [LEAK]this is never deleted
     std::shared_ptr<Model> treeModel;
-    std::shared_ptr<PixelPerfectGLFont> fontRenderer;
+	std::shared_ptr<GLFont> fontRenderer;
+	unsigned long long previousFrameTime;
+	float deltaTime;
 
     GameLoop();
     void buildSampleTerrain();
-    ///
+	void update();
+	float getDeltaTime();
+	///
     /// Draws a basic text string.
     /// \param val - the string of text to draw
     /// \param x - the x coordinate of the text
@@ -180,10 +184,14 @@ void initializeEngine()
     //Create font
 	GLuint textureName;
 	glGenTextures(1, &textureName);
-	gameLoopObject.fontRenderer = std::shared_ptr<PixelPerfectGLFont>(new PixelPerfectGLFont());
+	gameLoopObject.fontRenderer = std::shared_ptr<GLFont>(new GLFont());
 	try
 	{
-		gameLoopObject.fontRenderer->Create("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/glfont.glf", textureName);
+#ifdef _WIN32
+		gameLoopObject.fontRenderer->Create(getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
+#else
+	gameLoopObject.fontRenderer->Create("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/glfont.glf", textureName);
+#endif
 	}
 	catch(GLFontError::InvalidFile)
 	{
@@ -203,7 +211,7 @@ void initializeEngine()
 /// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 ///
 GameLoop::GameLoop() : gameIsRunning(true), player(Entity()), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
-        terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr)
+	terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), previousFrameTime(getCurrentTimeMillis())
 {
     player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
 }
@@ -233,12 +241,17 @@ void GameLoop::buildSampleTerrain()
 //  defaultMap.addTerrain(new TerrainPolygon());
 //  defaultMap.buildTerrainRenderer();
     //createTerrainRenderer(terrain->exportToTerrainData());
-    auto tex = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
-    auto terrainExp = terrain->exportToTerrainData();
+#ifdef _WIN32
+	auto tex = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
+	auto grassTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
+#else
+	auto grassTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
+	auto tex = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
+#endif
+	auto terrainExp = terrain->exportToTerrainData();
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
     this->terrainRenderer->create(terrainExp, tex);
 
-    auto grassTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
     gameLoopObject.grass = new Grass(50, glm::vec3(0,0,0), 50, grassTexture);
 
     /// Load tree model(s)
@@ -254,12 +267,21 @@ void GameLoop::buildSampleTerrain()
 
 
     /// Pine tree?
-    ObjParser parser(
-        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
-        "Branches0018_1_S.png", false );
-    gameLoopObject.treeModel = parser.exportModel();
-    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
-    auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
+#ifdef _WIN32
+	ObjParser parser(
+		"D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
+		"Branches0018_1_S.png", false );
+	gameLoopObject.treeModel = parser.exportModel();
+	auto treeTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
+	auto branchTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
+#else
+	ObjParser parser(
+		"/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
+		"Branches0018_1_S.png", false);
+	gameLoopObject.treeModel = parser.exportModel();
+	auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
+	auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
+#endif
     std::map<std::string, std::shared_ptr<Texture>> textures;
     textures["tree"] = treeTexture;
     textures["leaves"] = branchTexture;
@@ -296,11 +318,10 @@ bool GameLoop::drawString(std::string val, float x, float y, float z, Colour col
     try
     {
         glEnable(GL_TEXTURE_2D);
-        glColor4f(colour.r, colour.g, colour.b, colour.a);
+        gl::glColor4f(colour.r, colour.g, colour.b, colour.a);
         glDisable(GL_BLEND);
-        glAlphaFunc(GL_GREATER, 0.1f);
+       glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
-        fontRenderer->Begin();
         fontRenderer->TextOut("hello world", 50, 50, 0);
         return true;
     }
@@ -309,6 +330,19 @@ bool GameLoop::drawString(std::string val, float x, float y, float z, Colour col
         return false;
     }
     return false;
+}
+
+float GameLoop::getDeltaTime()
+{
+	return deltaTime;
+}
+
+void GameLoop::update()
+{
+	unsigned long long currentTime = getCurrentTimeMillis();
+	unsigned long long deltaTimeMillis = currentTime - previousFrameTime;
+	this->deltaTime = static_cast<float>(deltaTimeMillis) / 1000.0f;
+	previousFrameTime = currentTime;
 }
 
 ///***********************************************************************
@@ -354,6 +388,8 @@ void gameUpdateTick()
     //    {
     //        next_game_tick = getCurrentTimeMillis();
     //    }
+
+	gameLoopObject.update();
 
         processKeyboardInput();
         processMouseInput();
@@ -517,6 +553,7 @@ void gameUpdateTick()
 #include "graphics/windowhelper.h"
 void processKeyboardInput()
 {
+	float deltaTime = gameLoopObject.getDeltaTime();
     // to check for a key modifier use:
     //       int glutGetModifiers(void);
     // The return value for this function is either one of three predefined constants or any bitwise OR combination of them. The constants are:
@@ -534,27 +571,41 @@ void processKeyboardInput()
 
     if(manager->getKeyState('w') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(sin(gameLoopObject.player.getCamera()->rotation.y),
-                0,
-                -cos(gameLoopObject.player.getCamera()->rotation.y)));
+		gameLoopObject.player.accel(
+			glm::vec3(
+				sin(gameLoopObject.player.getCamera()->rotation.y),
+				0,
+				-cos(gameLoopObject.player.getCamera()->rotation.y)
+			) * deltaTime * 5.0f
+		);
     }
     if(manager->getKeyState('s') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(-sin(gameLoopObject.player.getCamera()->rotation.y),
+        gameLoopObject.player.accel(
+			glm::vec3(
+				-sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
-                cos(gameLoopObject.player.getCamera()->rotation.y)));
+                cos(gameLoopObject.player.getCamera()->rotation.y)
+			) * deltaTime * 5.0f
+		);
     }
     if(manager->getKeyState('a') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
+        gameLoopObject.player.accel(
+			glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
-                -sin(gameLoopObject.player.getCamera()->rotation.y)));
+                -sin(gameLoopObject.player.getCamera()->rotation.y)
+			) * deltaTime * 5.0f
+		);
     }
     if(manager->getKeyState('d') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
+        gameLoopObject.player.accel(
+			glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
-                sin(gameLoopObject.player.getCamera()->rotation.y)));
+                sin(gameLoopObject.player.getCamera()->rotation.y)
+			) * deltaTime * 5.0f
+		);
     }
 
     if(manager->isKeyDown('1'))
@@ -600,11 +651,11 @@ void processKeyboardInput()
 
     if(manager->getKeyState(' ') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(0, 1, 0));
+        gameLoopObject.player.accel(glm::vec3(0, 1, 0) * deltaTime);
     }
     if(manager->getKeyState('x') == KeyManager::PRESSED)
     {
-        gameLoopObject.player.accel(glm::vec3(0, -1, 0));
+		gameLoopObject.player.accel(glm::vec3(0, -1, 0) * deltaTime);
     }
     /*
     if(Keyboard.isKeyDown(Keyboard.KEY_LBRACKET) && !isLBracketDown){

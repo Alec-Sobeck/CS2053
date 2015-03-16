@@ -1,136 +1,78 @@
-//*********************************************************
-//GLFONT.CPP -- glFont routines
-//Copyright (c) 1998 Brad Fish
-//Copyright (c) 2002 Henri Kyrki
-//See glFont.txt for terms of use
-//10.5 2002
-//*********************************************************
 
-#define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
 #include "glfont.h"
-
-//*********************************************************
-//GLFontBase
-//*********************************************************
-
 using namespace gl;
 
-GLFontBase::GLFontBase() : ok(FALSE)
+GLFont::GLFont() : ok(false)
 {
 }
 
-void GLFontBase::CreateImpl(const std::string &Filename, GLuint Tex, bool PixelPerfect)
+void GLFont::Create(std::shared_ptr<Texture> tex)
 {
-	Font.Char = NULL;
-	FreeResources();
-
-	FILE *Input;
-
-	//Open font file
-	if ((Input = fopen(Filename.c_str(), "rb")) == NULL)
-		throw GLFontError::InvalidFile();
-
-	//Read glFont structure
-	fread(&Font, sizeof(GLFONT), 1, Input);
-
-	//Save texture number
-	Font.Tex = Tex;
-
-	//Get number of characters
-	int Num = Font.IntEnd - Font.IntStart + 1;
-
-	//Allocate memory for characters
-	//if ((Font.Char = (GLFONTCHAR *)malloc(sizeof(GLFONTCHAR) * Num)) == NULL)
-	Font.Char = new GLFONTCHAR[Num];
-
-	//Read glFont characters
-	fread(Font.Char, sizeof(GLFONTCHAR), Num, Input);
-
-	//Get texture size
-	Num = Font.TexWidth * Font.TexHeight * 2;
-
-	//Allocate memory for texture data
-	//TexBytes = (char *)malloc(Num)
-	char *TexBytes = new char[Num];
-
-	//Read texture data
-	fread(TexBytes, sizeof(char), Num, Input);
-
-	//Set texture attributes
-	glBindTexture(GL_TEXTURE_2D, Font.Tex);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<GLfloat>(GL_CLAMP));
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<GLfloat>(GL_CLAMP));
-	if(PixelPerfect)
+	this->fontTexture = tex;
+	float tx = 0.0f;
+	float ty = 1.0f;
+	for (int i = 1; i < 9; i++)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLfloat>(GL_NEAREST));
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLfloat>(GL_NEAREST));
+
+		float tx1, tx2, ty1, ty2;
+		float width, height;
+		GLFontChar c;
+		c.tx1 = tx;
+		c.tx2 = tx + 16.0f / 256.0f;
+		c.ty1 = ty;
+		c.ty2 = ty - 16.0f / 256.0f;
+
+		characters.insert({48 + i, c });
+	
+		tx += 16.0f / 256.0f;
 	}
-	else
+	GLFontChar c;
+	c.tx1 = tx;
+	c.tx2 = tx + 16.0f / 256.0f;
+	c.ty1 = ty;
+	c.ty2 = ty - 16.0f / 256.0f;
+	characters.insert({ 48 , c });
+
+	tx = 0.0f;
+	ty = 1.0f - 16.0f / 256.0f;
+	for (char i = 'a'; i <= 'z'; i++)
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<GLfloat>(GL_LINEAR));
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<GLfloat>(GL_LINEAR));
+		if (tx >= 1.0f)
+			ty -= 16.0f / 256.0f;
+		tx = fmod(tx, 1.0f);
+		ty = fmod(ty, 1.0f);
+
+		GLFontChar c;
+		c.tx1 = tx;
+		c.tx2 = tx + 16.0f / 256.0f;
+		c.ty1 = ty;
+		c.ty2 = ty - 16.0f / 256.0f;
+		c.width = 16;
+		c.height = 16;
+
+		characters.insert({ i, c });
+	
+		tx += 16.0f / 256.0f;
 	}
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, static_cast<GLfloat>(GL_MODULATE));
 
-	//Create texture
-	glTexImage2D(GL_TEXTURE_2D, 0, 2, Font.TexWidth, Font.TexHeight, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, (void *)TexBytes);
+	ok = true;
 
-	//Clean up
-
-	delete []TexBytes;
-	fclose(Input);
-
-	ok = TRUE;
 }
-//*********************************************************
-void GLFontBase::FreeResources ()
+
+GLFont::~GLFont()
 {
-	//Free character memory
-	if (Font.Char != NULL) delete []Font.Char;
-	ok = FALSE;
+	ok = false;
 }
-//*********************************************************
-void GLFontBase::Begin ()
+
+void GLFont::TextOut(std::string String, float x, float y, float z)
 {
 	if (!ok)
 	{
 		throw GLFontError::InvalidFont();
 	}
 
-	glBindTexture(GL_TEXTURE_2D, Font.Tex);
-}
-//*********************************************************
-GLFontBase::~GLFontBase ()
-{
-	FreeResources();
-}
-
-//*********************************************************
-//PixelPerfectGLFont
-//*********************************************************
-
-PixelPerfectGLFont::PixelPerfectGLFont()
-{
-}
-//*********************************************************
-void PixelPerfectGLFont::Create(const std::string &Filename, GLuint Tex)
-{
-	GLFontBase::CreateImpl(Filename, Tex, TRUE);
-	for (int i = 0; i < Font.IntEnd - Font.IntStart + 1; i++)
-	{
-		Font.Char[i].width = (int)((Font.Char[i].tx2 - Font.Char[i].tx1)*Font.TexWidth);
-		Font.Char[i].height = (int)((Font.Char[i].ty2 - Font.Char[i].ty1)*Font.TexHeight);
-	}
-}
-//*********************************************************
-void PixelPerfectGLFont::TextOut (std::string String, int x, int y, int z)
-{
-	//Return if we don't have a valid glFont
-	if (!ok)
-	{
-		throw GLFontError::InvalidFont();
-	}
+	this->fontTexture->bind();
 
 	//Get length of string
 	int Length = String.length();
@@ -142,78 +84,22 @@ void PixelPerfectGLFont::TextOut (std::string String, int x, int y, int z)
 	for (int i = 0; i < Length; i++)
 	{
 		//Get pointer to glFont character
-		GLFONTCHAR *Char = &Font.Char[(int)String[i] - Font.IntStart];
+		GLFontChar* Char = &characters[String[i]];
 
 		//Specify vertices and texture coordinates
 		glTexCoord2f(Char->tx1, Char->ty1);
-		glVertex3i(x, y, z);
+		glVertex2i(x, y);
 		glTexCoord2f(Char->tx1, Char->ty2);
-		glVertex3i(x, y + Char->height, z);
+		glVertex2i(x, y + Char->height);
 		glTexCoord2f(Char->tx2, Char->ty2);
-		glVertex3i(x + Char->width, y + Char->height, z);
+		glVertex2i(x + Char->width, y + Char->height);
 		glTexCoord2f(Char->tx2, Char->ty1);
-		glVertex3i(x + Char->width, y, z);
+		glVertex2i(x + Char->width, y);
 
 		//Move to next character
 		x += Char->width;
 	}
-
+	
 	//Stop rendering quads
 	glEnd();
 }
-
-//*********************************************************
-//GLFont
-//*********************************************************
-
-GLFont::GLFont()
-{
-}
-//*********************************************************
-void GLFont::Create(const std::string &Filename, GLuint Tex)
-{
-	GLFontBase::CreateImpl(Filename, Tex, FALSE);
-}
-//*********************************************************
-void GLFont::TextOut (std::string String, float x, float y, float z)
-{
-	//Return if we don't have a valid glFont
-	if (!ok)
-	{
-		throw GLFontError::InvalidFont();
-	}
-
-	//Get length of string
-	int Length = String.length();
-
-	//Begin rendering quads
-	glBegin(GL_QUADS);
-
-	//Loop through characters
-	for (int i = 0; i < Length; i++)
-	{
-		//Get pointer to glFont character
-		GLFONTCHAR *Char = &Font.Char[(int)String[i] - Font.IntStart];
-
-		//Specify vertices and texture coordinates
-		glTexCoord2f(Char->tx1, Char->ty1);
-		glVertex3f(x, y, z);
-		glTexCoord2f(Char->tx1, Char->ty2);
-		glVertex3f(x, y + Char->dy, z);
-		glTexCoord2f(Char->tx2, Char->ty2);
-		glVertex3f(x + Char->dx, y + Char->dy, z);
-		glTexCoord2f(Char->tx2, Char->ty1);
-		glVertex3f(x + Char->dx, y, z);
-
-		//Move to next character
-		x += Char->dx;
-	}
-
-	//Stop rendering quads
-	glEnd();
-}
-
-//End of file
-
-
-
