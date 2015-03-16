@@ -190,7 +190,7 @@ void initializeEngine()
 #ifdef _WIN32
 		gameLoopObject.fontRenderer->Create(getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
 #else
-	gameLoopObject.fontRenderer->Create("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/glfont.glf", textureName);
+	gameLoopObject.fontRenderer->Create(getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
 #endif
 	}
 	catch(GLFontError::InvalidFile)

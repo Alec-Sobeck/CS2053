@@ -1,4 +1,4 @@
-
+#include <cmath>
 #include <stdio.h>
 #include "glfont.h"
 using namespace gl;
@@ -24,7 +24,7 @@ void GLFont::Create(std::shared_ptr<Texture> tex)
 		c.ty2 = ty - 16.0f / 256.0f;
 
 		characters.insert({48 + i, c });
-	
+
 		tx += 16.0f / 256.0f;
 	}
 	GLFontChar c;
@@ -52,7 +52,7 @@ void GLFont::Create(std::shared_ptr<Texture> tex)
 		c.height = 16;
 
 		characters.insert({ i, c });
-	
+
 		tx += 16.0f / 256.0f;
 	}
 
@@ -99,7 +99,7 @@ void GLFont::TextOut(std::string String, float x, float y, float z)
 		//Move to next character
 		x += Char->width;
 	}
-	
+
 	//Stop rendering quads
 	glEnd();
 }
