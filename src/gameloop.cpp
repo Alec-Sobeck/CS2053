@@ -21,6 +21,7 @@
 #include "graphics/gluhelper.h"
 #include "utils/objparser.h"
 #include "render/glfont.h"
+#include "render/ui.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -47,48 +48,6 @@ void gameUpdateTick();
 /// Special Usage Note: KeyManager class has some problems with the isShiftDown, isControlDown, and isAltDown fields not updating. The state of these keys cannot be queried until another
 /// key event happens [this is an OS restriction - there might be a workaround?]. Their state only updates when another key is pressed or released.
 ///
-class KeyManager
-{
-public:
-    static const int VALID_NUMBER_OF_CHARS = 1000000;
-    static const int VALID_NUMBER_OF_SPECIALS = 1000;
-    static const unsigned char RELEASED = 1;
-    static const unsigned char PRESSED = 2;
-    static const int KEY_F1 = 3;
-    static const int KEY_F2 = 4;
-    static const int KEY_F3 = 5;
-    static const int KEY_F4 = 6;
-    static const int KEY_F5 = 7;
-    static const int KEY_F6 = 8;
-    static const int KEY_F7 = 9;
-    static const int KEY_F8 = 10;
-    static const int KEY_F9 = 11;
-    static const int KEY_F10 = 12;
-    static const int KEY_F11 = 13;
-    static const int KEY_F12 = 14;
-    static const int KEY_LEFT = 15;
-    static const int KEY_RIGHT = 16;
-    static const int KEY_UP = 17;
-    static const int KEY_DOWN = 18;
-    static const int KEY_PAGE_UP = 19;
-    static const int KEY_PAGE_DOWN = 20;
-    static const int KEY_PAGE_HOME = 21;
-    static const int KEY_PAGE_END = 22;
-    static const int KEY_PAGE_INSERT = 23;
-
-    unsigned char keystates[VALID_NUMBER_OF_CHARS];
-    unsigned char specialKeystates[VALID_NUMBER_OF_SPECIALS];
-    bool isShiftDown;
-    bool isControlDown;
-    bool isAltDown;
-    unsigned char getKeyState(unsigned char key);
-    unsigned char isKeyDown(unsigned char key);
-    unsigned char getSpecialState(int key);
-    KeyManager();
-    void update();
-    void updateModifierState();
-};
-
 void keyManagerKeyPressed(unsigned char key, int x, int y);
 void keyManagerKeyUp (unsigned char key, int x, int y);
 void keyManagerKeySpecial(int key, int x, int y);
@@ -97,23 +56,6 @@ void updateModifierState();
 ///
 /// Define the MouseManager class. Similarly to KeyManager this is in a fairly C-like style because GLUT is a C library.
 ///
-
-class MouseManager
-{
-public:
-    static const int MOUSE_RELEASED = 0;
-    static const int MOUSE_PRESSED = 1;
-    int leftMouseButtonState;
-    int middleMouseButtonState;
-    int rightMouseButtonState;
-    int x;
-    int y;
-    bool grabbed;
-    glm::vec3 relativeGrabDirection;
-    MouseManager();
-    void setGrabbed(bool);
-    glm::vec3 getRelativeGrabDirection();
-};
 
 void mouseManagerHandleMouseClick(int button, int state, int x, int y);
 void mouseManagerHandleMouseMovementWhileClicked(int x,int y);
@@ -138,6 +80,8 @@ public:
 	std::shared_ptr<GLFont> fontRenderer;
 	unsigned long long previousFrameTime;
 	float deltaTime;
+	std::shared_ptr<Texture> ammoTexture;
+	std::shared_ptr<Texture> medkitTexture;
 
     GameLoop();
     void buildSampleTerrain();
@@ -188,8 +132,12 @@ void initializeEngine()
 	try
 	{
 #ifdef _WIN32
-		gameLoopObject.fontRenderer->Create(getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
+	gameLoopObject.fontRenderer->Create(getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
+	gameLoopObject.ammoTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/ammo_icon.png");
+	gameLoopObject.medkitTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/medkit.png");
 #else
+	gameLoopObject.ammoTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/ammo_icon.png");
+	gameLoopObject.medkitTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/medkit.png");
 	gameLoopObject.fontRenderer->Create(getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
 #endif
 	}
@@ -320,7 +268,7 @@ bool GameLoop::drawString(std::string val, float x, float y, float z, Colour col
         glEnable(GL_TEXTURE_2D);
         gl::glColor4f(colour.r, colour.g, colour.b, colour.a);
         glDisable(GL_BLEND);
-       glAlphaFunc(GL_GREATER, 0.1f);
+        glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
         fontRenderer->TextOut("hello world", 50, 50, 0);
         return true;
@@ -453,6 +401,7 @@ void gameUpdateTick()
 
         start2DRenderCycle();
         gameLoopObject.drawString("hello world", 50, 50, 0, RED);
+		drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
         end2DRenderCycle();
         endRenderCycle();
 
@@ -632,6 +581,15 @@ void processKeyboardInput()
     {
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
+
+	if (manager->isKeyDown('g'))
+	{
+		gameLoopObject.player.health += 10.0f * deltaTime;
+	}
+	if (manager->isKeyDown('h'))
+	{
+		gameLoopObject.player.health -= 10.0f * deltaTime;
+	}
 
     static bool keylockTab = false;
     if(manager->getKeyState('\t') == KeyManager::PRESSED && !keylockTab)

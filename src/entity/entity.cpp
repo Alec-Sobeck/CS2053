@@ -18,7 +18,7 @@ int getNextEntityID()
 Entity::Entity() : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(getNextEntityID()),
     model(std::shared_ptr<Model>(nullptr)), camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))),
     velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), isAffectedByGravity(false),
-    isNoClipActive(false)
+	isNoClipActive(false), ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
 {
 }
 
@@ -30,7 +30,7 @@ Entity::Entity() : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5)
  */
 Entity::Entity(int entityID) : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(entityID),
     camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
-    isAffectedByGravity(false), isNoClipActive(false)
+	isAffectedByGravity(false), isNoClipActive(false), ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
 {
 }
 
@@ -42,7 +42,8 @@ Entity::Entity(int entityID) : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.
  * @param camera a Camera that will be used for this entity
  */
 Entity::Entity(int entityID, std::shared_ptr<Model> model, Camera camera) : boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))),
-    entityID(entityID), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f)
+    entityID(entityID), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
+	ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
 {
 }
 
@@ -193,4 +194,9 @@ AABB Entity::getAABB()
 
 void Entity::onGameTick()
 {
+}
+
+float Entity::getHealthPercent()
+{
+	return health / maxHealth;
 }
