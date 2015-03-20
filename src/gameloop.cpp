@@ -23,6 +23,10 @@
 #include "render/glfont.h"
 #include "render/ui.h"
 
+#include "fmod/fmod_studio.hpp"
+#include "fmod/fmod.hpp"
+#include "fmod/fmod_errors.h"
+
 ///***********************************************************************
 ///***********************************************************************
 /// Start internal API declaration
@@ -96,6 +100,12 @@ public:
     /// \param colour - the colour the text will be rendered.
     ///
     bool drawString(std::string val, float x, float y, float z, Colour colour);
+
+	
+	FMOD::System* system = NULL;
+	FMOD::Sound *music;
+	FMOD::Channel* musicChannel;
+	FMOD::Studio::EventInstance* eventInstance;
 };
 
 
@@ -117,6 +127,17 @@ GameLoop gameLoopObject;
 /// Define initialization functions
 ///***********************************************************************
 ///***********************************************************************
+
+void ERRCHECK(FMOD_RESULT result)        // this is an error handling function for FMOD errors
+{
+	if (result != FMOD_OK)
+	{
+		printf("FMOD error! (%d) %s", result, FMOD_ErrorString(result));
+		exit(-1);
+	}
+}
+
+
 void initializeEngine()
 {
     using namespace gl;
@@ -127,7 +148,7 @@ void initializeEngine()
 
     //Create font
 	GLuint textureName;
-	glGenTextures(1, &textureName);
+	gl::glGenTextures(1, &textureName);
 	gameLoopObject.fontRenderer = std::shared_ptr<GLFont>(new GLFont());
 	try
 	{
@@ -146,7 +167,55 @@ void initializeEngine()
 		std::cout << "Cannot load font" << std::endl;
 		exit(1);
 	}
-    gameLoopObject.buildSampleTerrain();
+    
+
+	// Init the sound engine (FMOD)
+	FMOD::Studio::System* system = NULL;
+	ERRCHECK(FMOD::Studio::System::create(&system));
+
+	// The example Studio project is authored for 5.1 sound, so set up the system output mode to match
+	FMOD::System* lowLevelSystem = NULL;
+	ERRCHECK(system->getLowLevelSystem(&lowLevelSystem));
+	ERRCHECK(lowLevelSystem->setSoftwareFormat(0, FMOD_SPEAKERMODE_5POINT1, 0));
+
+	ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, NULL));
+
+	FMOD::Studio::Bank* masterBank = NULL;
+	ERRCHECK(system->loadBankFile("D:/Dropbox/University/GameDev/GameEngineCPP/res/audio/Master Bank.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
+
+	FMOD::Studio::Bank* stringsBank = NULL;
+	ERRCHECK(system->loadBankFile("D:/Dropbox/University/GameDev/GameEngineCPP/res/audio/Master Bank.strings.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
+
+	//FMOD::Studio::Bank* vehiclesBank = NULL;
+	//ERRCHECK(system->loadBankFile(Common_MediaPath("Vehicles.bank"), FMOD_STUDIO_LOAD_BANK_NORMAL, &vehiclesBank));
+
+	FMOD::Studio::EventDescription* eventDescription = NULL;
+	ERRCHECK(system->getEvent("event:/pistol-01", &eventDescription));
+
+	gameLoopObject.eventInstance = NULL;
+	ERRCHECK(eventDescription->createInstance(&gameLoopObject.eventInstance));
+	
+	ERRCHECK(gameLoopObject.eventInstance->start());
+
+	// Position the listener at the origin
+	FMOD_3D_ATTRIBUTES attributes = { { 0 } };
+	attributes.forward.z = 1.0f;
+	attributes.up.y = 1.0f;
+	ERRCHECK(system->setListenerAttributes(&attributes));
+
+	// Position the event 2 units in front of the listener
+	attributes.position.z = 2.0f;
+	ERRCHECK(gameLoopObject.eventInstance->set3DAttributes(&attributes));
+	
+	//ERRCHECK(system->release());
+
+
+
+
+
+
+
+	gameLoopObject.buildSampleTerrain();
 }
 
 ///***********************************************************************
@@ -301,7 +370,7 @@ void GameLoop::update()
 void gameUpdateTick()
 {
     using namespace gl;
-
+	gameLoopObject.system->update();
     //Variables for the gameloop cap (30 times / second)
     /*
     const int GAME_TICKS_PER_SECOND = 30;
@@ -344,7 +413,7 @@ void gameUpdateTick()
 
         //Draw here
         startRenderCycle();
-        glClearDepth(1.0f);
+        gl::glClearDepth(1.0f);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
@@ -371,7 +440,7 @@ void gameUpdateTick()
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
         //glDisable(GL_CULL_FACE);
-        glLoadIdentity();
+		gl::glLoadIdentity();
         glEnable(GL_TEXTURE_2D);
         // Translate to model co-ordinates, based on the origin of the shape
         setLookAt(cam);
@@ -589,6 +658,12 @@ void processKeyboardInput()
 	if (manager->isKeyDown('h'))
 	{
 		gameLoopObject.player.health -= 10.0f * deltaTime;
+		
+		
+
+		ERRCHECK(gameLoopObject.eventInstance->start());
+
+
 	}
 
     static bool keylockTab = false;
