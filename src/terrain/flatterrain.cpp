@@ -28,6 +28,7 @@ void FlatTerrain::generateTerrain(int LoD, float size)
 	vertices = FlexArray<glm::vec3>(numVerts);
 	colours = FlexArray<Colour>(numVerts);
 	uvs = FlexArray<glm::vec2>(numVerts);
+	normals = FlexArray<glm::vec3>(4);
 	for (int i = 0; i < lod; i++)
 	{
 		for (int j = 0; j < lod; j++)
@@ -44,6 +45,10 @@ void FlatTerrain::generateTerrain(int LoD, float size)
 	uvs[1] = glm::vec2(0, 1);
 	uvs[2] = glm::vec2(0, 0);
 	uvs[3] = glm::vec2(1, 0);
+	normals[0] = glm::vec3(0, 1, 0);
+	normals[1] = glm::vec3(0, 1, 0);
+	normals[2] = glm::vec3(0, 1, 0);
+	normals[3] = glm::vec3(0, 1, 0);
 }
 
 std::shared_ptr<TerrainData> FlatTerrain::exportToTerrainData()
@@ -66,6 +71,8 @@ std::shared_ptr<TerrainData> FlatTerrain::exportToTerrainData()
 		faceVerts.push_back(glm::vec3(i + 1, i + 1 + lod, i + lod));
 		faceTextures.push_back(glm::vec3(1, 2, 3));
 		faceTextures.push_back(glm::vec3(1, 2, 3));
+		faceNormals.push_back(glm::vec3(1, 2, 3));
+		faceNormals.push_back(glm::vec3(1, 2, 3));
 	}
 
 	return std::shared_ptr<TerrainData>(new TerrainData(vertices, normals, colours, textureCoords, faceVerts, faceNormals, faceTextures));

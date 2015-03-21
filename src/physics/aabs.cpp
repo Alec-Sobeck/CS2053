@@ -6,6 +6,15 @@
 #include "math/polygon3.h"
 #include "math/gamemath.h"
 
+AABS::AABS() : x(0), y(0), z(0), radius(0)
+{
+
+}
+
+AABS::AABS(glm::vec3 pos, float radius) : x(pos.x), y(pos.y), z(pos.z), radius(radius)
+{
+
+}
 
 AABS::AABS(float x, float y, float z, float radius) : x(x), y(y), z(z), radius(radius)
 {
@@ -26,6 +35,28 @@ bool AABS::overlaps(AABS &other)
     return (pow(x - other.x, 2) +
             pow(y - other.y, 2) +
             pow(z - other.z, 2)) < pow(radius + other.radius, 2);
+}
+
+bool AABS::overlaps(AABB &b)
+{
+	float distanceSquared = radius * radius;
+
+	if (x < b.xMin)
+		distanceSquared -= square(x - b.xMin);
+	else if (x > b.xMax)
+		distanceSquared -= square(x - b.xMax);
+
+	if (y < b.yMin)
+		distanceSquared -= square(y - b.yMin);
+	else if (y > b.yMax)
+		distanceSquared -= square(y - b.yMax);
+
+	if (z < b.zMin)
+		distanceSquared -= square(z - b.zMin);
+	else if (z > b.zMax)
+		distanceSquared -= square(z - b.zMax);
+
+	return distanceSquared > 0;
 }
 
 bool AABS::intersectsTriangle(Polygon3 &triangle)
@@ -81,4 +112,11 @@ bool AABS::intersectsTriangle(Polygon3 &triangle)
     //end edge tests
 
     return !(sep1 || sep2 || sep3 || sep4 || sep5 || sep6);
+}
+
+void AABS::moveTo(float x, float y, float z)
+{
+	this->x = x;
+	this->y = y;
+	this->z = z;
 }

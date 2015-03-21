@@ -44,6 +44,7 @@ public:
 	void removeFromCurrentZoom(float);
 	float getMaxZoom();
 	float getMinZoom();
+	void Camera::move(glm::vec3 val);
 };
 
 #endif

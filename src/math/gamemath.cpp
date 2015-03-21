@@ -34,6 +34,8 @@ double toDeg(int rad)
     return static_cast<double>(rad) * (180.0 / PI_D);
 }
 
+
+
 // TODO -- verify this is working as intended
 bool approximatelyEqual(float a, float b)
 {

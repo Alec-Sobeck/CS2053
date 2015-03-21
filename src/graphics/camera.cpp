@@ -110,3 +110,10 @@ float Camera::getMinZoom()
 {
 	return minZoom;
 }
+#include<iostream>
+void Camera::move(glm::vec3 val)
+{
+	position.x = position.x + val.x;
+	position.y = position.y + val.y;
+	position.z = position.z + val.z;
+}

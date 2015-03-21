@@ -22,6 +22,7 @@
 #include "utils/objparser.h"
 #include "render/glfont.h"
 #include "render/ui.h"
+#include "entity/projectile.h"
 
 #include "fmod/fmod_studio.hpp"
 #include "fmod/fmod.hpp"
@@ -86,6 +87,7 @@ public:
 	float deltaTime;
 	std::shared_ptr<Texture> ammoTexture;
 	std::shared_ptr<Texture> medkitTexture;
+	std::vector<Projectile> projectiles;
 
     GameLoop();
     void buildSampleTerrain();
@@ -367,10 +369,13 @@ void GameLoop::update()
 /// Define Gameloop/render functions.
 ///***********************************************************************
 ///***********************************************************************
+#include "render/sphere.h"
+Sphere sphere(10, 12, 24);
 void gameUpdateTick()
 {
     using namespace gl;
 	gameLoopObject.system->update();
+	float deltaTime = gameLoopObject.getDeltaTime();
     //Variables for the gameloop cap (30 times / second)
     /*
     const int GAME_TICKS_PER_SECOND = 30;
@@ -417,20 +422,55 @@ void gameUpdateTick()
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
+
         Camera *cam = gameLoopObject.player.getCamera();
         startRenderCycle();
         start3DRenderCycle();
+		
+		/*
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glShadeModel(GL_SMOOTH);
 
-        glDisable(GL_TEXTURE_2D);
-        renderAxes(cam);
+		GLfloat global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+		
+		GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 
+		// note, no alpha is required since it has no use in specifying a light
+		// source (in this case). Keep in mind however, that its default value
+		// is 1.0f anyway
+		// Create light components
+		GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+		GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+		GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		GLfloat position[] = { 20, 20, 0, 1.0f };
+
+		// Assign created components to GL_LIGHT0
+		glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+		glLightfv(GL_LIGHT0, GL_POSITION, position);
+
+		glDisable(GL_TEXTURE_2D);
+		*/
+		renderAxes(cam);
         gameLoopObject.player.move();
         gameLoopObject.terrainRenderer->draw(cam);
 
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glDisable(GL_TEXTURE_2D);
+		//sphere.draw(30, 10, 30);
+		for (Projectile &p : gameLoopObject.projectiles)
+		{
+			p.onGameTick(deltaTime);
+			p.draw();
+		}
+		glEnable(GL_TEXTURE_2D);
 
     /// DRAW -- tree
-
-
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
@@ -464,7 +504,9 @@ void gameUpdateTick()
 
 
     /// END DRAW -- tree
-        gameLoopObject.grass->update(cam);
+
+
+		gameLoopObject.grass->update(cam);
         gameLoopObject.grass->draw(cam);
         end3DRenderCycle();
 
@@ -651,6 +693,26 @@ void processKeyboardInput()
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
 
+	static bool fireLock = false;
+	if (manager->isKeyDown('f') && !fireLock)
+	{
+		fireLock = true;
+		Camera cam(gameLoopObject.player.getPosition(), glm::vec3(0, 0, 0));
+		Projectile projectile(cam, 1);
+		glm::vec3 acceleration = glm::vec3(
+			sin(gameLoopObject.player.getCamera()->rotation.y),
+			0,
+			-cos(gameLoopObject.player.getCamera()->rotation.y)
+			) * 25.0f;
+		acceleration.y -= 9.8f;
+		projectile.accel(acceleration);
+		gameLoopObject.projectiles.push_back(projectile);
+	}
+	if (!manager->isKeyDown('f'))
+	{
+		fireLock = false;
+	}
+
 	if (manager->isKeyDown('g'))
 	{
 		gameLoopObject.player.health += 10.0f * deltaTime;
@@ -731,25 +793,26 @@ void processMouseInput()
 {
     MouseManager *manager = &gameLoopObject.mouseManager;
     Camera *cam = gameLoopObject.player.getCamera();
+	float deltaTime = gameLoopObject.getDeltaTime();
 
     if(manager->grabbed)
     {
         glm::vec3 *grabDir = &manager->relativeGrabDirection;
         if (grabDir->x < -2)
         {
-            cam->rotate(glm::vec3(0, -0.01, 0));
+			cam->rotate(glm::vec3(0, -0.6, 0) * deltaTime);
         }
         else if (grabDir->x > 2)
         {
-            cam->rotate(glm::vec3(0, 0.01, 0));
+            cam->rotate(glm::vec3(0, 0.6, 0) * deltaTime);
         }
         if (grabDir->y < -2)
         {
-            cam->rotate(glm::vec3(-0.01, 0, 0));
+			cam->rotate(glm::vec3(-0.6, 0, 0) * deltaTime);
         }
         else if (grabDir->y > 2)
         {
-            cam->rotate(glm::vec3(0.01, 0, 0));
+			cam->rotate(glm::vec3(0.6, 0, 0) * deltaTime);
         }
     }
 }

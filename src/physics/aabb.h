@@ -1,8 +1,12 @@
 #ifndef AABB_H
 #define AABB_H
 
+class AABB;
+class AABS;
+
 #include <string>
 #include "glm/vec3.hpp"
+#include "physics/aabs.h"
 
 /**
  * AABB - "Axis Aligned Bounding Box" - is a rectangular prism that is aligned to the standard axes to aid
@@ -32,7 +36,6 @@ public:
      * @param halfSizes a Vector3 describing the half-width/height/depth of the AABB
      */
     AABB(glm::vec3 origin, glm::vec3 halfSizes);
-
     /**
 	 * Checks this AABB against another AABB for overlap. If the bounding boxes are not properly aligned to the axes,
 	 * this can provide weird results.
@@ -40,6 +43,11 @@ public:
 	 * @return a boolean, true if the AABB overlap, and in all other cases false
 	 */
 	bool overlaps(AABB &other);
+	/**
+ 	 * Checks this AABB against an AABS for overlap. 
+	 * @return a boolean, true if the AABB and AANS overlap, and in all other cases false
+	 */
+	bool overlaps(AABS &other);
     /**
 	 * Changes the values of xMin and xMax by the specified amount.
 	 * @param amount a float which indicates how much to change the xMin and
@@ -73,7 +81,6 @@ public:
 	float getZCenter();
 	float getXCenter();
 
-private:
 	//Position data can be stored this way because the box is aligned along the x, y, and z axes.
 	float xMin;
 	float xMax;

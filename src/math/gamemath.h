@@ -6,6 +6,9 @@
 const float PI = 3.14159265359f;
 const double PI_D = 3.14159265359;
 
+const float PI_2 = 3.14159265359f / 2.0f;
+const double PI_2_D = 3.14159265359 / 2;
+
 double toRad(double deg);
 float  toRad(float deg);
 double toRad(int deg);
@@ -13,6 +16,25 @@ double toDeg(double rad);
 float  toDeg(float rad);
 double toDeg(int rad);
 
+inline float square(float val)
+{
+	return val * val;
+}
+
+inline float cube(float val)
+{
+	return val * val * val;
+}
+
+inline double square(double val)
+{
+	return val * val;
+}
+
+inline double cube(double val)
+{
+	return val * val * val;
+}
 /**
  * Checks if two floats are approximately equal. This is done by seeing if the floats are within
  * 1E-6 of each other.

@@ -17,6 +17,7 @@ protected:
 	FlexArray<glm::vec3> vertices;
 	FlexArray<Colour> colours;
 	FlexArray<glm::vec2> uvs;
+	FlexArray<glm::vec3> normals;
 
 public:
 	virtual void generateTerrain(int LoD, float size);

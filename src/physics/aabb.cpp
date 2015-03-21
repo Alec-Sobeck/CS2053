@@ -1,6 +1,7 @@
 
 #include <sstream>
 #include "physics/aabb.h"
+#include "math/gamemath.h"
 
 AABB::AABB(float xMin, float yMin, float zMin, float xMax, float yMax, float zMax)
  : xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax), zMin(zMin), zMax(zMax)
@@ -23,6 +24,28 @@ bool AABB::overlaps(AABB &other)
     return(xMin < other.xMax && xMax > other.xMin &&
            yMin < other.yMax && yMax > other.yMin &&
            zMin < other.zMax && zMax > other.zMin);
+}
+
+bool AABB::overlaps(AABS &a)
+{
+	float distanceSquared = a.radius * a.radius;
+
+	if (a.x < xMin)
+		distanceSquared -= square(a.x - xMin);
+	else if (a.x > xMax)
+		distanceSquared -= square(a.x - xMax);
+	
+	if (a.y < yMin)
+		distanceSquared -= square(a.y - yMin);
+	else if (a.y > yMax)
+		distanceSquared -= square(a.y - yMax);
+	
+	if (a.z < zMin)
+		distanceSquared -= square(a.z - zMin);
+	else if (a.z > zMax)
+		distanceSquared -= square(a.z - zMax);
+	
+	return distanceSquared > 0;
 }
 
 void AABB::moveX(float amount) {

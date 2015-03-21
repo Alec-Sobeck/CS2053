@@ -206,16 +206,18 @@ void DynamicVBO::draw(Camera *cam)
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glLoadIdentity();
-    glEnable(GL_TEXTURE_2D);
-    glColor3f(1.0f, 1.0f, 1.0f);
+   
+    //glColor3f(1.0f, 1.0f, 1.0f);
     // Translate to model co-ordinates, based on the origin of the shape
     setLookAt(cam);
     if(texture)
     {
+		glEnable(GL_TEXTURE_2D);
         texture->bind(); // terrain texture?
     }
     else
     {
+		glDisable(GL_TEXTURE_2D);
         std::cout << "failure to bind texture: nullptr" << std::endl;
     }
     int firstVert = 0;
