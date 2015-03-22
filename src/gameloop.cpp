@@ -98,7 +98,9 @@ public:
 	FMOD::Sound *music;
 	FMOD::Channel* musicChannel;
 	FMOD::Studio::EventInstance* eventInstance;
+	FMOD::Studio::EventInstance* bgmInstance;
 	std::list<Tree> trees;
+	bool hasStartedBGM = false;
 
     GameLoop();
 	~GameLoop();
@@ -183,13 +185,35 @@ void initializeEngine()
 	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
 	FMOD::Studio::Bank* stringsBank = NULL;
 	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.strings.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
-	
+	masterBank->loadSampleData();
+	stringsBank->loadSampleData();
+
+	bool done = false;
+	while (!done)
+	{		
+		FMOD_STUDIO_LOADING_STATE val1;
+		FMOD_STUDIO_LOADING_STATE val2;
+		masterBank->getLoadingState(&val1);
+		stringsBank->getLoadingState(&val2);
+		if (val1 == FMOD_STUDIO_LOADING_STATE_LOADED && val2 == FMOD_STUDIO_LOADING_STATE_LOADED)
+		{
+			done = true;
+		}
+	}
+
+
 	FMOD::Studio::EventDescription* eventDescription = NULL;
 	ERRCHECK(system->getEvent("event:/pistol-01", &eventDescription));
-
 	gameLoopObject.eventInstance = NULL;
 	ERRCHECK(eventDescription->createInstance(&gameLoopObject.eventInstance));	
-	ERRCHECK(gameLoopObject.eventInstance->start());
+	//ERRCHECK(gameLoopObject.eventInstance->start());
+
+	FMOD::Studio::EventDescription* bgmDescription = NULL;
+	ERRCHECK(system->getEvent("event:/bgm-battle-01", &bgmDescription));
+	gameLoopObject.bgmInstance = NULL;
+	ERRCHECK(bgmDescription->createInstance(&gameLoopObject.bgmInstance));
+	//ERRCHECK(gameLoopObject.bgmInstance->start());
+//	gameLoopObject.bgmInstance->setVolume(0.4f);
 
 	// Position the listener at the origin
 	FMOD_3D_ATTRIBUTES attributes = { { 0 } };
@@ -311,6 +335,20 @@ void GameLoop::update()
 	unsigned long long deltaTimeMillis = currentTime - previousFrameTime;
 	this->deltaTime = static_cast<float>(deltaTimeMillis) / 1000.0f;
 	previousFrameTime = currentTime;
+	if (!hasStartedBGM)
+	{
+		hasStartedBGM = true;
+		ERRCHECK(gameLoopObject.bgmInstance->start());
+	}
+	else
+	{
+		FMOD_STUDIO_PLAYBACK_STATE bgmState;
+		gameLoopObject.bgmInstance->getPlaybackState(&bgmState);
+		if (bgmState == FMOD_STUDIO_PLAYBACK_STOPPED)
+		{
+			ERRCHECK(gameLoopObject.bgmInstance->start());
+		}
+	}
 }
 
 ///***********************************************************************
@@ -544,13 +582,8 @@ void processKeyboardInput()
 	}
 	if (manager->isKeyDown('h'))
 	{
-		gameLoopObject.player.health -= 10.0f * deltaTime;
-		
-		
-
+		gameLoopObject.player.health -= 10.0f * deltaTime;		
 		ERRCHECK(gameLoopObject.eventInstance->start());
-
-
 	}
 
     static bool keylockTab = false;
