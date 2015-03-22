@@ -8,9 +8,9 @@
 #include "graphics/gluhelper.h"
 #include "graphics/terrainpolygon.h"
 
-Grass::Grass(int density, glm::vec3 center, float range, std::shared_ptr<Texture> texture) : texture(texture), density(density), vbo(std::shared_ptr<VBO>(nullptr)),
+Grass::Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, float range, std::shared_ptr<Texture> texture) : texture(texture), density(density), vbo(std::shared_ptr<VBO>(nullptr)),
     windDirection(glm::vec3(0, 0, 0)), maxTimeOfCurrentBurst(0), remainingTime(0), timeUntilNextBurst(0), previousTime(getCurrentTimeMillis()), deltaTime(0),
-    grassShader(std::shared_ptr<Shader>(nullptr)), maxWindPower(0)
+	grassShader(std::shared_ptr<Shader>(nullptr)), maxWindPower(0), randomizationOffsets(randomizationOffsets)
 {
     seedRandomGenerator();
     createVBO(center, range);
@@ -324,7 +324,11 @@ void Grass::createVBO(glm::vec3 center, float range)
         for(int j = 0; j < numberPerDimension; j++)
         {
             int index = i * numberPerDimension + j;
-            glm::vec3 v(((range * 2) / numberPerDimension) * i + minX, 0, ((range * 2) / numberPerDimension) * j + minZ );
+            glm::vec3 v(
+				((range * 2) / numberPerDimension) * i + minX + randomizationOffsets.x * getRandomFloat(),
+				0 + randomizationOffsets.y * getRandomFloat(),
+				((range * 2) / numberPerDimension) * j + minZ + randomizationOffsets.z * getRandomFloat()
+			);
             putGrassCluster(combinedData, index * 144, v);
         }
     }

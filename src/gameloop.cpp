@@ -236,7 +236,7 @@ void GameLoop::buildSampleTerrain()
 	auto terrainExp = terrain->exportToTerrainData();
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
     this->terrainRenderer->create(terrainExp, tex);
-	this->grass = new Grass(getRandomInt(1000) + 300, glm::vec3(0, 0, 0), 50, grassTexture);
+	this->grass = new Grass(getRandomInt(1000) + 300, glm::vec3(0, 0, 0), glm::vec3(2.0f, 0, 2.0f), 50, grassTexture);
 	
 	// Load the tree model
 	ObjParser parser(

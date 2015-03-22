@@ -11,7 +11,7 @@
 class Grass
 {
 public:
-    Grass(int density, glm::vec3 center, float range, std::shared_ptr<Texture> texture);
+    Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, float range, std::shared_ptr<Texture> texture);
     void update(Camera *camera);
     void draw(Camera *camera);
 private:
@@ -26,6 +26,7 @@ private:
     unsigned long long deltaTime;
     std::shared_ptr<Shader> grassShader;
     float maxWindPower;
+	glm::vec3 randomizationOffsets;
     float getWindPower();
     void generateNewWind();
     void createVBO(glm::vec3 center, float range);
