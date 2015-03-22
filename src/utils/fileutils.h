@@ -17,4 +17,10 @@ void writeTextFile(std::string filepath, std::string contents);
  */
 std::vector<std::string> readTextFileAsLines(std::string filepath);
 
+/*
+ * Builds a filepath using the OS dependent resource directory and then appending the provided path. 
+ * For example, on windows the OS dependent directory might be C:/Program Files/Engine 
+ */
+std::string buildPath(std::string path);
+
 #endif // FILEUTILS_H

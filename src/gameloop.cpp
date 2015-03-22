@@ -1,10 +1,14 @@
 
 #include <cmath>
+#include <list>
 #include <memory>
 #include <stdlib.h>
 #include <iostream>
 #include <soil/SOIL.h>
 #include <glbinding/gl/gl.h>
+#include <fmod/fmod_studio.hpp>
+#include <fmod/fmod.hpp>
+#include <fmod/fmod_errors.h>
 #include "gameloop.h"
 #include "utils/textureloader.h"
 #include "entity/entity.h"
@@ -23,10 +27,11 @@
 #include "render/glfont.h"
 #include "render/ui.h"
 #include "entity/projectile.h"
-
-#include "fmod/fmod_studio.hpp"
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_errors.h"
+#include "render/sphere.h"
+#include "graphics/tree.h"
+#include "math/gamemath.h"
+#include "utils/fileutils.h"
+#include "utils/random.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -68,19 +73,6 @@ void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y);
 ///
 /// Define the GameLoop class.
 ///
-#ifdef _WIN32
-const std::string gameDirectory = "C:/Program Files/Engine/";
-#else
-#error NYI
-const std::string gameDirectory = "";
-#endif
-
-std::string buildPath(std::string path)
-{
-	std::stringstream ss;
-	ss << gameDirectory << path;
-	return ss.str();
-}
 
 class GameLoop
 {
@@ -94,7 +86,7 @@ public:
     std::shared_ptr<TerrainRenderer> terrainRenderer;
     KeyManager keyManager;
     MouseManager mouseManager;
-    Grass *grass; // TODO => [LEAK]this is never deleted
+    Grass *grass; 
     std::shared_ptr<Model> treeModel;
 	std::shared_ptr<GLFont> fontRenderer;
 	unsigned long long previousFrameTime;
@@ -102,8 +94,14 @@ public:
 	std::shared_ptr<Texture> ammoTexture;
 	std::shared_ptr<Texture> medkitTexture;
 	std::vector<Projectile> projectiles;
+	FMOD::System* system = NULL;
+	FMOD::Sound *music;
+	FMOD::Channel* musicChannel;
+	FMOD::Studio::EventInstance* eventInstance;
+	std::list<Tree> trees;
 
     GameLoop();
+	~GameLoop();
     void buildSampleTerrain();
 	void update();
 	float getDeltaTime();
@@ -116,14 +114,7 @@ public:
     /// \param colour - the colour the text will be rendered.
     ///
     bool drawString(std::string val, float x, float y, float z, Colour colour);
-
-	
-	FMOD::System* system = NULL;
-	FMOD::Sound *music;
-	FMOD::Channel* musicChannel;
-	FMOD::Studio::EventInstance* eventInstance;
 };
-
 
 ///***********************************************************************
 ///***********************************************************************
@@ -144,7 +135,10 @@ GameLoop gameLoopObject;
 ///***********************************************************************
 ///***********************************************************************
 
-void ERRCHECK(FMOD_RESULT result)        // this is an error handling function for FMOD errors
+///
+/// this is an error handling function for FMOD errors
+/// 
+void ERRCHECK(FMOD_RESULT result)        
 {
 	if (result != FMOD_OK)
 	{
@@ -155,11 +149,9 @@ void ERRCHECK(FMOD_RESULT result)        // this is an error handling function f
 
 void initializeEngine()
 {
-    using namespace gl;
-     ///// TODO -- initializeTextures()
+    using namespace gl;    
     initializeViewport();
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
 
     //Create font
 	GLuint textureName;
@@ -167,23 +159,15 @@ void initializeEngine()
 	gameLoopObject.fontRenderer = std::shared_ptr<GLFont>(new GLFont());
 	try
 	{
-#ifdef _WIN32
-
-	gameLoopObject.fontRenderer->Create(getTexture(buildPath("res/font.png")));
-	gameLoopObject.ammoTexture = getTexture(buildPath("res/ammo_icon.png"));
-	gameLoopObject.medkitTexture = getTexture(buildPath("res/medkit.png"));
-#else
-	gameLoopObject.ammoTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/ammo_icon.png");
-	gameLoopObject.medkitTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/medkit.png");
-	gameLoopObject.fontRenderer->Create(getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
-#endif
+		gameLoopObject.fontRenderer->Create(getTexture(buildPath("res/font.png")));
+		gameLoopObject.ammoTexture = getTexture(buildPath("res/ammo_icon.png"));
+		gameLoopObject.medkitTexture = getTexture(buildPath("res/medkit.png"));
 	}
 	catch(GLFontError::InvalidFile)
 	{
 		std::cout << "Cannot load font" << std::endl;
 		exit(1);
-	}
-    
+	}    
 
 	// Init the sound engine (FMOD)
 	FMOD::Studio::System* system = NULL;
@@ -193,24 +177,18 @@ void initializeEngine()
 	FMOD::System* lowLevelSystem = NULL;
 	ERRCHECK(system->getLowLevelSystem(&lowLevelSystem));
 	ERRCHECK(lowLevelSystem->setSoftwareFormat(0, FMOD_SPEAKERMODE_5POINT1, 0));
-
 	ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, NULL));
 
 	FMOD::Studio::Bank* masterBank = NULL;
 	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
-
 	FMOD::Studio::Bank* stringsBank = NULL;
 	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.strings.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
-
-	//FMOD::Studio::Bank* vehiclesBank = NULL;
-	//ERRCHECK(system->loadBankFile(Common_MediaPath("Vehicles.bank"), FMOD_STUDIO_LOAD_BANK_NORMAL, &vehiclesBank));
-
+	
 	FMOD::Studio::EventDescription* eventDescription = NULL;
 	ERRCHECK(system->getEvent("event:/pistol-01", &eventDescription));
 
 	gameLoopObject.eventInstance = NULL;
-	ERRCHECK(eventDescription->createInstance(&gameLoopObject.eventInstance));
-	
+	ERRCHECK(eventDescription->createInstance(&gameLoopObject.eventInstance));	
 	ERRCHECK(gameLoopObject.eventInstance->start());
 
 	// Position the listener at the origin
@@ -222,15 +200,8 @@ void initializeEngine()
 	// Position the event 2 units in front of the listener
 	attributes.position.z = 2.0f;
 	ERRCHECK(gameLoopObject.eventInstance->set3DAttributes(&attributes));
-	
-	//ERRCHECK(system->release());
 
-
-
-
-
-
-
+	// Build the terrain
 	gameLoopObject.buildSampleTerrain();
 }
 
@@ -239,110 +210,74 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
-
-///
-/// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
-///
 GameLoop::GameLoop() : gameIsRunning(true), player(Entity()), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
 	terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), previousFrameTime(getCurrentTimeMillis())
 {
-    player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
+	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
+	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
+}
+
+GameLoop::~GameLoop()
+{
+	ERRCHECK(system->release());
+	if (grass)
+	{
+		delete grass;
+	}
 }
 
 void GameLoop::buildSampleTerrain()
 {
-//shader = ShaderFactory.createShader(null, "shaders/animated1.frag");
     glm::vec3 v(getWindowWidth(), getWindowHeight(), 1.0);
-//	shader.glUniform3v("iResolution", v);
-//  shader.glUniform1f("iGlobalTime", 0.0f);
-//  terrain = new TrigTerrain(10, 100);
-
-
-    //std::shared_ptr<Terrain> terrain(new MidPointTerrain(3, 0.6f, 50, 200));
-
     std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
 
-
-    //terrain = new InterpTestNoiseTerrain(10, 10, 50, 400);
-    //map.setTerrain(terrain->exportToTerrainData());
-//  Set<TerrainPolygon> polys = map.getTerrainOctree().getRange(new AABB(-10, -10, -10, 10, 10, 10));
-//  monkeyModel3.scaleModel(1.0f, true, true, true);
-//  map.setTerrain(monkey.exportTerrain());
-//  map.addModel(new DrawableModel(teapot.exportData()));
-//  RenderSettingsHelper.initialize3DSettings();
-//  map.addModel(new DrawableModel(ModelDataBuilder.getDerpyDefaultData()));
-//  defaultMap.addTerrain(new TerrainPolygon());
-//  defaultMap.buildTerrainRenderer();
-    //createTerrainRenderer(terrain->exportToTerrainData());
-#ifdef _WIN32
-	auto tex = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
-	auto grassTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
-#else
-	auto grassTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png");
-	auto tex = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/terrain.png");
-#endif
+	auto tex = getTexture(buildPath("res/terrain.png"));
+	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
     this->terrainRenderer->create(terrainExp, tex);
-
-    gameLoopObject.grass = new Grass(50, glm::vec3(0,0,0), 50, grassTexture);
-
-    /// Load tree model(s)
-/*
-    ObjParser parser("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/oak_tree1/Tree_V9_Final.obj", "bark_tree.jpg");
-    ModelData data = parser.exportModel();
-    auto treeTexture = getTexture(data.associatedTextureName);
-    gameLoopObject.treeVBO = std::shared_ptr<VBO>(new VBO(data, treeTexture));
-
-*/
-
-
-
-
-    /// Pine tree?
-#ifdef _WIN32
+	this->grass = new Grass(getRandomInt(1000) + 300, glm::vec3(0, 0, 0), 50, grassTexture);
+	
+	// Load the tree model
 	ObjParser parser(
 		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
 		"Branches0018_1_S.png", false );
 	gameLoopObject.treeModel = parser.exportModel();
 	auto treeTexture = getTexture(buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
 	auto branchTexture = getTexture(buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
-#else
-	ObjParser parser(
-		"/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
-		"Branches0018_1_S.png", false);
-	gameLoopObject.treeModel = parser.exportModel();
-	auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
-	auto branchTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
-#endif
-    std::map<std::string, std::shared_ptr<Texture>> textures;
+	std::map<std::string, std::shared_ptr<Texture>> textures;
     textures["tree"] = treeTexture;
     textures["leaves"] = branchTexture;
     gameLoopObject.treeModel->createVBOs(textures);
-/*
-    ObjParser parser(
-        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree1/Broad_Leaf_Straight_Trunk.obj", "Broad_Leaf_1.bmp"
-    );
-    gameLoopObject.treeModel = parser.exportModel();
-    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree1/Broad_Leaf_1.bmp");
-    std::map<std::string, std::shared_ptr<Texture>> textures;
-    textures["tree"] = treeTexture;
-    gameLoopObject.treeModel->overrideTexture = treeTexture;
-    gameLoopObject.treeModel->createVBOs(textures);
-*/
-/*
-    ObjParser parser(
-        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/Tree.obj", "Bottom_Trunk.bmp"
-    );
-    gameLoopObject.treeModel = parser.exportModel();
-    auto leafTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/Branches0018_1_S.png");
-    auto treeTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/generic_tree2/BarkDecidious0107_M.jpg");
-    std::map<std::string, std::shared_ptr<Texture>> textures;
-    textures["tree"] = treeTexture;
-    textures["leaves"] = leafTexture;
-    gameLoopObject.treeModel->createVBOs(textures);
-*/
 
+	for (int i = 0; i < 10; i++)
+	{
+		int x = getRandomInt(100) - 50;
+		int y = 0;
+		int z = getRandomInt(100) - 50;
+
+		int retryCounter = 0;
+		while (retryCounter < 10)
+		{
+			bool success = true;
+			for (Tree &tree : gameLoopObject.trees)
+			{
+				float distanceSquared = square(tree.x - x) + square(tree.y - y);
+				if (distanceSquared < 25)
+				{
+					success = false;
+					break;
+				}
+			}
+			retryCounter++;
+			if (success)
+			{
+				gameLoopObject.trees.push_back(Tree(treeModel, x, y, z));
+				retryCounter += 1000;
+			}
+		}
+		
+	}
 }
 
 bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
@@ -383,249 +318,115 @@ void GameLoop::update()
 /// Define Gameloop/render functions.
 ///***********************************************************************
 ///***********************************************************************
-#include "render/sphere.h"
-Sphere sphere(10, 12, 24);
+
 void gameUpdateTick()
 {
     using namespace gl;
 	gameLoopObject.system->update();
 	float deltaTime = gameLoopObject.getDeltaTime();
-    //Variables for the gameloop cap (30 times / second)
-    /*
-    const int GAME_TICKS_PER_SECOND = 30;
-    const int SKIP_TICKS = 1000 / GAME_TICKS_PER_SECOND;
-    const int MAX_FRAMESKIP = 5;
-    long long next_game_tick = getCurrentTimeMillis();
-    int loops;
-*/
-    //This method may be commented out to block the terrain generation and rendering
-
-    //Main Game Loop
-   // while(gameLoopObject.gameIsRunning)
-   // {
-   //     loops = 0;
-   //     while(getCurrentTimeMillis() > static_cast<unsigned long long>(next_game_tick) && loops < MAX_FRAMESKIP) //Update the game 30 times/second
-    //    {
-            //Take hardware input and chat and such; update graphics and whatnot
-            //Keys.keyboard(player, map);
-            //MouseHelper.update(player.getCamera());
-            //ComponentHelper.getWindow().mouseAndKeyboardUpdate();
-            //ComponentHelper.getWindow().mouseAndKeyboardUpdate();
-
-            //Actual game world code here
-
-    //        next_game_tick += SKIP_TICKS;
-    //        loops++;
-    //    }
-
-        //Make sure the game loop doesn't fall very far behind and have to accelerate the
-        //game for an extended period of time
-    //    if(getCurrentTimeMillis() - next_game_tick > 1000)
-    //    {
-    //        next_game_tick = getCurrentTimeMillis();
-    //    }
 
 	gameLoopObject.update();
+    processKeyboardInput();
+    processMouseInput();
 
-        processKeyboardInput();
-        processMouseInput();
+    //Draw here
+    startRenderCycle();
+    gl::glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
 
-        //Draw here
-        startRenderCycle();
-        gl::glClearDepth(1.0f);
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-
-        Camera *cam = gameLoopObject.player.getCamera();
-        startRenderCycle();
-        start3DRenderCycle();
+    Camera *cam = gameLoopObject.player.getCamera();
+    startRenderCycle();
+    start3DRenderCycle();
 		
-		/*
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glShadeModel(GL_SMOOTH);
+	/*
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glShadeModel(GL_SMOOTH);
 
-		GLfloat global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+	GLfloat global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 		
-		GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
 
-		// note, no alpha is required since it has no use in specifying a light
-		// source (in this case). Keep in mind however, that its default value
-		// is 1.0f anyway
-		// Create light components
-		GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-		GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-		GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-		GLfloat position[] = { 20, 20, 0, 1.0f };
+	// note, no alpha is required since it has no use in specifying a light
+	// source (in this case). Keep in mind however, that its default value
+	// is 1.0f anyway
+	// Create light components
+	GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat position[] = { 20, 20, 0, 1.0f };
 
-		// Assign created components to GL_LIGHT0
-		glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-		glLightfv(GL_LIGHT0, GL_POSITION, position);
+	// Assign created components to GL_LIGHT0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-		glDisable(GL_TEXTURE_2D);
-		*/
-		renderAxes(cam);
-        gameLoopObject.player.move();
-        gameLoopObject.terrainRenderer->draw(cam);
+	glDisable(GL_TEXTURE_2D);
+	*/
+	renderAxes(cam);
+    gameLoopObject.player.move();
+    gameLoopObject.terrainRenderer->draw(cam);
 
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glDisable(GL_TEXTURE_2D);
-		//sphere.draw(30, 10, 30);
-		for (int i = 0; i < gameLoopObject.projectiles.size(); )
-		{
-			Projectile &p = gameLoopObject.projectiles.at(i);
-			p.onGameTick(deltaTime);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glDisable(GL_TEXTURE_2D);
+	for (int i = 0; i < gameLoopObject.projectiles.size(); )
+	{
+		Projectile &p = gameLoopObject.projectiles.at(i);
+		p.onGameTick(deltaTime);
 			
-			if (p.getY() < -p.size)
-			{
-				gameLoopObject.projectiles.erase(gameLoopObject.projectiles.begin() + i);
-			}
-			else
-			{
-				p.draw();
-				i++;
-			}
+		if (p.getY() < -p.size)
+		{
+			gameLoopObject.projectiles.erase(gameLoopObject.projectiles.begin() + i);
 		}
-		glEnable(GL_TEXTURE_2D);
+		else
+		{
+			p.draw();
+			i++;
+		}
+	}
+	glEnable(GL_TEXTURE_2D);
 
-    /// DRAW -- tree
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	/// DRAW -- tree
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-        glDisable(GL_BLEND);
-        glAlphaFunc(GL_GREATER, 0.1f);
-        glEnable(GL_ALPHA_TEST);
-        //glDisable(GL_CULL_FACE);
-		gl::glLoadIdentity();
-        glEnable(GL_TEXTURE_2D);
-        // Translate to model co-ordinates, based on the origin of the shape
-        setLookAt(cam);
-        glDisable(GL_CULL_FACE);
-        glEnable(GL_DEPTH_TEST);
-//        glCullFace(GL_BACK);
+    glDisable(GL_BLEND);
+    glAlphaFunc(GL_GREATER, 0.1f);
+    glEnable(GL_ALPHA_TEST);
+    //glDisable(GL_CULL_FACE);
+	gl::glLoadIdentity();
+    glEnable(GL_TEXTURE_2D);
+    // Translate to model co-ordinates, based on the origin of the shape
+    setLookAt(cam);
+    glDisable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    for(Tree &tree : gameLoopObject.trees)
+    {
+        tree.draw(cam);
+    }
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	/// END DRAW -- tree
+	
+	gameLoopObject.grass->update(cam);
+    gameLoopObject.grass->draw(cam);
+    end3DRenderCycle();
 
-        //glTranslatef(0.0f, 5.0f, 0.0f);
-        for(int i = 0; i < 1; i++)
-        {
-        //    glTranslatef(5.0f, 0.0f, 0.0f);
-            gameLoopObject.treeModel->draw(cam);
-        }
+    start2DRenderCycle();
+    gameLoopObject.drawString("hello world", 50, 50, 0, RED);
+	drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
+    end2DRenderCycle();
+    endRenderCycle();
 
-        //glEnable(GL_CULL_FACE);
-///        glDisable(GL_ALPHA_TEST);
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-
-    /// END DRAW -- tree
-
-
-		gameLoopObject.grass->update(cam);
-        gameLoopObject.grass->draw(cam);
-        end3DRenderCycle();
-
-        start2DRenderCycle();
-        gameLoopObject.drawString("hello world", 50, 50, 0, RED);
-		drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
-        end2DRenderCycle();
-        endRenderCycle();
-
-/*
-        RenderSettingsHelper.start3DRenderCycle();
-        Render.renderAxes(player.getCamera());
-        player.move();
-
-        if(terrain != null)
-        {
-            //shader.bindShader();
-            ModTerRenderer.draw(player.getCamera());
-            //shader.releaseShader();
-
-            map.draw(player.getCamera());
-        }
-
-
-
-        RenderSettingsHelper.end3DRenderCycle();
-        ComponentHelper.getWindow().draw();
-        RenderSettingsHelper.endRenderCycle();
-*/
-
-//        		if(Mouse.isButtonDown(0))
-//        		{
-//        			System.out.println(Unprojection.unproject(mappingCamera, Mouse.getX(), Mouse.getY(), mappingCamera.getZ()));
-//        		}
-
-        //End drawing now
-
-
-
-/*
-        static bool loadTexture = false;
-        static std::shared_ptr<Texture> texture(nullptr);
-        if(!loadTexture)
-        {
-            loadTexture = true;
-            texture = getTexture(
-                "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/img_test.png"
-            );
-        }
-
-        // Clear Color and Depth Buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // Reset transformations
-        gl::glLoadIdentity();
-        // Set the camera
-        setGluLookAt(	0.0f, 0.0f, 10.0f,
-                    0.0f, 0.0f,  0.0f,
-                    0.0f, 1.0f,  0.0f);
-        gl::glRotatef(10.0, 0.0f, 1.0f, 0.0f);
-
-        glEnable(GL_TEXTURE_2D);
-        texture->bind();
-
-        glBegin(GL_QUADS);
-          glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-          glTexCoord2f(0, 1); glVertex3f(0, 10, 0);
-          glTexCoord2f(1, 1); glVertex3f(10, 10, 0);
-          glTexCoord2f(1, 0); glVertex3f(10, 0, 0);
-        glEnd();
-
-        swapBuffers();
-
-        // Clear Color and Depth Buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // Reset transformations
-        gl::glLoadIdentity();
-        // Set the camera
-        setGluLookAt(	0.0f, 0.0f, 10.0f,
-                    0.0f, 0.0f,  0.0f,
-                    0.0f, 1.0f,  0.0f);
-        gl::glRotatef(10.0, 0.0f, 1.0f, 0.0f);
-
-        glEnable(GL_TEXTURE_2D);
-        texture->bind();
-
-        glBegin(GL_QUADS);
-          glTexCoord2f(0, 0); glVertex3f(0, 0, 0);
-          glTexCoord2f(0, 1); glVertex3f(0, 10, 0);
-          glTexCoord2f(1, 1); glVertex3f(10, 10, 0);
-          glTexCoord2f(1, 0); glVertex3f(10, 0, 0);
-        glEnd();
-
-        swapBuffers();
-        */
-   // }
 }
 
 ///***********************************************************************

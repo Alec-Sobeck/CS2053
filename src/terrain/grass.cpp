@@ -4,6 +4,7 @@
 #include "utils/random.h"
 #include "utils/timehelper.h"
 #include "utils/flexarray.h"
+#include "utils/fileutils.h"
 #include "graphics/gluhelper.h"
 #include "graphics/terrainpolygon.h"
 
@@ -47,48 +48,37 @@ void Grass::draw(Camera *camera)
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-//bind shader
-    //if(vbo)
-    //{
+    glDisable(GL_BLEND);
+    glAlphaFunc(GL_GREATER, 0.1f);
+    glEnable(GL_ALPHA_TEST);
 
+    glDisable(GL_CULL_FACE);
+    glLoadIdentity();
+    glEnable(GL_TEXTURE_2D);
+    glScalef(1.0f,1.0f,1.0f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    // Translate to model co-ordinates, based on the origin of the shape
+    setLookAt(camera);
 
-        glDisable(GL_BLEND);
-        glAlphaFunc(GL_GREATER, 0.1f);
-        glEnable(GL_ALPHA_TEST);
-
-        glDisable(GL_CULL_FACE);
-        glLoadIdentity();
+    if(grassShader)
+    {
+        float power = getWindPower();
+        vbo->hasTextureData = false;
         glEnable(GL_TEXTURE_2D);
-        glScalef(1.0f,1.0f,1.0f);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        // Translate to model co-ordinates, based on the origin of the shape
-        setLookAt(camera);
-
-        if(grassShader)
-        {
-            float power = getWindPower();
-      ///      std::cout << "Wind [" << power << "]" << windDirection.x << "," << windDirection.y << "," << windDirection.z << std::endl;
-            vbo->hasTextureData = false;
-            glEnable(GL_TEXTURE_2D);
-            grassShader->bindShader();
-            grassShader->glUniform1("texture1", 0);
-            grassShader->glUniform3("windDirection", windDirection);
-            grassShader->glUniform1("windPower", power);
-            glActiveTexture(GL_TEXTURE0);
-            vbo->associatedTexture->bind();
-
-        }
-        vbo->draw(camera);
-        if(grassShader)
-        {
-            grassShader->releaseShader();
-        }
-        glEnable(GL_CULL_FACE);
-    //}
-
+        grassShader->bindShader();
+        grassShader->glUniform1("texture1", 0);
+        grassShader->glUniform3("windDirection", windDirection);
+        grassShader->glUniform1("windPower", power);
+        glActiveTexture(GL_TEXTURE0);
+        vbo->associatedTexture->bind();
+    }
+    vbo->draw(camera);
+    if(grassShader)
+    {
+        grassShader->releaseShader();
+    }
+    glEnable(GL_CULL_FACE);
     glDisable(GL_ALPHA_TEST);
-
-
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -341,7 +331,7 @@ void Grass::createVBO(glm::vec3 center, float range)
     MeshData data(GL_QUADS,
         std::shared_ptr<Material>(nullptr),
         4,
-        "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grass_1.png",
+        buildPath("res/grass_1.png"),
         stride,
         totalElementsOfData,
         3, 0, GL_FLOAT,
@@ -352,8 +342,8 @@ void Grass::createVBO(glm::vec3 center, float range)
     );
     this->vbo = std::shared_ptr<VBO>(new VBO(data, this->texture));
     this->vbo->hasTextureData = true;
-    std::string vertPath = "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grassy_wind.vert";
-    std::string fragPath = "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/grassy_wind.frag";
+	std::string vertPath = buildPath("res/grassy_wind.vert");
+	std::string fragPath = buildPath("res/grassy_wind.frag");
     this->grassShader = createShader(&vertPath, &fragPath);
 }
 

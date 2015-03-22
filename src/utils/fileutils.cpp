@@ -53,3 +53,16 @@ std::vector<std::string> readTextFileAsLines(std::string filepath)
     }
     return out;
 }
+
+std::string buildPath(std::string path)
+{
+#ifdef _WIN32
+	static const std::string gameDirectory = "C:/Program Files/Engine/";
+#else
+#error NYI
+	static const std::string gameDirectory = "";
+#endif
+	std::stringstream ss;
+	ss << gameDirectory << path;
+	return ss.str();
+}
