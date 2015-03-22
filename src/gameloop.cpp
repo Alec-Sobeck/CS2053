@@ -68,6 +68,20 @@ void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y);
 ///
 /// Define the GameLoop class.
 ///
+#ifdef _WIN32
+const std::string gameDirectory = "C:/Program Files/Engine/";
+#else
+#error NYI
+const std::string gameDirectory = "";
+#endif
+
+std::string buildPath(std::string path)
+{
+	std::stringstream ss;
+	ss << gameDirectory << path;
+	return ss.str();
+}
+
 class GameLoop
 {
 public:
@@ -139,7 +153,6 @@ void ERRCHECK(FMOD_RESULT result)        // this is an error handling function f
 	}
 }
 
-
 void initializeEngine()
 {
     using namespace gl;
@@ -155,9 +168,10 @@ void initializeEngine()
 	try
 	{
 #ifdef _WIN32
-	gameLoopObject.fontRenderer->Create(getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/font.png"));
-	gameLoopObject.ammoTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/ammo_icon.png");
-	gameLoopObject.medkitTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/medkit.png");
+
+	gameLoopObject.fontRenderer->Create(getTexture(buildPath("res/font.png")));
+	gameLoopObject.ammoTexture = getTexture(buildPath("res/ammo_icon.png"));
+	gameLoopObject.medkitTexture = getTexture(buildPath("res/medkit.png"));
 #else
 	gameLoopObject.ammoTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/ammo_icon.png");
 	gameLoopObject.medkitTexture = getTexture("/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/medkit.png");
@@ -183,10 +197,10 @@ void initializeEngine()
 	ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, NULL));
 
 	FMOD::Studio::Bank* masterBank = NULL;
-	ERRCHECK(system->loadBankFile("D:/Dropbox/University/GameDev/GameEngineCPP/res/audio/Master Bank.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
+	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
 
 	FMOD::Studio::Bank* stringsBank = NULL;
-	ERRCHECK(system->loadBankFile("D:/Dropbox/University/GameDev/GameEngineCPP/res/audio/Master Bank.strings.bank", FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
+	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.strings.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
 
 	//FMOD::Studio::Bank* vehiclesBank = NULL;
 	//ERRCHECK(system->loadBankFile(Common_MediaPath("Vehicles.bank"), FMOD_STUDIO_LOAD_BANK_NORMAL, &vehiclesBank));
@@ -288,11 +302,11 @@ void GameLoop::buildSampleTerrain()
     /// Pine tree?
 #ifdef _WIN32
 	ObjParser parser(
-		"D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
+		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
 		"Branches0018_1_S.png", false );
 	gameLoopObject.treeModel = parser.exportModel();
-	auto treeTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/BarkDecidious0107_M.jpg");
-	auto branchTexture = getTexture("D:/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Branches0018_1_S.png");
+	auto treeTexture = getTexture(buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
+	auto branchTexture = getTexture(buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
 #else
 	ObjParser parser(
 		"/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/", "/home/alec/Dropbox/University/GameDev/GameEngineCPP/res/models/pine_tree1/Tree.obj",
@@ -463,10 +477,20 @@ void gameUpdateTick()
 		glCullFace(GL_BACK);
 		glDisable(GL_TEXTURE_2D);
 		//sphere.draw(30, 10, 30);
-		for (Projectile &p : gameLoopObject.projectiles)
+		for (int i = 0; i < gameLoopObject.projectiles.size(); )
 		{
+			Projectile &p = gameLoopObject.projectiles.at(i);
 			p.onGameTick(deltaTime);
-			p.draw();
+			
+			if (p.getY() < -p.size)
+			{
+				gameLoopObject.projectiles.erase(gameLoopObject.projectiles.begin() + i);
+			}
+			else
+			{
+				p.draw();
+				i++;
+			}
 		}
 		glEnable(GL_TEXTURE_2D);
 
