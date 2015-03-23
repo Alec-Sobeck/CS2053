@@ -87,3 +87,45 @@ Texture* Render::getTexture(std::string name)
 
     glEnable(GL_TEXTURE_2D);
 }
+
+void drawAABB(AABB &box)
+{
+	using namespace gl;
+	//Multi-colored side - FRONT
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0f);     glVertex3f(box.xMax, box.yMin, box.zMin);      // P1 is red
+	glColor3f(0.0f, 1.0f, 0.0f);     glVertex3f(box.xMax, box.yMax, box.zMin);      // P2 is green
+	glColor3f(0.0f, 0.0f, 1.0f);     glVertex3f(box.xMin, box.yMax, box.zMin);      // P3 is blue
+	glColor3f(1.0f, 0.0f, 1.0f);     glVertex3f(box.xMin, box.yMin, box.zMin);      // P4 is purple
+	// White side - BACK
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(box.xMax, box.yMin, box.zMax);
+	glVertex3f(box.xMax, box.yMax, box.zMax);
+	glVertex3f(box.xMin, box.yMax, box.zMax);
+	glVertex3f(box.xMin, box.yMin, box.zMax);
+	// Purple side - RIGHT
+	glColor3f(1.0f, 0.0f, 1.0f);
+	glVertex3f(box.xMax, box.yMin, box.zMin);
+	glVertex3f(box.xMax, box.yMax, box.zMin);
+	glVertex3f(box.xMax, box.yMax, box.zMax);
+	glVertex3f(box.xMax, box.yMin, box.zMax);
+	// Green side - LEFT
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(box.xMin, box.yMin, box.zMax);
+	glVertex3f(box.xMin, box.yMax, box.zMax);
+	glVertex3f(box.xMin, box.yMax, box.zMin);
+	glVertex3f(box.xMin, box.yMin, box.zMin);
+	// Blue side - TOP
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(box.xMax, box.yMax, box.zMax);
+	glVertex3f(box.xMax, box.yMax, box.zMin);
+	glVertex3f(box.xMin, box.yMax, box.zMin);
+	glVertex3f(box.xMin, box.yMax, box.zMax);
+	// Red side - BOTTOM
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(box.xMax, box.yMin, box.zMin);
+	glVertex3f(box.xMax, box.yMin, box.zMax);
+	glVertex3f(box.xMin, box.yMin, box.zMax);
+	glVertex3f(box.xMin, box.yMin, box.zMin);
+	glEnd();
+}

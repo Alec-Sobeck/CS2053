@@ -7,6 +7,7 @@
 #include "graphics/camera.h"
 #include "graphics/gluhelper.h"
 #include "utils/textureloader.h"
+#include "physics/aabb.h"
 
 /**
  * Defines the base class for anything that draws something to screen in this application. All Textures are stored here.
@@ -48,5 +49,6 @@ public:
 };
 
 void renderAxes(Camera  *cam);
+void drawAABB(AABB &box);
 
 #endif

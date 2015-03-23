@@ -10,14 +10,64 @@ int getNextModelID()
     return modelID++;
 }
 
-AABB Model::getAABB()
-{
-    return AABB(0,0,0,0,0,0);
-}
-
 void Model::onAABBCollision(AABB &boundsCollidedWith)
 {
 
+
+}
+
+AABB Model::getAABB()
+{
+	return aabb;
+}
+
+AABB Model::generateAABB()
+{
+	if (data.size() == 0)
+	{
+		return AABB(0, 0, 0, 0, 0, 0);
+	}
+	float minX =  10000000;
+	float minY =  10000000;
+	float minZ =  10000000;
+	float maxX = -10000000;
+	float maxY = -10000000;
+	float maxZ = -10000000;
+
+	for (auto mesh : data)
+	{
+		for (int i = 0; i < mesh->combinedData.size(); i += mesh->elementsPerRowOfCombinedData)
+		{
+			// X
+			if (mesh->combinedData[i] > maxX)
+			{
+				maxX = mesh->combinedData[i];
+			}
+			if (mesh->combinedData[i] < minX)
+			{
+				minX = mesh->combinedData[i];
+			}
+			// Y
+			if (mesh->combinedData[i] > maxY)
+			{
+				maxY = mesh->combinedData[i];
+			}
+			if (mesh->combinedData[i] < minY)
+			{
+				minY = mesh->combinedData[i];
+			}
+			// Z
+			if (mesh->combinedData[i] > maxZ)
+			{
+				maxZ = mesh->combinedData[i];
+			}
+			if (mesh->combinedData[i] < minZ)
+			{
+				minZ = mesh->combinedData[i];
+			}
+		}
+	}
+	return AABB(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
 /**
@@ -25,43 +75,13 @@ void Model::onAABBCollision(AABB &boundsCollidedWith)
  * @param data a ModelData object that can be used to construct this Model
  */
 Model::Model(std::vector<std::shared_ptr<MeshData>> data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
-        data(data), aabb(rotateAABB(AABB(0, 0, 0, 10, 10, 10))), scale(glm::vec3(1.0f, 1.0f, 1.0f))
+        data(data), aabb(generateAABB()), scale(glm::vec3(1.0f, 1.0f, 1.0f))
 {
 }
 
 Model::~Model()
 {
 
-}
-
-AABB Model::rotateAABB(AABB aabb)
-{
-    if(1==1)
-    {
-//        return data.getAABB();
-        return AABB(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f);
-    }
-    //TODO rotate the AABB
-//		this doesnt work at all - vertices are botched srsly badly
-    if(1==1)
-        throw std::runtime_error("Any value given by this method is wrong. will fix");
-    /*
-    Vector3[] vertices = {
-            new Vector3(aabb.getXMin(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMin(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMin(), aabb.getYMax(), aabb.getZMin()),
-            new Vector3(aabb.getXMin(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMax(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMax(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMax(), aabb.getYMin(), aabb.getZMin()),
-            new Vector3(aabb.getXMax(), aabb.getYMin(), aabb.getZMin())
-    };
-
-
-
-    return null;
-    */
-    return AABB(0,0,0,0,0,0);
 }
 
 /**
@@ -158,7 +178,7 @@ void Model::reduceRotation()
 void Model::setRotationOnAxes(glm::vec3 rotationOnAxes)
 {
     this->rotationOnAxes = rotationOnAxes;
-    this->aabb = rotateAABB(AABB(0,0,0,10,10,10));
+    //this->aabb = rotateAABB(AABB(0,0,0,10,10,10));
 }
 
 int Model::getID()

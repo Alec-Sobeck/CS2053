@@ -32,6 +32,7 @@
 #include "math/gamemath.h"
 #include "utils/fileutils.h"
 #include "utils/random.h"
+#include "entity/enemy.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -101,6 +102,7 @@ public:
 	FMOD::Studio::EventInstance* bgmInstance;
 	std::list<Tree> trees;
 	bool hasStartedBGM = false;
+	std::vector<std::shared_ptr<Enemy>> enemies;
 
     GameLoop();
 	~GameLoop();
@@ -376,7 +378,9 @@ void gameUpdateTick()
     Camera *cam = gameLoopObject.player.getCamera();
     startRenderCycle();
     start3DRenderCycle();
-		
+	
+	AABB box = gameLoopObject.treeModel->getAABB();
+
 	/*
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -454,7 +458,16 @@ void gameUpdateTick()
     glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	/// END DRAW -- tree
-	
+
+	glDisable(GL_TEXTURE_2D);
+	for (std::shared_ptr<Enemy> enemy: gameLoopObject.enemies)
+	{
+		enemy->onGameTick(gameLoopObject.player, deltaTime);
+		AABB box = enemy->getAABB();
+		drawAABB(box);
+	}
+	glEnable(GL_TEXTURE_2D);
+
 	gameLoopObject.grass->update(cam);
     gameLoopObject.grass->draw(cam);
     end3DRenderCycle();
@@ -575,6 +588,20 @@ void processKeyboardInput()
 	{
 		fireLock = false;
 	}
+
+	static bool enemyLock = false;
+	if (manager->isKeyDown('m') && !enemyLock)
+	{
+		enemyLock = true;
+		std::shared_ptr<Enemy> enemy(new Enemy(std::shared_ptr<Model>(nullptr), Camera(glm::vec3(getRandomInt(30) - 15, 0, getRandomInt(30) - 15), glm::vec3(0, 0, 0))));
+		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
+		gameLoopObject.enemies.push_back(enemy);
+	}
+	if (!manager->isKeyDown('m'))
+	{
+		enemyLock = false;
+	}
+
 
 	if (manager->isKeyDown('g'))
 	{

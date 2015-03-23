@@ -66,11 +66,26 @@ public:
 	 * zMax; if this is negative it will subtract that amount from zMin and zMax
 	 */
     void moveZ(float amount);
-    /**
-	 * Formats the values in this AABB to something fairly clear and understandable.
-	 */
     void move(glm::vec3 amounts);
+	/**
+	* Formats the values in this AABB to something fairly clear and understandable.
+	*/
 	std::string toString();
+	/*
+	 * Centers the box on the specified position 
+	 */
+	void moveTo(float x, float y, float z)
+	{
+		float xHalfsize = (xMax - xMin) / 2;
+		float yHalfsize = (yMax - yMin) / 2;
+		float zHalfsize = (zMax - zMin) / 2;
+		xMin = x - xHalfsize;
+		xMax = x + xHalfsize;
+		yMin = y - yHalfsize;
+		yMax = y + yHalfsize;
+		zMin = z - zHalfsize;
+		zMax = z + zHalfsize;
+	}
 	float getXMin();
 	float getXMax();
 	float getYMin();

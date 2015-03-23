@@ -28,15 +28,15 @@ protected:
 	glm::vec3 rotationOnAxes;
 	AABB aabb;
 	glm::vec3 scale;
-	AABB rotateAABB(AABB aabb);
 public:
 	std::vector<std::shared_ptr<MeshData>> data;
 	std::vector<std::shared_ptr<VBO>> vbos;
 	std::shared_ptr<Texture> overrideTexture;
+	void onAABBCollision(AABB &boundsCollidedWith) override;
 
-	AABB getAABB();
-	void onAABBCollision(AABB &boundsCollidedWith);
-    ~Model();
+	AABB getAABB() override;
+	AABB generateAABB();
+	~Model();
 	/**
 	 * Constructs a new Model with the specified ModelData object.
 	 * @param data a ModelData object that can be used to construct this Model
