@@ -67,7 +67,8 @@ AABB Model::generateAABB()
 			}
 		}
 	}
-	return AABB(minX, minY, minZ, maxX, maxY, maxZ);
+	this->aabb = AABB(minX, minY, minZ, maxX, maxY, maxZ);
+	return this->aabb;
 }
 
 /**

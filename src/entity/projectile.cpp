@@ -26,7 +26,7 @@ Projectile::Projectile(int entityID) : size(10), boundingSphere(AABS(0, 0, 0, 0)
  * @param model a Model that will be used for this entity
  * @param camera a Camera that will be used for this entity
  */
-Projectile::Projectile(int entityID, Camera camera, int size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
+Projectile::Projectile(int entityID, Camera camera, float size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
 	entityID(entityID), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), sphere(Sphere(size, 12, 24))
 	
 {
@@ -39,7 +39,7 @@ Projectile::Projectile(int entityID, Camera camera, int size) : size(size), boun
 * @param model a Model that will be used for this entity
 * @param camera a Camera that will be used for this entity
 */
-Projectile::Projectile(Camera camera, int size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
+Projectile::Projectile(Camera camera, float size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
 	entityID(getEntityID()), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), sphere(Sphere(size, 12, 24))
 {
 }

@@ -42,8 +42,8 @@ public:
 	 * @param model a Model that will be used for this entity
 	 * @param camera a Camera that will be used for this entity
 	 */
-	Projectile(int entityID, Camera camera, int size = 0);
-	Projectile(Camera camera, int size = 0);
+	Projectile(int entityID, Camera camera, float size = 0);
+	Projectile(Camera camera, float size = 0);
 	~Projectile();
     float getX();
 	float getY();

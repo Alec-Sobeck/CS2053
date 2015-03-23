@@ -89,11 +89,13 @@ public:
     MouseManager mouseManager;
     Grass *grass; 
     std::shared_ptr<Model> treeModel;
+	std::shared_ptr<Model> gunModel;
 	std::shared_ptr<GLFont> fontRenderer;
 	unsigned long long previousFrameTime;
 	float deltaTime;
 	std::shared_ptr<Texture> ammoTexture;
 	std::shared_ptr<Texture> medkitTexture;
+	std::shared_ptr<Texture> gunTexture;
 	std::vector<Projectile> projectiles;
 	FMOD::System* system = NULL;
 	FMOD::Sound *music;
@@ -276,6 +278,22 @@ void GameLoop::buildSampleTerrain()
     textures["leaves"] = branchTexture;
     gameLoopObject.treeModel->createVBOs(textures);
 
+	// Load the gun model
+	parser = ObjParser(
+		buildPath("res/models/gun/"), buildPath("res/models/gun/M9.obj"),
+		"", true);
+	gameLoopObject.gunModel = parser.exportModel();
+	auto Handgun_D = getTexture(buildPath("res/models/gun/Tex_0009_1.jpg"));
+	gameLoopObject.gunTexture = Handgun_D;
+	textures = std::map<std::string, std::shared_ptr<Texture>>();
+	textures["Tex_0009_1"] = Handgun_D;
+	gameLoopObject.gunModel->createVBOs(textures);
+	for (std::shared_ptr<VBO> vbo : gameLoopObject.gunModel->vbos)
+	{
+		vbo->associatedTexture = Handgun_D;
+	}
+	gameLoopObject.gunModel->generateAABB();
+
 	for (int i = 0; i < 10; i++)
 	{
 		int x = getRandomInt(100) - 50;
@@ -453,7 +471,7 @@ void gameUpdateTick()
     {
         tree.draw(cam);
     }
-    glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -470,7 +488,49 @@ void gameUpdateTick()
 
 	gameLoopObject.grass->update(cam);
     gameLoopObject.grass->draw(cam);
-    end3DRenderCycle();
+    
+	// Draw the player's gun
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	//glDisable(GL_CULL_FACE);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	// Translate to model co-ordinates, based on the origin of the shape
+	setLookAt(cam);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+
+	glm::vec3 lookAt = glm::normalize(glm::vec3(
+		+ sin(cam->rotation.y),
+		- sin(cam->rotation.x),
+		- cos(cam->rotation.y)
+	));
+	glm::vec3 offset = lookAt;
+	glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
+	glRotatef(toDeg(-cam->rotation.x), 1, 0, 0);
+	glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
+	glRotatef(toDeg(-cam->rotation.z), 0, 0, 1);
+
+	glEnable(GL_TEXTURE_2D);
+	gameLoopObject.gunModel->draw(cam);
+	glPopMatrix();
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
+	// End gun draw
+	end3DRenderCycle();
 
     start2DRenderCycle();
     gameLoopObject.drawString("hello world", 50, 50, 0, RED);
@@ -700,6 +760,41 @@ void processMouseInput()
 			cam->rotate(glm::vec3(0.6, 0, 0) * deltaTime);
         }
     }
+
+	// FIRE!
+	static bool leftClickLock = false;
+	if (manager->leftMouseButtonState == MouseManager::MOUSE_PRESSED && !leftClickLock)
+	{
+		leftClickLock = true;
+		// Figure out the bullet's offset based on the lookAt vector
+		glm::vec3 lookAt = glm::normalize(glm::vec3(
+			+sin(cam->rotation.y),
+			-sin(cam->rotation.x),
+			-cos(cam->rotation.y)
+			));
+		AABB gunbox = gameLoopObject.gunModel->getAABB();
+		float yDelta = gunbox.yMax - gunbox.yMin;
+		lookAt = lookAt + lookAt * yDelta;
+		// Note the bullet is still a little bit off
+		lookAt.x += 0.025f;
+		lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
+		// Create the projectile.
+		Camera cam(gameLoopObject.player.getPosition() + lookAt, glm::vec3(0, 0, 0));
+		Projectile projectile(cam, .029f);
+		glm::vec3 acceleration = glm::vec3(
+			sin(gameLoopObject.player.getCamera()->rotation.y),
+			0,
+			-cos(gameLoopObject.player.getCamera()->rotation.y)
+			) * 200.0f;
+		acceleration.y -= 9.8f;
+		projectile.accel(acceleration);
+		gameLoopObject.projectiles.push_back(projectile);
+
+	}
+	if (manager->leftMouseButtonState != MouseManager::MOUSE_PRESSED)
+	{
+		leftClickLock = false;
+	}
 }
 
 void entryCall(int argc, char **argv)
