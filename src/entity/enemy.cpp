@@ -151,24 +151,39 @@ void Enemy::onGameTick(Entity &player, float deltaTime)
 	float distanceSquared = glm::dot(toPlayer, toPlayer);
 	toPlayer = glm::normalize(toPlayer); 
 	
-	// Check if the monster is near the player. If the are, have them start chasing the player.
-	if (distanceSquared < 400) 
+	if (state == AIState::IDLE)
 	{
-		// Always persue at this distance. 
+		if (distanceSquared < 400)
+		{
+			state = AIState::ATTACK;
+		}
+		// Otherwise, idle and do nothing.
+	}
+	else if (state == AIState::ATTACK)
+	{
+		if (distanceSquared > 400 && distanceSquared < 35 * 35)
+		{
+			state = AIState::LOSING_SIGHT;
+		}
+		// Else chase and attack
 		float movementSpeed = 3.0f * deltaTime;
 		this->accel(toPlayer * movementSpeed);
-		wasChasing = true;
 	}
-	else if (distanceSquared < (35 * 35) && wasChasing)
+	else if (state == AIState::LOSING_SIGHT)
 	{
+		if (distanceSquared > 35 * 35)
+		{
+			state = AIState::IDLE;
+		}
+		if (distanceSquared < 400)
+		{
+			state = AIState::ATTACK;
+		}
 		// Persue at this distance if previously chasing the player. otherwise, ignore them.
 		float movementSpeed = 3.0f * deltaTime;
 		this->accel(toPlayer * movementSpeed);
 	}
-	else
-	{
-		wasChasing = false;
-	}
+
 	// Update the position
 	this->move();
 	auto pos = getPosition();

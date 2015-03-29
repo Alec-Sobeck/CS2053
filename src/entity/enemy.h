@@ -10,6 +10,14 @@
 #include "graphics/model.h"
 #include "entity.h"
 
+
+enum class AIState
+{
+	ATTACK,
+	LOSING_SIGHT,
+	IDLE
+};
+
 /**
 * Entity is the base class for all things that exist in the world with some sort of model, and position.
 * @author Alec Sobeck
@@ -23,7 +31,7 @@ public:
 	const int entityID;
 	float health;
 	float maxHealth;
-	bool wasChasing = false;
+	AIState state = AIState::IDLE;
 	/**
 	 * Constructs a new Entity, assigning it the next valid entityID available and a camera with position
 	 * and rotation of 0.
