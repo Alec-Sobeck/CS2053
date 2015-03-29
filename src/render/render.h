@@ -48,7 +48,8 @@ public:
 
 };
 
-void renderAxes(Camera  *cam);
+void drawSkybox(std::shared_ptr<Texture> skybox, Camera *cam);
+void renderAxes(Camera *cam);
 void drawAABB(AABB &box);
 
 #endif

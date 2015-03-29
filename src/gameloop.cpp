@@ -105,6 +105,7 @@ public:
 	std::list<Tree> trees;
 	bool hasStartedBGM = false;
 	std::vector<std::shared_ptr<Enemy>> enemies;
+	std::shared_ptr<Texture> skyboxTexture;
 
     GameLoop();
 	~GameLoop();
@@ -258,6 +259,9 @@ void GameLoop::buildSampleTerrain()
 {
     glm::vec3 v(getWindowWidth(), getWindowHeight(), 1.0);
     std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
+
+	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
+
 
 	auto tex = getTexture(buildPath("res/terrain.png"));
 	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
@@ -428,6 +432,7 @@ void gameUpdateTick()
 	glDisable(GL_TEXTURE_2D);
 	*/
 	renderAxes(cam);
+	drawSkybox(gameLoopObject.skyboxTexture, cam);
     gameLoopObject.player.move();
     gameLoopObject.terrainRenderer->draw(cam);
 
