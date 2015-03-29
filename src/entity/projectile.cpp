@@ -3,7 +3,7 @@
 
 Projectile::Projectile() : size(10), boundingSphere(AABS(0, 0, 0, 0)), entityID(getEntityID()),
     camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), 
-	acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), isAffectedByGravity(true), sphere(Sphere(size, 12, 24))
+	acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(10000.0f), isAffectedByGravity(true), sphere(Sphere(size, 12, 24))
 {
 }
 
@@ -14,7 +14,7 @@ Projectile::Projectile() : size(10), boundingSphere(AABS(0, 0, 0, 0)), entityID(
  * be a value generated from {@link #getNextEntityID()}
  */
 Projectile::Projectile(int entityID) : size(10), boundingSphere(AABS(0, 0, 0, 0)), entityID(entityID),
-    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
+    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(10000.0f),
 	isAffectedByGravity(false), sphere(Sphere(size, 12, 24))
 {
 }
@@ -27,7 +27,7 @@ Projectile::Projectile(int entityID) : size(10), boundingSphere(AABS(0, 0, 0, 0)
  * @param camera a Camera that will be used for this entity
  */
 Projectile::Projectile(int entityID, Camera camera, float size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
-	entityID(entityID), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), sphere(Sphere(size, 12, 24))
+	entityID(entityID), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(10000.0f), sphere(Sphere(size, 12, 24))
 	
 {
 }
@@ -40,7 +40,7 @@ Projectile::Projectile(int entityID, Camera camera, float size) : size(size), bo
 * @param camera a Camera that will be used for this entity
 */
 Projectile::Projectile(Camera camera, float size) : size(size), boundingSphere(AABS(camera.getPosition(), size)),
-	entityID(getEntityID()), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), sphere(Sphere(size, 12, 24))
+	entityID(getEntityID()), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(10000.0f), sphere(Sphere(size, 12, 24))
 {
 }
 

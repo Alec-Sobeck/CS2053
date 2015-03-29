@@ -2,6 +2,7 @@
 #define GAMEMATH_H
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 const float PI = 3.14159265359f;
 const double PI_D = 3.14159265359;
@@ -55,8 +56,14 @@ bool parallel(glm::vec3, glm::vec3);
 */
 bool perpendicular(glm::vec3, glm::vec3);
 
-float clamp(float val);
+inline float clamp(float val, float min = 0.0f, float max = 1.0f)
+{
+	return (val < min) ? min : (val > max) ? max : val;
+}
 
 float round2(float val);
+
+glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up);
+
 
 #endif

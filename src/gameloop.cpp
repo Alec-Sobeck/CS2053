@@ -509,6 +509,7 @@ void gameUpdateTick()
 	glPushMatrix();
 	glLoadIdentity();
 	// Translate to model co-ordinates, based on the origin of the shape
+	
 	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -520,18 +521,23 @@ void gameUpdateTick()
 	));
 	glm::vec3 offset = lookAt;
 	glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
-	glRotatef(toDeg(-cam->rotation.x), 1, 0, 0);
+	glm::vec3 forward(
+		cam->position.x + sin(cam->rotation.y),
+		cam->position.y - sin(cam->rotation.x),
+		cam->position.z - cos(cam->rotation.y)
+		);
+	glm::vec3 up(0, cos(cam->rotation.x), 0);
+	glm::vec3 left = glm::cross(up, forward);
+	//glRotatef(toDeg(cam->rotation.x + cam->rotation.z), left.x, left.y, left.z);
 	glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
-	glRotatef(toDeg(-cam->rotation.z), 0, 0, 1);
-
 	glEnable(GL_TEXTURE_2D);
 	gameLoopObject.gunModel->draw(cam);
-	glPopMatrix();
-
+	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glPopMatrix();
 
 
 	// End gun draw
@@ -773,25 +779,22 @@ void processMouseInput()
 		leftClickLock = true;
 		// Figure out the bullet's offset based on the lookAt vector
 		glm::vec3 lookAt = glm::normalize(glm::vec3(
-			+sin(cam->rotation.y),
-			-sin(cam->rotation.x),
-			-cos(cam->rotation.y)
-			));
+			sin(cam->rotation.y * -1.0f),
+			0,
+			cos(cam->rotation.y * -1.0f)
+			)) * -1.0f;
 		AABB gunbox = gameLoopObject.gunModel->getAABB();
 		float yDelta = gunbox.yMax - gunbox.yMin;
 		lookAt = lookAt + lookAt * yDelta;
 		// Note the bullet is still a little bit off
-		lookAt.x += 0.025f;
-		lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
+		//lookAt.x += 0.025f;
+		//lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
 		// Create the projectile.
-		Camera cam(gameLoopObject.player.getPosition() + lookAt, glm::vec3(0, 0, 0));
-		Projectile projectile(cam, .029f);
-		glm::vec3 acceleration = glm::vec3(
-			sin(gameLoopObject.player.getCamera()->rotation.y),
-			0,
-			-cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * 200.0f;
-		acceleration.y -= 9.8f;
+		Camera camera(gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f), glm::vec3(0, 0, 0));
+		Projectile projectile(camera, .029f);
+		
+		glm::vec3 acceleration = (lookAt) * 200.0f;
+		//acceleration.y -= 9.8f;
 		projectile.accel(acceleration);
 		gameLoopObject.projectiles.push_back(projectile);
 
