@@ -98,11 +98,12 @@ public:
 	std::shared_ptr<Texture> medkitTexture;
 	std::shared_ptr<Texture> gunTexture;
 	std::vector<std::shared_ptr<Projectile>> projectiles;
-	FMOD::System* system = NULL;
+	FMOD::Studio::System* system = NULL;
 	FMOD::Sound *music;
 	FMOD::Channel* musicChannel;
 	FMOD::Studio::EventInstance* eventInstance;
 	FMOD::Studio::EventInstance* bgmInstance;
+	FMOD::Studio::EventInstance* hurtInstance;
 	std::list<Tree> trees;
 	bool hasStartedBGM = false;
 	std::vector<std::shared_ptr<Enemy>> enemies;
@@ -113,6 +114,7 @@ public:
 	~GameLoop();
     void buildSampleTerrain();
 	void update();
+	void collisionCheck();
 	float getDeltaTime();
 	///
     /// Draws a basic text string.
@@ -181,6 +183,7 @@ void initializeEngine()
 	// Init the sound engine (FMOD)
 	FMOD::Studio::System* system = NULL;
 	ERRCHECK(FMOD::Studio::System::create(&system));
+	gameLoopObject.system = system;
 
 	// The example Studio project is authored for 5.1 sound, so set up the system output mode to match
 	FMOD::System* lowLevelSystem = NULL;
@@ -213,14 +216,16 @@ void initializeEngine()
 	ERRCHECK(system->getEvent("event:/pistol-01", &eventDescription));
 	gameLoopObject.eventInstance = NULL;
 	ERRCHECK(eventDescription->createInstance(&gameLoopObject.eventInstance));	
-	//ERRCHECK(gameLoopObject.eventInstance->start());
-
+	
 	FMOD::Studio::EventDescription* bgmDescription = NULL;
 	ERRCHECK(system->getEvent("event:/bgm-battle-01", &bgmDescription));
 	gameLoopObject.bgmInstance = NULL;
 	ERRCHECK(bgmDescription->createInstance(&gameLoopObject.bgmInstance));
-	//ERRCHECK(gameLoopObject.bgmInstance->start());
-//	gameLoopObject.bgmInstance->setVolume(0.4f);
+
+	FMOD::Studio::EventDescription* hurtDescription = NULL;
+	ERRCHECK(system->getEvent("event:/hurt1", &hurtDescription));
+	gameLoopObject.hurtInstance = NULL;
+	ERRCHECK(hurtDescription->createInstance(&gameLoopObject.hurtInstance));
 
 	// Position the listener at the origin
 	FMOD_3D_ATTRIBUTES attributes = { { 0 } };
@@ -246,6 +251,7 @@ terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), prev
 {
 	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
+	player.boundingBox = AABB(0.0f, 0.0f, 0.0f, 1.0f, 2.0f, 1.0f);
 }
 
 GameLoop::~GameLoop()
@@ -376,6 +382,24 @@ void GameLoop::update()
 			ERRCHECK(gameLoopObject.bgmInstance->start());
 		}
 	}
+
+	// Check collisions
+	collisionCheck();
+}
+
+void GameLoop::collisionCheck()
+{
+	for (auto enemy : enemies)
+	{
+		if (enemy->getAABB().overlaps(player.getAABB()))
+		{
+			if (!player.isInvincible())
+			{
+				player.hurtPlayer(20);
+				gameLoopObject.hurtInstance->start();
+			}
+		}
+	}	
 }
 
 ///***********************************************************************
@@ -407,8 +431,7 @@ void gameUpdateTick()
 	AABB box = gameLoopObject.treeModel->getAABB();
 	renderAxes(cam);
 	drawSkybox(gameLoopObject.skyboxTexture, cam);
-    gameLoopObject.player.move();
-	gameLoopObject.player.boundsCheckPosition(gameLoopObject.worldBounds);
+	gameLoopObject.player.update(gameLoopObject.worldBounds, deltaTime);
     gameLoopObject.terrainRenderer->draw(cam);
 
 	glEnable(GL_CULL_FACE);
@@ -633,7 +656,7 @@ void processKeyboardInput()
 	if (manager->isKeyDown('h'))
 	{
 		gameLoopObject.player.health -= 10.0f * deltaTime;		
-		ERRCHECK(gameLoopObject.eventInstance->start());
+
 	}
 
     static bool keylockTab = false;
@@ -647,6 +670,7 @@ void processKeyboardInput()
         keylockTab = false;
     }
 
+	/*
     if(manager->getKeyState(' ') == KeyManager::PRESSED)
     {
         gameLoopObject.player.accel(glm::vec3(0, 1, 0) * deltaTime);
@@ -655,6 +679,7 @@ void processKeyboardInput()
     {
 		gameLoopObject.player.accel(glm::vec3(0, -1, 0) * deltaTime);
     }
+	*/
 }
 
 void processMouseInput()
@@ -688,6 +713,7 @@ void processMouseInput()
 	static bool leftClickLock = false;
 	if (manager->leftMouseButtonState == MouseManager::MOUSE_PRESSED && !leftClickLock)
 	{
+
 		leftClickLock = true;
 		// Figure out the bullet's offset based on the lookAt vector
 		glm::vec3 lookAt = glm::normalize(glm::vec3(
@@ -705,11 +731,12 @@ void processMouseInput()
 		Camera camera((gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f)), glm::vec3(0, 0, 0));
 		std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f));
 		
-		glm::vec3 acceleration = (lookAt) * 100.0f;
-		acceleration.y -= 9.8f;
+		glm::vec3 acceleration = (lookAt) * 40.0f;
+		acceleration.y -= 1.8f;
 		projectile->accel(acceleration);
 		gameLoopObject.projectiles.push_back(projectile);
 
+		ERRCHECK(gameLoopObject.eventInstance->start());		
 	}
 	if (manager->leftMouseButtonState != MouseManager::MOUSE_PRESSED)
 	{

@@ -19,9 +19,14 @@ class Player : public Entity
 {
 public:
 	int ammoCount;
+	float invincibilityFrames;
 	int healingItemCount;
 	Player(Camera camera);
 	~Player();
+	void hurtPlayer(int amount);
+	bool isDead();
+	bool isInvincible();
+	void update(AABB &worldBounds, float deltaTime);
 };
 
 #endif
