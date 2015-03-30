@@ -10,8 +10,6 @@
 
 /**
  * Contains data to create a VBO to draw a model. That is, vertex data, normals, colour, and texture coordinates.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class MeshData
 {

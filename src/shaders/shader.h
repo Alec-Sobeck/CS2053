@@ -11,8 +11,6 @@
 /**
  * Shader contains the relevant information and methods to bind and release an OpenGL shader, and to assign values to the uniform
  * attributes within an OpenGL shader.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class Shader
 {

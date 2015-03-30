@@ -13,8 +13,6 @@ class AABS;
  * in collision detection.
  * <br>
  * http://www.euclideanspace.com/threed/animation/collisiondetect/index.htm?utm_source=[deliciuos]&utm_medium=twitter
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class AABB
 {

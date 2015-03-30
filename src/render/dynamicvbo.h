@@ -19,8 +19,6 @@ int *constructRange(int a, int b);
 /**
  * DynamicVBO implements a dynamic Vertex Buffer Object. This VBO chooses what vertexes to render based
  * on an Index Buffer Object that is kept in addition to the vertex data.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class DynamicVBO
 {

@@ -13,7 +13,6 @@
  * Any kind of data which has an associated AABB may be stored in this Octree as it stores identifiers for the AABB
  * (based of the total elements passed at creation), and not the AABBs themselves.
  * Rather WIP, may need refining, definitely needs testing. Currently provides methods to build the Tree itself, and to insert an element.
- * @author Matthew Robertson
  * @param T the Type of the Object being stored in this Octree. It must implement IOctreeElement.
  */
 template<class T>

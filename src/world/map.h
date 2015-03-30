@@ -13,7 +13,6 @@
  * and terrain data. Rendering functionality is not provided in Map, although the data to do collision detections is
  * found within Map
  * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class Map
 {

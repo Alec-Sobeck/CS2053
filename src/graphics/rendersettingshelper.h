@@ -3,8 +3,6 @@
 
 /**
  * RenderSettingsHelper defines static methods that set OpenGL settings to some sort of default for a particular operation. For example, 2D or 3D rendering.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 
 /**

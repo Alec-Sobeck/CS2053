@@ -19,8 +19,6 @@ enum class AIState
 
 /**
 * Entity is the base class for all things that exist in the world with some sort of model, and position.
-* @author Alec Sobeck
-* @author Matthew Robertson
 */
 class Enemy : public Entity
 {
@@ -36,6 +34,6 @@ public:
 	Enemy(std::shared_ptr<Model> model, Camera camera);
 	~Enemy();
 	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);
-	void draw();
+	void draw(Camera* cam);
 };
 #endif

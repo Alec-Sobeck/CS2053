@@ -12,8 +12,6 @@ gl::GLuint createVBOID();
 /**
  * VBO defines an immutable class that takes a ModelData object, ructs a Vertex Buffer Object,
  * and then allows it to be drawn with a call to {@link #draw()}.
- * @author Alec Sobeck
- * @author Matthew Sobeck
  */
 class VBO
 {

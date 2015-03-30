@@ -1,5 +1,9 @@
 ﻿
+#include <glbinding/gl/gl.h>
+#include "math/gamemath.h"
+#include "graphics/gluhelper.h"
 #include "enemy.h"
+#include "render/render.h"
 
 /**
 * Creates a new Entity and assigns it the provided entityID, model, and camera.
@@ -18,6 +22,8 @@ Enemy::Enemy(std::shared_ptr<Model> model, Camera camera) : Entity(model, camera
 	{
 		this->boundingBox = AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5));
 	}
+	health = 10;
+	maxHealth = 10;
 }
 
 Enemy::~Enemy()
@@ -50,6 +56,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 		// Else chase and attack
 		float movementSpeed = 3.0f * deltaTime;
 		this->accel(toPlayer * movementSpeed);
+		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 	else if (state == AIState::LOSING_SIGHT)
 	{
@@ -64,16 +71,23 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 		// Persue at this distance if previously chasing the player. otherwise, ignore them.
 		float movementSpeed = 3.0f * deltaTime;
 		this->accel(toPlayer * movementSpeed);
+		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 
-	// Update the position
 	this->move();
 	this->boundsCheckPosition(worldBounds);
 	auto pos = getPosition();
 	boundingBox.moveTo(pos.x, pos.y, pos.z);
 }
 
-void Enemy::draw()
+void Enemy::draw(Camera *cam)
 {
-
+	using namespace gl;
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glTranslatef(getX(), getY(), getZ());
+	glScalef(0.2, 0.2, 0.2);
+	glRotatef(toDeg(getRotation().y), 0, 1, 0);
+	model->draw(cam);
+	glPopMatrix();
 }

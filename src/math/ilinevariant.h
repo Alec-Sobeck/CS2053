@@ -5,8 +5,6 @@
 
 /**
  * ILineVariant describes some variant of a line. This could be a Ray, LineSegment, or Line.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class ILineVariant
 {

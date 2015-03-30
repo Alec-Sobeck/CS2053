@@ -1,6 +1,5 @@
 /**
  * A collection of interpolation methods. Undefined if given a progress < 0 or > 1
- * @author Matthew Robertson
  */
 #ifndef INTERPOLATORS_H
 #define INTERPOLATORS_H

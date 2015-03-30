@@ -20,8 +20,6 @@ public:
 /**
  * TerrainPolygon associates a Polygon3 with its AABB, constructing said AABB when passed
  * a Polygon3 in the constructor {@link #TerrainPolygon(Polygon3)}.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class TerrainPolygon : public Polygon3, public IOctreeElement
 {

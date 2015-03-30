@@ -10,8 +10,6 @@
  *  <li> {@link #getAABB()}</li>
  *  <li> {@link #onAABBCollision(AABB)}</li>
  * </ul>
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class IOctreeElement
 {

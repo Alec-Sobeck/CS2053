@@ -12,8 +12,6 @@
 
 /**
  * Entity is the base class for all things that exist in the world with some sort of model, and position.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class Player : public Entity
 {

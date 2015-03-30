@@ -15,8 +15,6 @@ int getNextModelID();
 
 /**
  * Describes a basic 3d model.
- * @author Matt Robertson
- * @author Alec Sobeck
  */
 class Model : public IOctreeElement
 {

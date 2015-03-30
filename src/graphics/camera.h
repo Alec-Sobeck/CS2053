@@ -6,8 +6,6 @@
 /**
  * Camera has all the information the server needs to move a player around properly based on keyboard input.
  * This has no methods that require OpenGL or any rendering and is common between the server and client.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class Camera
 {

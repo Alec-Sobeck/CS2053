@@ -9,17 +9,17 @@
 #include "graphics/model.h"
 #include "render/sphere.h"
 #include "entity.h"
+#include "math/linesegment3.h"
 
 /**
  * Entity is the base class for all things that exist in the world with some sort of model, and position.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class Projectile : public Entity
 {
 public:
 	int size;
 	AABS boundingSphere;
+	glm::vec3 previousPosition;
 	/**
 	 * Creates a new Entity and assigns it the provided entityID, model, and camera.
      * @param entityID an int which must uniquely identify this Entity. It is suggested that this
@@ -32,6 +32,7 @@ public:
 	void draw();
 	void onGameTick(float deltaTime);
 	void move(float deltaTime);
+	LineSegment3 getMovement();
 
 protected:
 	Sphere sphere;

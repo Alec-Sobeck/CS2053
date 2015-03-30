@@ -13,8 +13,6 @@
  * a collection of TerrainPolygon and some metadata including the total number of vertices
  * of all the polygons and the total number of elements (vertices, normals, colours, texture-coords)
  * to describe the entire terrain.
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class TerrainData
 {

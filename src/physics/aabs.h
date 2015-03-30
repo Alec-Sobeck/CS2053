@@ -13,8 +13,6 @@ class AABS;
  * of collision test.
  * <br>
  * <u>http://www.euclideanspace.com/threed/animation/collisiondetect/index.htm?utm_source=[deliciuos]&utm_medium=twitter</u>
- * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class AABS
 {

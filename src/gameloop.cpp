@@ -91,6 +91,7 @@ public:
     Grass *grass; 
     std::shared_ptr<Model> treeModel;
 	std::shared_ptr<Model> gunModel;
+	std::shared_ptr<Model> zombieModel;
 	std::shared_ptr<GLFont> fontRenderer;
 	unsigned long long previousFrameTime;
 	float deltaTime;
@@ -332,9 +333,29 @@ void GameLoop::buildSampleTerrain()
 				gameLoopObject.trees.push_back(Tree(treeModel, x, y, z));
 				retryCounter += 1000;
 			}
-		}
-		
+		}		
 	}
+
+	// Load the zombie
+	parser = ObjParser(buildPath("res/models/zombie/"), buildPath("res/models/zombie/Lambent_Male.obj"), "", true);
+	gameLoopObject.zombieModel = parser.exportModel();
+	auto _D = getTexture(buildPath("res/models/zombie/Lambent_Male_D.png"));
+	auto _E = getTexture(buildPath("res/models/zombie/Lambent_Male_E.tga"));
+	auto _N = getTexture(buildPath("res/models/zombie/Lambent_Male_N.tga"));
+	auto _S = getTexture(buildPath("res/models/zombie/Lambent_Male_S.tga"));
+	textures = std::map<std::string, std::shared_ptr<Texture>>();
+	textures["Lambent_Male_D.tga"] = _D;
+	textures["Lambent_Male_E.tga"] = _E;
+	textures["Lambent_Male_N.tga"] = _N;
+	textures["Lambent_Male_S.tga"] = _S;
+	gameLoopObject.zombieModel->createVBOs(textures);
+	for (std::shared_ptr<VBO> vbo : gameLoopObject.zombieModel->vbos)
+	{
+		vbo->associatedTexture = _D;
+	}
+	gameLoopObject.zombieModel->generateAABB(); 
+
+
 }
 
 bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
@@ -389,8 +410,10 @@ void GameLoop::update()
 
 void GameLoop::collisionCheck()
 {
-	for (auto enemy : enemies)
+	// Player - monster collision
+	for (int i = 0; i < enemies.size(); i++)
 	{
+		std::shared_ptr<Enemy> enemy = enemies[i];
 		if (enemy->getAABB().overlaps(player.getAABB()))
 		{
 			if (!player.isInvincible())
@@ -400,6 +423,27 @@ void GameLoop::collisionCheck()
 			}
 		}
 	}	
+
+	// Player's bullet vs enemy collision test. 
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		for (int j = 0; j < projectiles.size(); j++)
+		{
+			// Capsule variables
+			LineSegment3 seg = projectiles[j]->getMovement();
+			float radius = projectiles[j]->size;
+			// AABB
+			AABB box = enemies[i]->boundingBox;
+			
+			if (false /* Intersection test */)
+			{
+				enemies.erase(enemies.begin() + i);
+				i--;
+				continue;
+			}
+		}
+	}
+
 }
 
 ///***********************************************************************
@@ -477,15 +521,31 @@ void gameUpdateTick()
     glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	/// END DRAW -- tree
+	// draw enemies
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	gl::glLoadIdentity();
+	glEnable(GL_TEXTURE_2D);
+	setLookAt(cam);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	for (std::shared_ptr<Enemy> enemy: gameLoopObject.enemies)
 	{
 		enemy->onGameTick(gameLoopObject.player, deltaTime, gameLoopObject.worldBounds);
-		AABB box = enemy->getAABB();
-		drawAABB(box);
+		enemy->draw(cam);
 	}
-	glEnable(GL_TEXTURE_2D);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	// End draw enemies
 
 	gameLoopObject.grass->update(cam);
     gameLoopObject.grass->draw(cam);
@@ -640,7 +700,7 @@ void processKeyboardInput()
 	if (manager->isKeyDown('m') && !enemyLock)
 	{
 		enemyLock = true;
-		std::shared_ptr<Enemy> enemy(new Enemy(std::shared_ptr<Model>(nullptr), Camera(glm::vec3(getRandomInt(30) - 15, 0, getRandomInt(30) - 15), glm::vec3(0, 0, 0))));
+		std::shared_ptr<Enemy> enemy(new Enemy(gameLoopObject.zombieModel, Camera(glm::vec3(getRandomInt(30) - 15, 0, getRandomInt(30) - 15), glm::vec3(0, 0, 0))));
 		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
 		gameLoopObject.enemies.push_back(enemy);
 	}
@@ -698,19 +758,19 @@ void processMouseInput()
         glm::vec3 *grabDir = &manager->relativeGrabDirection;
         if (grabDir->x < -2)
         {
-			cam->rotate(glm::vec3(0, -0.6, 0) * deltaTime);
+			cam->rotate(glm::vec3(0, -1.2, 0) * deltaTime);
         }
         else if (grabDir->x > 2)
         {
-            cam->rotate(glm::vec3(0, 0.6, 0) * deltaTime);
+            cam->rotate(glm::vec3(0, 1.2, 0) * deltaTime);
         }
         if (grabDir->y < -2)
         {
-			cam->rotate(glm::vec3(-0.6, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(-1.2, 0, 0) * deltaTime);
         }
         else if (grabDir->y > 2)
         {
-			cam->rotate(glm::vec3(0.6, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(1.2, 0, 0) * deltaTime);
         }
     }
 

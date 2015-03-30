@@ -20,6 +20,7 @@ Projectile::~Projectile()
 
 void Projectile::onGameTick(float deltaTime)
 {
+	previousPosition = getPosition();
 	move(deltaTime);
 	auto pos = getPosition();
 	this->boundingSphere.moveTo(pos.x, pos.y, pos.z);
@@ -70,4 +71,9 @@ void Projectile::move(float deltaTime)
 	}
 
 	camera.move(velocity * deltaTime);
+}
+
+LineSegment3 Projectile::getMovement()
+{
+	return LineSegment3(previousPosition, getPosition());
 }

@@ -9,7 +9,6 @@
  * MapData is the save format for an entire map, containing data on the terrain
  * and the models.
  * @author Alec Sobeck
- * @author Matthew Robertson
  */
 class MapData
 {
