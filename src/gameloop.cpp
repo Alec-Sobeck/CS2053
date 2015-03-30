@@ -368,7 +368,9 @@ bool GameLoop::drawString(std::string val, float x, float y, float z, Colour col
         glDisable(GL_BLEND);
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
-        fontRenderer->TextOut("hello world", 50, 50, 0);
+		std::stringstream ss;
+		ss << "score:" << player.score;
+        fontRenderer->TextOut(ss.str(), 20, 20, 0);
         return true;
     }
     catch(GLFontError::InvalidFont)
@@ -437,6 +439,8 @@ void GameLoop::collisionCheck()
 			
 			if (false /* Intersection test */)
 			{
+				player.score += 1;
+				player.ammoCount += 5;
 				enemies.erase(enemies.begin() + i);
 				i--;
 				continue;

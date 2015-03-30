@@ -8,7 +8,7 @@
 * @param model a Model that will be used for this entity
 * @param camera a Camera that will be used for this entity
 */
-Player::Player(Camera camera) : Entity(std::shared_ptr<Model>(nullptr), camera), ammoCount(500), healingItemCount(3), invincibilityFrames(0)
+Player::Player(Camera camera) : Entity(std::shared_ptr<Model>(nullptr), camera), ammoCount(500), healingItemCount(3), invincibilityFrames(0), score(0)
 {
 }
 

@@ -16,6 +16,7 @@
 class Player : public Entity
 {
 public:
+	int score;
 	int ammoCount;
 	float invincibilityFrames;
 	int healingItemCount;

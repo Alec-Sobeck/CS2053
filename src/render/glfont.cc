@@ -58,8 +58,16 @@ void GLFont::Create(std::shared_ptr<Texture> tex)
 		tx += 16.0f / 256.0f;
 	}
 
-	ok = true;
+	tx = 0.0f;
+	c.tx1 = tx;
+	c.tx2 = tx + 16.0f / 256.0f;
+	c.ty1 = ty - 16.0f / 256.0f;
+	c.ty2 = ty - 32.0f / 256.0f;
+	c.width = 16;
+	c.height = 16;
+	characters.insert({ ':' , c });
 
+	ok = true;
 }
 
 GLFont::~GLFont()
