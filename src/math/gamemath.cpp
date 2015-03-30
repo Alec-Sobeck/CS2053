@@ -72,9 +72,11 @@ glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
 		-glm::dot(U, eye),
 		-glm::dot(F, eye)
 		);
-	glm::mat4x4 mat = {L.x, U.x, F.x, 0, 
+	glm::mat4x4 mat = {
+		L.x, U.x, F.x, 0, 
 		L.y, U.y, F.y, 0,
-	L.z, U.z, F.z, 0,
-	T.x, T.y, T.z, 1};
+		L.z, U.z, F.z, 0,
+		T.x, T.y, T.z, 1
+	};
 	return mat;
 }

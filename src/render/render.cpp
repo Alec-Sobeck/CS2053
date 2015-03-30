@@ -279,7 +279,6 @@ void drawSkybox(std::shared_ptr<Texture> skyboxTexture, Camera *cam)
 
 }
 
-
  void renderAxes(Camera *cam)
 {
     using namespace gl;

@@ -33,6 +33,7 @@
 #include "utils/fileutils.h"
 #include "utils/random.h"
 #include "entity/enemy.h"
+#include "entity/player.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -80,7 +81,7 @@ class GameLoop
 public:
     const int GAME_TICKS_PER_SECOND = 60;
     bool gameIsRunning;
-    Entity player;
+    Player player;
     std::shared_ptr<TerrainData> terrain;
     Map map;
     long startTime;
@@ -96,7 +97,7 @@ public:
 	std::shared_ptr<Texture> ammoTexture;
 	std::shared_ptr<Texture> medkitTexture;
 	std::shared_ptr<Texture> gunTexture;
-	std::vector<Projectile> projectiles;
+	std::vector<std::shared_ptr<Projectile>> projectiles;
 	FMOD::System* system = NULL;
 	FMOD::Sound *music;
 	FMOD::Channel* musicChannel;
@@ -106,6 +107,7 @@ public:
 	bool hasStartedBGM = false;
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	std::shared_ptr<Texture> skyboxTexture;
+	AABB worldBounds;
 
     GameLoop();
 	~GameLoop();
@@ -239,8 +241,8 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
-GameLoop::GameLoop() : gameIsRunning(true), player(Entity()), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
-	terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), previousFrameTime(getCurrentTimeMillis())
+GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
+terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), previousFrameTime(getCurrentTimeMillis()), worldBounds(AABB(0, 0, 0, 0, 0, 0))
 {
 	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
@@ -259,6 +261,7 @@ void GameLoop::buildSampleTerrain()
 {
     glm::vec3 v(getWindowWidth(), getWindowHeight(), 1.0);
     std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
+	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 
 	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
 
@@ -402,38 +405,10 @@ void gameUpdateTick()
     start3DRenderCycle();
 	
 	AABB box = gameLoopObject.treeModel->getAABB();
-
-	/*
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glShadeModel(GL_SMOOTH);
-
-	GLfloat global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
-		
-	GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
-
-	// note, no alpha is required since it has no use in specifying a light
-	// source (in this case). Keep in mind however, that its default value
-	// is 1.0f anyway
-	// Create light components
-	GLfloat ambientLight[] = { 0.8f, 0.8f, 0.8f, 1.0f };
-	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	GLfloat position[] = { 20, 20, 0, 1.0f };
-
-	// Assign created components to GL_LIGHT0
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
-
-	glDisable(GL_TEXTURE_2D);
-	*/
 	renderAxes(cam);
 	drawSkybox(gameLoopObject.skyboxTexture, cam);
     gameLoopObject.player.move();
+	gameLoopObject.player.boundsCheckPosition(gameLoopObject.worldBounds);
     gameLoopObject.terrainRenderer->draw(cam);
 
 	glEnable(GL_CULL_FACE);
@@ -441,16 +416,16 @@ void gameUpdateTick()
 	glDisable(GL_TEXTURE_2D);
 	for (int i = 0; i < gameLoopObject.projectiles.size(); )
 	{
-		Projectile &p = gameLoopObject.projectiles.at(i);
-		p.onGameTick(deltaTime);
+		std::shared_ptr<Projectile> p = gameLoopObject.projectiles.at(i);
+		p->onGameTick(deltaTime);
 			
-		if (p.getY() < -p.size)
+		if (p->getY() < -p->size)
 		{
 			gameLoopObject.projectiles.erase(gameLoopObject.projectiles.begin() + i);
 		}
 		else
 		{
-			p.draw();
+			p->draw();
 			i++;
 		}
 	}
@@ -465,10 +440,8 @@ void gameUpdateTick()
     glDisable(GL_BLEND);
     glAlphaFunc(GL_GREATER, 0.1f);
     glEnable(GL_ALPHA_TEST);
-    //glDisable(GL_CULL_FACE);
 	gl::glLoadIdentity();
     glEnable(GL_TEXTURE_2D);
-    // Translate to model co-ordinates, based on the origin of the shape
     setLookAt(cam);
     glDisable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
@@ -485,7 +458,7 @@ void gameUpdateTick()
 	glDisable(GL_TEXTURE_2D);
 	for (std::shared_ptr<Enemy> enemy: gameLoopObject.enemies)
 	{
-		enemy->onGameTick(gameLoopObject.player, deltaTime);
+		enemy->onGameTick(gameLoopObject.player, deltaTime, gameLoopObject.worldBounds);
 		AABB box = enemy->getAABB();
 		drawAABB(box);
 	}
@@ -506,8 +479,8 @@ void gameUpdateTick()
 	//glDisable(GL_CULL_FACE);
 	
 	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
+	gl::glPushMatrix();
+	gl::glLoadIdentity();
 	// Translate to model co-ordinates, based on the origin of the shape
 	
 	setLookAt(cam);
@@ -520,7 +493,7 @@ void gameUpdateTick()
 		- cos(cam->rotation.y)
 	));
 	glm::vec3 offset = lookAt;
-	glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
+	gl::glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
 	glm::vec3 forward(
 		cam->position.x + sin(cam->rotation.y),
 		cam->position.y - sin(cam->rotation.x),
@@ -529,7 +502,7 @@ void gameUpdateTick()
 	glm::vec3 up(0, cos(cam->rotation.x), 0);
 	glm::vec3 left = glm::cross(up, forward);
 	//glRotatef(toDeg(cam->rotation.x + cam->rotation.z), left.x, left.y, left.z);
-	glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
+	gl::glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
 	gameLoopObject.gunModel->draw(cam);
 	
@@ -537,7 +510,7 @@ void gameUpdateTick()
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glPopMatrix();
+	gl::glPopMatrix();
 
 
 	// End gun draw
@@ -639,27 +612,7 @@ void processKeyboardInput()
     {
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
-
-	static bool fireLock = false;
-	if (manager->isKeyDown('f') && !fireLock)
-	{
-		fireLock = true;
-		Camera cam(gameLoopObject.player.getPosition(), glm::vec3(0, 0, 0));
-		Projectile projectile(cam, 1);
-		glm::vec3 acceleration = glm::vec3(
-			sin(gameLoopObject.player.getCamera()->rotation.y),
-			0,
-			-cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * 25.0f;
-		acceleration.y -= 9.8f;
-		projectile.accel(acceleration);
-		gameLoopObject.projectiles.push_back(projectile);
-	}
-	if (!manager->isKeyDown('f'))
-	{
-		fireLock = false;
-	}
-
+	
 	static bool enemyLock = false;
 	if (manager->isKeyDown('m') && !enemyLock)
 	{
@@ -672,7 +625,6 @@ void processKeyboardInput()
 	{
 		enemyLock = false;
 	}
-
 
 	if (manager->isKeyDown('g'))
 	{
@@ -694,11 +646,6 @@ void processKeyboardInput()
     {
         keylockTab = false;
     }
-    /*
-    if(Keyboard.isKeyDown(Keyboard.KEY_PERIOD)){
-        shouldTether = !shouldTether;
-    }
-    */
 
     if(manager->getKeyState(' ') == KeyManager::PRESSED)
     {
@@ -708,41 +655,6 @@ void processKeyboardInput()
     {
 		gameLoopObject.player.accel(glm::vec3(0, -1, 0) * deltaTime);
     }
-    /*
-    if(Keyboard.isKeyDown(Keyboard.KEY_LBRACKET) && !isLBracketDown){
-        isLBracketDown = true;
-        List<Model> models = map.getModels();
-        if (models != null && models.size() != 0){
-            if (selectedModel.getID() > 0){
-                selectedModel = models.get(selectedModel.getID() - 1);
-            }
-            else
-            {
-                selectedModel = models.get(models.size() - 1);
-            }
-        }
-    }
-    else if (isLBracketDown && !Keyboard.isKeyDown(Keyboard.KEY_LBRACKET)){
-        isLBracketDown = false;
-    }
-
-    if(Keyboard.isKeyDown(Keyboard.KEY_RBRACKET) && !isRBracketDown){
-        isRBracketDown = true;
-        List<Model> models = map.getModels();
-        if (models != null && models.size() != 0){
-            if (selectedModel.getID() < models.size() - 1){
-                selectedModel = models.get(selectedModel.getID() + 1);
-            }
-            else
-            {
-                selectedModel = models.get(0);
-            }
-        }
-    }
-    else if (isRBracketDown && !Keyboard.isKeyDown(Keyboard.KEY_RBRACKET)){
-        isRBracketDown = false;
-    }
-    */
 }
 
 void processMouseInput()
@@ -790,12 +702,12 @@ void processMouseInput()
 		//lookAt.x += 0.025f;
 		//lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
 		// Create the projectile.
-		Camera camera(gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f), glm::vec3(0, 0, 0));
-		Projectile projectile(camera, .029f);
+		Camera camera((gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f)), glm::vec3(0, 0, 0));
+		std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f));
 		
-		glm::vec3 acceleration = (lookAt) * 200.0f;
-		//acceleration.y -= 9.8f;
-		projectile.accel(acceleration);
+		glm::vec3 acceleration = (lookAt) * 100.0f;
+		acceleration.y -= 9.8f;
+		projectile->accel(acceleration);
 		gameLoopObject.projectiles.push_back(projectile);
 
 	}

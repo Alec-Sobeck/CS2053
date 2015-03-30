@@ -14,23 +14,10 @@ int getNextEntityID()
 //
 // Define methods in Entity class
 //
-
 Entity::Entity() : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(getNextEntityID()),
     model(std::shared_ptr<Model>(nullptr)), camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))),
     velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), isAffectedByGravity(false),
-	isNoClipActive(false), ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
-{
-}
-
-/**
- * Constructs a new Entity, assigning it the entityID provided and a camera with position
- * and rotation of 0.
- * @param entityID an int which must uniquely identify this Entity. It is suggested that this
- * be a value generated from {@link #getNextEntityID()}
- */
-Entity::Entity(int entityID) : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(entityID),
-    camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
-	isAffectedByGravity(false), isNoClipActive(false), ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
+	isNoClipActive(false), health(100), maxHealth(100)
 {
 }
 
@@ -41,9 +28,9 @@ Entity::Entity(int entityID) : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.
  * @param model a Model that will be used for this entity
  * @param camera a Camera that will be used for this entity
  */
-Entity::Entity(int entityID, std::shared_ptr<Model> model, Camera camera) : boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))),
-    entityID(entityID), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
-	ammoCount(20), healingItemCount(3), health(100), maxHealth(100)
+Entity::Entity(std::shared_ptr<Model> model, Camera camera) : boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))),
+    entityID(getEntityID()), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
+	health(100), maxHealth(100)
 {
 }
 
@@ -154,13 +141,6 @@ void Entity::setCamera(Camera camera)
         }
     }
 
-    //glm::vec3 temp = (camera.position + velocity);
-    //std::cout << ":" << temp.x << " " << temp.y << " " << temp.z << std::endl;
-    //std::cout << "p:" << camera.position.x << " " << camera.position.y << " " << camera.position.z << std::endl;
-    //std::cout << "v:" << velocity.x << " " << velocity.y << " " << velocity.z << std::endl;
-    //ĵĵĵĵĵĵĵĵĵĵĵĵĵĵĵĵĵstd::cout << "a:" << acceleration.x << " " << acceleration.y << " " << acceleration.z << std::endl;
-
-
     camera.setPosition(camera.getPosition() + velocity);
     boundingBox.move(velocity);
     acceleration = glm::vec3(0,0,0);
@@ -192,11 +172,46 @@ AABB Entity::getAABB()
     return boundingBox;
 }
 
-void Entity::onGameTick()
-{
-}
-
 float Entity::getHealthPercent()
 {
 	return health / maxHealth;
+}
+
+void Entity::boundsCheckPosition(AABB &worldBounds)
+{
+	AABB &bounds = this->boundingBox;
+
+	float xHalfsize = (bounds.xMax - bounds.xMin) / 2;
+	float yHalfsize = (bounds.yMax - bounds.yMin) / 2;
+	float zHalfsize = (bounds.zMax - bounds.zMin) / 2;
+
+	float x = getX();
+	float y = getY();
+	float z = getZ();
+
+	if (x - xHalfsize < worldBounds.xMin)
+	{
+		x = xHalfsize + worldBounds.xMin;
+	}
+	if (x + xHalfsize > worldBounds.xMax)
+	{
+		x = worldBounds.xMax - xHalfsize;
+	}
+	if (y - yHalfsize < worldBounds.yMin)
+	{
+		y = worldBounds.yMin + yHalfsize;
+	}
+	if (y + yHalfsize > worldBounds.yMax)
+	{
+		y = worldBounds.yMax - yHalfsize;
+	}
+	if (z - zHalfsize < worldBounds.zMin)
+	{
+		z = zHalfsize + worldBounds.zMin;
+	}
+	if (z + zHalfsize > worldBounds.zMax)
+	{
+		z = worldBounds.zMax - zHalfsize;
+	}
+	camera.setPosition(glm::vec3(x, y, z));
 }

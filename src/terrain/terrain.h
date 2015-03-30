@@ -11,15 +11,13 @@
 
 class Terrain
 {
-protected:
+public:
 	int lod;
 	float width;
 	FlexArray<glm::vec3> vertices;
 	FlexArray<Colour> colours;
 	FlexArray<glm::vec2> uvs;
 	FlexArray<glm::vec3> normals;
-
-public:
 	virtual void generateTerrain(int LoD, float size);
 	virtual std::shared_ptr<TerrainData> exportToTerrainData();
 	virtual float getHeight(double x, double y) = 0;

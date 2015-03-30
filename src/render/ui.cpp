@@ -5,7 +5,7 @@
 #include "math/gamemath.h"
 using namespace gl;
 
-void drawUI(Entity &player, MouseManager &mouse, std::shared_ptr<GLFont> font, 
+void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	std::shared_ptr<Texture> ammoTexture, std::shared_ptr<Texture> medkitTexture)
 {
 	int width = getWindowWidth();
