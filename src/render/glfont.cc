@@ -12,9 +12,8 @@ void GLFont::Create(std::shared_ptr<Texture> tex)
 	this->fontTexture = tex;
 	float tx = 0.0f;
 	float ty = 1.0f;
-	for (int i = 1; i < 9; i++)
+	for (int i = 1; i <= 9; i++)
 	{
-
 		float tx1, tx2, ty1, ty2;
 		float width, height;
 		GLFontChar c;
@@ -29,8 +28,8 @@ void GLFont::Create(std::shared_ptr<Texture> tex)
 		tx += 16.0f / 256.0f;
 	}
 	GLFontChar c;
-	c.tx1 = tx + 16.0f / 256.0f;
-	c.tx2 = tx + 32.0f / 256.0f;
+	c.tx1 = tx + 0.0f / 256.0f;
+	c.tx2 = tx + 16.0f / 256.0f;
 	c.ty1 = ty;
 	c.ty2 = ty - 16.0f / 256.0f;
 	c.width = 16;

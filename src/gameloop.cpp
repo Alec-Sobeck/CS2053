@@ -649,14 +649,19 @@ void processKeyboardInput()
 		enemyLock = false;
 	}
 
-	if (manager->isKeyDown('g'))
+	// Use a healthkit if the player has less than their maximum health. 
+	static bool healLock = false;
+	if (manager->isKeyDown('h') && !healLock)
 	{
-		gameLoopObject.player.health += 10.0f * deltaTime;
+		if (gameLoopObject.player.health < gameLoopObject.player.maxHealth && gameLoopObject.player.healingItemCount > 0)
+		{
+			gameLoopObject.player.health = gameLoopObject.player.maxHealth;
+			gameLoopObject.player.healingItemCount -= 1;
+		}
 	}
-	if (manager->isKeyDown('h'))
+	if (!manager->isKeyDown('h'))
 	{
-		gameLoopObject.player.health -= 10.0f * deltaTime;		
-
+		healLock = false;
 	}
 
     static bool keylockTab = false;
@@ -713,30 +718,33 @@ void processMouseInput()
 	static bool leftClickLock = false;
 	if (manager->leftMouseButtonState == MouseManager::MOUSE_PRESSED && !leftClickLock)
 	{
-
 		leftClickLock = true;
-		// Figure out the bullet's offset based on the lookAt vector
-		glm::vec3 lookAt = glm::normalize(glm::vec3(
-			sin(cam->rotation.y * -1.0f),
-			0,
-			cos(cam->rotation.y * -1.0f)
-			)) * -1.0f;
-		AABB gunbox = gameLoopObject.gunModel->getAABB();
-		float yDelta = gunbox.yMax - gunbox.yMin;
-		lookAt = lookAt + lookAt * yDelta;
-		// Note the bullet is still a little bit off
-		//lookAt.x += 0.025f;
-		//lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
-		// Create the projectile.
-		Camera camera((gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f)), glm::vec3(0, 0, 0));
-		std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f));
-		
-		glm::vec3 acceleration = (lookAt) * 40.0f;
-		acceleration.y -= 1.8f;
-		projectile->accel(acceleration);
-		gameLoopObject.projectiles.push_back(projectile);
+		if (gameLoopObject.player.ammoCount > 0)
+		{
+			// Figure out the bullet's offset based on the lookAt vector
+			glm::vec3 lookAt = glm::normalize(glm::vec3(
+				sin(cam->rotation.y * -1.0f),
+				0,
+				cos(cam->rotation.y * -1.0f)
+				)) * -1.0f;
+			AABB gunbox = gameLoopObject.gunModel->getAABB();
+			float yDelta = gunbox.yMax - gunbox.yMin;
+			lookAt = lookAt + lookAt * yDelta;
+			// Note the bullet is still a little bit off
+			//lookAt.x += 0.025f;
+			//lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
+			// Create the projectile.
+			Camera camera((gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f)), glm::vec3(0, 0, 0));
+			std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f));
 
-		ERRCHECK(gameLoopObject.eventInstance->start());		
+			glm::vec3 acceleration = (lookAt)* 40.0f;
+			acceleration.y -= 1.8f;
+			projectile->accel(acceleration);
+			gameLoopObject.projectiles.push_back(projectile);
+
+			ERRCHECK(gameLoopObject.eventInstance->start());
+			gameLoopObject.player.ammoCount -= 1;
+		}
 	}
 	if (manager->leftMouseButtonState != MouseManager::MOUSE_PRESSED)
 	{
