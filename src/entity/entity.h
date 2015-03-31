@@ -64,7 +64,8 @@ public:
     glm::vec3 getRotation();
     glm::vec3 getPosition();
 	float getHealthPercent();
-
+	void hurt(int amount);
+	bool isDead();
 protected:
 	/** A model somehow associated to this entity. */
     std::shared_ptr<Model> model;

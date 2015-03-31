@@ -22,8 +22,8 @@ Enemy::Enemy(std::shared_ptr<Model> model, Camera camera) : Entity(model, camera
 	{
 		this->boundingBox = AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5));
 	}
-	health = 10;
-	maxHealth = 10;
+	health = 100;
+	maxHealth = 100;
 }
 
 Enemy::~Enemy()
@@ -77,7 +77,11 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 	this->move();
 	this->boundsCheckPosition(worldBounds);
 	auto pos = getPosition();
-	boundingBox.moveTo(pos.x, pos.y, pos.z);
+
+	float xHalfsize = (boundingBox.xMax - boundingBox.xMin) / 2;
+	float yHalfsize = (boundingBox.yMax - boundingBox.yMin) / 2;
+	float zHalfsize = (boundingBox.zMax - boundingBox.zMin) / 2;
+	boundingBox = AABB(pos.x - xHalfsize, pos.y - yHalfsize, pos.z - zHalfsize, pos.x + xHalfsize, pos.y + yHalfsize, pos.z + zHalfsize);
 }
 
 void Enemy::draw(Camera *cam)

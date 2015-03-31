@@ -14,9 +14,9 @@ int getNextEntityID()
 //
 // Define methods in Entity class
 //
-Entity::Entity() : boundingBox(AABB(glm::vec3(0, 0, 0), glm::vec3(2.5, 2.5, 2.5))), entityID(getNextEntityID()),
-    model(std::shared_ptr<Model>(nullptr)), camera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0))),
-    velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), isAffectedByGravity(false),
+Entity::Entity() : boundingBox(AABB(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.5f, 2.5f, 2.5f))), entityID(getNextEntityID()),
+model(std::shared_ptr<Model>(nullptr)), camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f))),
+	velocity(glm::vec3(0.0f, 0.0f, 0.0f)), acceleration(glm::vec3(0.0f, 0.0f, 0.0f)), maxMoveSpeed(0.5f), isAffectedByGravity(false),
 	isNoClipActive(false), health(100), maxHealth(100)
 {
 }
@@ -143,8 +143,8 @@ void Entity::setCamera(Camera camera)
 
     camera.setPosition(camera.getPosition() + velocity);
     boundingBox.move(velocity);
-    acceleration = glm::vec3(0,0,0);
-    velocity *= 0.6;
+    acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
+    velocity *= 0.6f;
 }
 
 void Entity::accel(glm::vec3 movement)
@@ -179,11 +179,9 @@ float Entity::getHealthPercent()
 
 void Entity::boundsCheckPosition(AABB &worldBounds)
 {
-	AABB &bounds = this->boundingBox;
-
-	float xHalfsize = (bounds.xMax - bounds.xMin) / 2;
-	float yHalfsize = (bounds.yMax - bounds.yMin) / 2;
-	float zHalfsize = (bounds.zMax - bounds.zMin) / 2;
+	float xHalfsize = (boundingBox.xMax - boundingBox.xMin) / 2.0f;
+	float yHalfsize = (boundingBox.yMax - boundingBox.yMin) / 2.0f;
+	float zHalfsize = (boundingBox.zMax - boundingBox.zMin) / 2.0f;
 
 	float x = getX();
 	float y = getY();
@@ -214,4 +212,16 @@ void Entity::boundsCheckPosition(AABB &worldBounds)
 		z = worldBounds.zMax - zHalfsize;
 	}
 	camera.setPosition(glm::vec3(x, y, z));
+	boundingBox.moveTo(x, y, z);
 }
+
+void Entity::hurt(int amount)
+{
+	health -= amount;
+}
+
+bool Entity::isDead()
+{
+	return health <= 0;
+}
+

@@ -257,7 +257,10 @@ terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), prev
 
 GameLoop::~GameLoop()
 {
-	ERRCHECK(system->release());
+	if (system)
+	{
+		ERRCHECK(system->release());
+	}
 	if (grass)
 	{
 		delete grass;
@@ -427,24 +430,60 @@ void GameLoop::collisionCheck()
 	}	
 
 	// Player's bullet vs enemy collision test. 
-	for (int i = 0; i < enemies.size(); i++)
+	for (int j = 0; j < projectiles.size(); j++)
 	{
-		for (int j = 0; j < projectiles.size(); j++)
+		std::vector<std::shared_ptr<Enemy>> hits;
+		for (int i = 0; i < enemies.size(); i++)
 		{
 			// Capsule variables
 			LineSegment3 seg = projectiles[j]->getMovement();
 			float radius = projectiles[j]->size;
-			// AABB
-			AABB box = enemies[i]->boundingBox;
-			
-			if (false /* Intersection test */)
+			Capsule3D capsule(seg.point1, seg.point2, radius);
+			// Check for overlap with a lazy overlap test that misses some [in this case trivial] cases.	
+			if (enemies[i]->boundingBox.cheapOverlaps(capsule))
 			{
-				player.score += 1;
-				player.ammoCount += 5;
-				enemies.erase(enemies.begin() + i);
-				i--;
-				continue;
+				hits.push_back(enemies[i]);
 			}
+		}
+		if (hits.size() == 1)
+		{
+			hits[0]->hurt(20);
+			projectiles.erase(projectiles.begin() + j);
+			j--;
+			continue;
+		}
+		else if (hits.size() > 1&&false)
+		{
+			int closest = 0;
+			float closestLength = 10000;
+			glm::vec3 head = player.boundingBox.center();
+			for (int i = 0; i < hits.size(); i++)
+			{
+				glm::vec3 tail = enemies[i]->boundingBox.center();
+				glm::vec3 result = head - tail;
+				float length = glm::length(result);
+				if (length < closestLength)
+				{
+					closest = i;
+				}
+			}
+			hits[closest]->hurt(20);
+
+			projectiles.erase(projectiles.begin() + j);
+			j--;
+			continue;
+		}
+	}
+
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		if (enemies[i]->isDead())
+		{
+			player.score += 1;
+			player.ammoCount += 5;
+			enemies.erase(enemies.begin() + i);
+			i--;
+			continue;
 		}
 	}
 
@@ -704,7 +743,7 @@ void processKeyboardInput()
 	if (manager->isKeyDown('m') && !enemyLock)
 	{
 		enemyLock = true;
-		std::shared_ptr<Enemy> enemy(new Enemy(gameLoopObject.zombieModel, Camera(glm::vec3(getRandomInt(30) - 15, 0, getRandomInt(30) - 15), glm::vec3(0, 0, 0))));
+		std::shared_ptr<Enemy> enemy(new Enemy(gameLoopObject.zombieModel, Camera(glm::vec3(static_cast<float>(getRandomInt(30) - 15), 0, static_cast<float>(getRandomInt(30) - 15)), glm::vec3(0, 0, 0))));
 		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
 		gameLoopObject.enemies.push_back(enemy);
 	}

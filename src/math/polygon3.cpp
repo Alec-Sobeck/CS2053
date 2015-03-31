@@ -51,7 +51,8 @@ void Polygon3::computeNormal()
     normal = glm::cross(firstSide, secondSide);
 }
 
-void Polygon3::cullNthPoint(int n){
+void Polygon3::cullNthPoint(int n)
+{
 	if (n > static_cast<int>(points.size()))
     {
         std::stringstream ss;
@@ -62,27 +63,32 @@ void Polygon3::cullNthPoint(int n){
         throw std::logic_error("Culling a point from this Polygon3 would make the polygon degenerate.");
 
     FlexArray<glm::vec3> replacement(points.size() - 1);
-    for (int i = 0; i < static_cast<int>(points.size()); i++){
-        if (i < n){
+    for (int i = 0; i < static_cast<int>(points.size()); i++)
+	{
+        if (i < n)
+		{
             replacement[i] = points[i];
         }
-        else if (i > n){
+        else if (i > n)
+		{
             replacement[i-1] = points[i];
         }
     }
     this->points = replacement;
 }
 
-glm::vec3 Polygon3::getNormal(){
+glm::vec3 Polygon3::getNormal()
+{
     return normal;
 }
 
-glm::vec3 Polygon3::getUnitNormal(){
+glm::vec3 Polygon3::getUnitNormal()
+{
 	return glm::normalize(normal);
 }
 
-double Polygon3::area() {
-    // TODO: test this more thoroughly
+double Polygon3::area() 
+{
     if (isCoplanar && points.size() >= 3)
 	{
         glm::vec3 total(0, 0, 0);
@@ -165,7 +171,8 @@ bool Polygon3::line_does_intersect_triangle(glm::vec3 v0, glm::vec3 v1, glm::vec
     return false;
 }
 
-std::shared_ptr<glm::vec3> Polygon3::line_intersect_point(ILineVariant &line){
+std::shared_ptr<glm::vec3> Polygon3::line_intersect_point(ILineVariant &line)
+{
     if (does_intersect_line(line))
 	{
         return getPlane().lineIntersectPoint(line);
@@ -176,7 +183,8 @@ std::shared_ptr<glm::vec3> Polygon3::line_intersect_point(ILineVariant &line){
 	}
 }
 
-bool Polygon3::does_intersect_poly(Polygon3 poly){
+bool Polygon3::does_intersect_poly(Polygon3 poly)
+{
     return (getPlane().doesIntersectPoly(poly) && poly.getPlane().doesIntersectPoly(*this));
 }
 
