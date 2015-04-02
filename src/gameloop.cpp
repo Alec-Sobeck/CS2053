@@ -281,7 +281,8 @@ void GameLoop::buildSampleTerrain()
 	auto terrainExp = terrain->exportToTerrainData();
     this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
     this->terrainRenderer->create(terrainExp, tex);
-	this->grass = new Grass(getRandomInt(1000) + 300, glm::vec3(0, 0, 0), glm::vec3(2.0f, 0, 2.0f), 50, grassTexture);
+	int grassDensity = (getRandomInt(1000) + 300) * 7;
+	this->grass = new Grass(grassDensity, glm::vec3(-20, 0, -20), glm::vec3(2.0f, 0, 2.0f), 80, grassTexture);
 	
 	// Load the tree model
 	ObjParser parser(
@@ -311,14 +312,14 @@ void GameLoop::buildSampleTerrain()
 	}
 	gameLoopObject.gunModel->generateAABB();
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 15; i++)
 	{
-		int x = getRandomInt(100) - 50;
+		int x = getRandomInt(70) - 35;
 		int y = 0;
-		int z = getRandomInt(100) - 50;
+		int z = getRandomInt(70) - 35;
 
 		int retryCounter = 0;
-		while (retryCounter < 10)
+		while (retryCounter < 20)
 		{
 			bool success = true;
 			for (Tree &tree : gameLoopObject.trees)
@@ -334,7 +335,7 @@ void GameLoop::buildSampleTerrain()
 			if (success)
 			{
 				gameLoopObject.trees.push_back(Tree(treeModel, x, y, z));
-				retryCounter += 1000;
+				retryCounter += 1;
 			}
 		}		
 	}
@@ -862,7 +863,7 @@ void entryCall(int argc, char **argv)
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(800,640);
-	glutCreateWindow("BoatQuest IV");
+	glutCreateWindow("Monster Hunter");
 	// register callbacks
 	glutDisplayFunc(gameUpdateTick);
 	glutReshapeFunc(changeSize);

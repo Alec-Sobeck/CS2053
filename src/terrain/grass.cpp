@@ -87,13 +87,23 @@ void Grass::draw(Camera *camera)
 
 inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3 o/*offset*/)
 {
+	float xHalfSize = 0.3f;
+	float yHalfSize = 0.3f;
+	float zHalfSize = 0.3f;
+	float xMinus = -xHalfSize;
+	float xPlus = xHalfSize;
+	float yMinus = 0.0f;
+	float yPlus = 2.0f * yHalfSize;
+	float zMinus = -zHalfSize;
+	float zPlus = zHalfSize;
+
     float sin30 = sin(toRad(30));
     float cos30 = cos(toRad(30));
     // Vert #1 -- quad1
     // Verts
     combinedData[index + 0 * 0 + 0] = o.x + 0.0f;
-    combinedData[index + 0 * 0 + 1] = o.y + 0.0f;
-    combinedData[index + 0 * 0 + 2] = o.z + 1.0f;
+    combinedData[index + 0 * 0 + 1] = o.y + yMinus;
+    combinedData[index + 0 * 0 + 2] = o.z + zPlus;
     // Normals
     combinedData[index + 0 * 0 + 3] = 1.0f;
     combinedData[index + 0 * 0 + 4] = 0.0f;
@@ -109,8 +119,8 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     //Vert2 -- quad1
     // Verts
     combinedData[index + 1 * 12 + 0] = o.x + 0.0f;
-    combinedData[index + 1 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 1 * 12 + 2] = o.z + 1.0f;
+    combinedData[index + 1 * 12 + 1] = o.y + yPlus;
+	combinedData[index + 1 * 12 + 2] = o.z + zPlus;
     // Normals
     combinedData[index + 1 * 12 + 3] = 1.0f;
     combinedData[index + 1 * 12 + 4] = 0.0f;
@@ -126,8 +136,8 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     //Vert3 -- quad1
     // Verts
     combinedData[index + 2 * 12 + 0] = o.x + 0.0f;
-    combinedData[index + 2 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 2 * 12 + 2] = o.z + -1.0f;
+    combinedData[index + 2 * 12 + 1] = o.y + yPlus;
+    combinedData[index + 2 * 12 + 2] = o.z + zMinus;
     // Normals
     combinedData[index + 2 * 12 + 3] = 1.0f;
     combinedData[index + 2 * 12 + 4] = 0.0f;
@@ -143,8 +153,8 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     //Vert4 -- quad1
     // Verts
     combinedData[index + 3 * 12 + 0] = o.x + 0.0f;
-    combinedData[index + 3 * 12 + 1] = o.y + 0.0f;
-    combinedData[index + 3 * 12 + 2] = o.z + -1.0f;
+	combinedData[index + 3 * 12 + 1] = o.y + yMinus;
+    combinedData[index + 3 * 12 + 2] = o.z + zMinus;
     // Normals
     combinedData[index + 3 * 12 + 3] = 1.0f;
     combinedData[index + 3 * 12 + 4] = 0.0f;
@@ -162,12 +172,12 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
 ///
     // Vert #1 -- quad2
     // Verts
-    combinedData[index + 4 * 12 + 0] = o.x + cos30;
+    combinedData[index + 4 * 12 + 0] = o.x + cos30 * xHalfSize;
     combinedData[index + 4 * 12 + 1] = o.y + 0.0f;
-    combinedData[index + 4 * 12 + 2] = o.z + sin30;
+    combinedData[index + 4 * 12 + 2] = o.z + sin30 * zHalfSize;
     // Normals
     combinedData[index + 4 * 12 + 3] = -1.0f / 1.999956f;
-    combinedData[index + 4 * 12 + 4] = 0.0f;
+    combinedData[index + 4 * 12 + 4] = yMinus;
     combinedData[index + 4 * 12 + 5] = 1.732f / 1.999956f;
     // Colour
     combinedData[index + 4 * 12 + 6] = 1.0f;
@@ -179,9 +189,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 4 * 12 + 11] = 0.0f;
     //Vert2 -- quad2
     // Verts
-    combinedData[index + 5 * 12 + 0] = o.x + cos30;
-    combinedData[index + 5 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 5 * 12 + 2] = o.z + sin30;
+	combinedData[index + 5 * 12 + 0] = o.x + cos30 * xHalfSize;
+    combinedData[index + 5 * 12 + 1] = o.y + yPlus;
+    combinedData[index + 5 * 12 + 2] = o.z + sin30 * zHalfSize;
     // Normals
     combinedData[index + 5 * 12 + 3] = -1.0f / 1.999956f;
     combinedData[index + 5 * 12 + 4] = 0.0f;
@@ -196,9 +206,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 5 * 12 + 11] = 1.0f;
     //Vert3 -- quad2
     // Verts
-    combinedData[index + 6 * 12 + 0] = o.x + -cos30;
-    combinedData[index + 6 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 6 * 12 + 2] = o.z + -sin30;
+    combinedData[index + 6 * 12 + 0] = o.x + -cos30 * xHalfSize;
+    combinedData[index + 6 * 12 + 1] = o.y + yPlus;
+    combinedData[index + 6 * 12 + 2] = o.z + -sin30 * zHalfSize;
     // Normals
     combinedData[index + 6 * 12 + 3] = -1.0f / 1.999956f;
     combinedData[index + 6 * 12 + 4] = 0.0f;
@@ -213,9 +223,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 6 * 12 + 11] = 1.0f;
     //Vert4 -- quad2
     // Verts
-    combinedData[index + 7 * 12 + 0] = o.x + -cos30;
-    combinedData[index + 7 * 12 + 1] = o.y + 0.0f;
-    combinedData[index + 7 * 12 + 2] = o.z + -sin30;
+    combinedData[index + 7 * 12 + 0] = o.x + -cos30 * xHalfSize;
+    combinedData[index + 7 * 12 + 1] = o.y + yMinus;
+    combinedData[index + 7 * 12 + 2] = o.z + -sin30 * zHalfSize;
     // Normals
     combinedData[index + 7 * 12 + 3] = -1.0f / 1.999956f;
     combinedData[index + 7 * 12 + 4] = 0.0f;
@@ -233,9 +243,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
 ///
     // Vert #1 -- quad3
     // Verts
-    combinedData[index + 8 * 12 + 0] = o.x + cos30;
-    combinedData[index + 8 * 12 + 1] = o.y + 0.0f;
-    combinedData[index + 8 * 12 + 2] = o.z + -sin30;
+    combinedData[index + 8 * 12 + 0] = o.x + cos30 * xHalfSize;
+    combinedData[index + 8 * 12 + 1] = o.y + yMinus;
+    combinedData[index + 8 * 12 + 2] = o.z + -sin30 * zHalfSize;
     // Normals
     combinedData[index + 8 * 12 + 3] = 1.0f / 1.999956f;
     combinedData[index + 8 * 12 + 4] = 0.0f;
@@ -250,9 +260,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 8 * 12 + 11] = 0.0f;
     //Vert2 -- quad3
     // Verts
-    combinedData[index + 9 * 12 + 0] = o.x + cos30;
-    combinedData[index + 9 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 9 * 12 + 2] = o.z + -sin30;
+    combinedData[index + 9 * 12 + 0] = o.x + cos30 * xHalfSize;
+    combinedData[index + 9 * 12 + 1] = o.y + yPlus;
+    combinedData[index + 9 * 12 + 2] = o.z + -sin30 * zHalfSize;
     // Normals
     combinedData[index + 9 * 12 + 3] = 1.0f / 1.999956f;
     combinedData[index + 9 * 12 + 4] = 0.0f;
@@ -267,9 +277,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 9 * 12 + 11] = 1.0f;
     //Vert3 -- quad3
     // Verts
-    combinedData[index + 10 * 12 + 0] = o.x + -cos30;
-    combinedData[index + 10 * 12 + 1] = o.y + 2.0f;
-    combinedData[index + 10 * 12 + 2] = o.z + sin30;
+    combinedData[index + 10 * 12 + 0] = o.x + -cos30 * xHalfSize;
+    combinedData[index + 10 * 12 + 1] = o.y + yPlus;
+    combinedData[index + 10 * 12 + 2] = o.z + sin30 * zHalfSize;
     // Normals
     combinedData[index + 10 * 12 + 3] = 1.0f / 1.999956f;
     combinedData[index + 10 * 12 + 4] = 0.0f;
@@ -284,9 +294,9 @@ inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3
     combinedData[index + 10 * 12 + 11] = 1.0f;
     //Vert4 -- quad3
     // Verts
-    combinedData[index + 11 * 12 + 0] = o.x + -cos30;
-    combinedData[index + 11 * 12 + 1] = o.y + 0.0f;
-    combinedData[index + 11 * 12 + 2] = o.z + sin30;
+    combinedData[index + 11 * 12 + 0] = o.x + -cos30 * xHalfSize;
+    combinedData[index + 11 * 12 + 1] = o.y + yMinus;
+    combinedData[index + 11 * 12 + 2] = o.z + sin30 * zHalfSize;
     // Normals
     combinedData[index + 11 * 12 + 3] = 1.0f / 1.999956f;
     combinedData[index + 11 * 12 + 4] = 0.0f;
