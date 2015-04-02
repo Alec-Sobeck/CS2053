@@ -13,6 +13,7 @@ class MouseManager
 public:
 	static const int MOUSE_RELEASED = 0;
 	static const int MOUSE_PRESSED = 1;
+	static const int MOUSE_JUST_PRESSED = 2;
 	int leftMouseButtonState;
 	int middleMouseButtonState;
 	int rightMouseButtonState;
@@ -22,6 +23,7 @@ public:
 	glm::vec3 relativeGrabDirection;
 	MouseManager();
 	void setGrabbed(bool);
+	void update();
 	glm::vec3 getRelativeGrabDirection();
 };
 

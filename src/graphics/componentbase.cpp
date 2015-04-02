@@ -36,16 +36,19 @@ void ComponentBase::drawBackground()
 {
 	using namespace gl;
 	//Draw the background texture if there is one. 
-
+	glEnable(GL_TEXTURE_2D);
 	renderTexture->bind();
 	glColor4f(1, 1, 1, 1);
 	glBegin(GL_QUADS);
 	glVertex3d(x, y + height, 0);
-	glTexCoord2f(0, 1);
+	glTexCoord2f(1, 0);
+
 	glVertex3d(x + width, y + height, 0);
 	glTexCoord2f(1, 1);
+
 	glVertex3d(x + width, y, 0);
-	glTexCoord2f(1, 0);
+	glTexCoord2f(0, 1);
+
 	glVertex3d(x, y, 0);
 	glTexCoord2f(0, 0);
 	glEnd();

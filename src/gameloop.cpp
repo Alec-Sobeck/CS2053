@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include <stack>
 #include <list>
 #include <memory>
 #include <stdlib.h>
@@ -34,6 +35,7 @@
 #include "utils/random.h"
 #include "entity/enemy.h"
 #include "entity/player.h"
+#include "render/menu.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -110,11 +112,20 @@ public:
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	std::shared_ptr<Texture> skyboxTexture;
 	AABB worldBounds;
+	std::stack<std::shared_ptr<Menu>> menus;
+
+	std::shared_ptr<Texture> startDesertButtonTexture;
+	std::shared_ptr<Texture> startForestButtonTexture;
+	std::shared_ptr<Texture> helpButtonTexture;
+	std::shared_ptr<Texture> optionsButtonTexture;
+	std::shared_ptr<Texture> backButtonTexture;
+	std::shared_ptr<Texture> helpTexture;
 
     GameLoop();
 	~GameLoop();
     void buildSampleTerrain();
 	void update();
+	void endOfTick();
 	void collisionCheck();
 	float getDeltaTime();
 	///
@@ -275,6 +286,7 @@ void GameLoop::buildSampleTerrain()
 
 	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
 
+	
 
 	auto tex = getTexture(buildPath("res/terrain.png"));
 	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
@@ -359,7 +371,35 @@ void GameLoop::buildSampleTerrain()
 	}
 	gameLoopObject.zombieModel->generateAABB(); 
 
+	// Create the menu(s)
+	gameLoopObject.startDesertButtonTexture = getTexture(buildPath("res/button_start.png"));
+	gameLoopObject.startForestButtonTexture = getTexture(buildPath("res/button_start2.png"));
+	gameLoopObject.helpButtonTexture = getTexture(buildPath("res/button_help.png"));
+	gameLoopObject.optionsButtonTexture = getTexture(buildPath("res/button_options.png"));
+	gameLoopObject.backButtonTexture = getTexture(buildPath("res/button_back.png"));
+	gameLoopObject.helpTexture = getTexture(buildPath("res/help.png"));
+	auto backButtonTexture = this->backButtonTexture;
+	auto helpTexture = this->helpTexture;
+	
+	std::shared_ptr<Menu> mainMenu(new MainMenu(startDesertButtonTexture, startForestButtonTexture, helpButtonTexture, optionsButtonTexture, 
+		[](){
+			// DesertEvt
+					
+		},
+		[](){
+			// forestEvt
 
+		},
+			[backButtonTexture, helpTexture](){
+			// helpEvn
+			gameLoopObject.menus.push(std::shared_ptr<Menu>(new HelpMenu(backButtonTexture, helpTexture)));
+		},
+			[backButtonTexture](){
+			// optionsEvn
+			gameLoopObject.menus.push(std::shared_ptr<Menu>(new OptionsMenu(backButtonTexture)));
+		}
+	));
+	menus.push(mainMenu);
 }
 
 bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
@@ -395,23 +435,32 @@ void GameLoop::update()
 	unsigned long long deltaTimeMillis = currentTime - previousFrameTime;
 	this->deltaTime = static_cast<float>(deltaTimeMillis) / 1000.0f;
 	previousFrameTime = currentTime;
-	if (!hasStartedBGM)
+	keyManager.update();
+
+	if (menus.size() == 0)
 	{
-		hasStartedBGM = true;
-		ERRCHECK(gameLoopObject.bgmInstance->start());
-	}
-	else
-	{
-		FMOD_STUDIO_PLAYBACK_STATE bgmState;
-		gameLoopObject.bgmInstance->getPlaybackState(&bgmState);
-		if (bgmState == FMOD_STUDIO_PLAYBACK_STOPPED)
+		if (!hasStartedBGM)
 		{
+			hasStartedBGM = true;
 			ERRCHECK(gameLoopObject.bgmInstance->start());
 		}
+		else
+		{
+			FMOD_STUDIO_PLAYBACK_STATE bgmState;
+			gameLoopObject.bgmInstance->getPlaybackState(&bgmState);
+			if (bgmState == FMOD_STUDIO_PLAYBACK_STOPPED)
+			{
+				ERRCHECK(gameLoopObject.bgmInstance->start());
+			}
+		}
+		// Check collisions
+		collisionCheck();
 	}
+}
 
-	// Check collisions
-	collisionCheck();
+void GameLoop::endOfTick()
+{
+	mouseManager.update();
 }
 
 void GameLoop::collisionCheck()
@@ -503,8 +552,28 @@ void gameUpdateTick()
 	float deltaTime = gameLoopObject.getDeltaTime();
 
 	gameLoopObject.update();
-    processKeyboardInput();
-    processMouseInput();
+    if (gameLoopObject.menus.size() > 0)
+	{
+		// Draw the menu
+		startRenderCycle();
+		start2DRenderCycle();
+
+		std::shared_ptr<Menu> m = gameLoopObject.menus.top();
+		m->update(&gameLoopObject.mouseManager, deltaTime);
+		m->draw(deltaTime);
+		if (m->shouldPopThisMenu())
+		{
+			gameLoopObject.menus.pop();
+		}
+		
+		end2DRenderCycle();
+		endRenderCycle();
+		gameLoopObject.endOfTick();
+		return;
+	}
+
+	processKeyboardInput();
+	processMouseInput();
 
     //Draw here
     startRenderCycle();
@@ -648,7 +717,7 @@ void gameUpdateTick()
 	drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
     end2DRenderCycle();
     endRenderCycle();
-
+	gameLoopObject.endOfTick();
 }
 
 ///***********************************************************************
@@ -669,8 +738,7 @@ void processKeyboardInput()
     //       GLUT_ACTIVE_ALT - Set if you press the ALT key.
     Camera *camera = gameLoopObject.player.getCamera();
     KeyManager *manager = &gameLoopObject.keyManager;
-    manager->update();
-
+   
     if (manager->getKeyState(27) == KeyManager::PRESSED) // Escape key
 	{
 		exit(0);
@@ -1029,7 +1097,14 @@ The second argument relates to the state of the button when the callback was gen
     {
         if(state == GLUT_DOWN)
         {
-            gameLoopObject.mouseManager.leftMouseButtonState = MouseManager::MOUSE_PRESSED;
+			if (gameLoopObject.mouseManager.leftMouseButtonState == MouseManager::MOUSE_RELEASED)
+			{
+				gameLoopObject.mouseManager.leftMouseButtonState = MouseManager::MOUSE_JUST_PRESSED;
+			}
+			else
+			{
+				gameLoopObject.mouseManager.leftMouseButtonState = MouseManager::MOUSE_PRESSED;
+			}
         }
         if(state == GLUT_UP)
         {
@@ -1038,10 +1113,17 @@ The second argument relates to the state of the button when the callback was gen
     }
     if(button == GLUT_MIDDLE_BUTTON)
     {
-        if(state == GLUT_DOWN)
-        {
-            gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_PRESSED;
-        }
+		if (state == GLUT_DOWN)
+		{
+			if (gameLoopObject.mouseManager.middleMouseButtonState == MouseManager::MOUSE_RELEASED)
+			{
+				gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_JUST_PRESSED;
+			}
+			else
+			{
+				gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_PRESSED;
+			}
+		}
         if(state == GLUT_UP)
         {
             gameLoopObject.mouseManager.middleMouseButtonState = MouseManager::MOUSE_RELEASED;
@@ -1051,8 +1133,15 @@ The second argument relates to the state of the button when the callback was gen
     {
         if(state == GLUT_DOWN)
         {
-            gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_PRESSED;
-        }
+			if (gameLoopObject.mouseManager.rightMouseButtonState == MouseManager::MOUSE_RELEASED)
+			{
+				gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_JUST_PRESSED;
+			}
+			else
+			{
+				gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_PRESSED;
+			}
+		}
         if(state == GLUT_UP)
         {
             gameLoopObject.mouseManager.rightMouseButtonState = MouseManager::MOUSE_RELEASED;
@@ -1151,5 +1240,19 @@ glm::vec3 MouseManager::getRelativeGrabDirection()
     }
 }
 
-
+void MouseManager::update()
+{
+	if (leftMouseButtonState == MOUSE_JUST_PRESSED)
+	{
+		leftMouseButtonState = MOUSE_PRESSED;
+	}
+	if (middleMouseButtonState == MOUSE_JUST_PRESSED)
+	{
+		middleMouseButtonState = MOUSE_PRESSED;
+	}
+	if (rightMouseButtonState == MOUSE_JUST_PRESSED)
+	{
+		rightMouseButtonState = MOUSE_PRESSED;
+	}
+}
 
