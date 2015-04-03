@@ -31,8 +31,13 @@ Enemy::~Enemy()
 
 }
 
-void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
+void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds, std::shared_ptr<Grid> worldGrid)
 {
+	if (!pathFinder)
+	{
+		pathFinder = std::shared_ptr<PathFinder>(new PathFinder(worldGrid));
+	}
+
 	// Figure out where the entity is relative to the player
 	glm::vec3 toPlayer = (player.getPosition() - getPosition());
 	toPlayer.y = 0;
@@ -54,7 +59,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 			state = AIState::LOSING_SIGHT;
 		}
 		// Else chase and attack
-		this->accel(toPlayer * deltaTime * speedModifier);
+		pathfind(worldGrid, player.getPosition(), deltaTime);
 		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 	else if (state == AIState::LOSING_SIGHT)
@@ -68,7 +73,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 			state = AIState::ATTACK;
 		}
 		// Persue at this distance if previously chasing the player. otherwise, ignore them.
-		this->accel(toPlayer * deltaTime * speedModifier);
+		pathfind(worldGrid, player.getPosition(), deltaTime);
 		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 
@@ -93,3 +98,68 @@ void Enemy::draw(Camera *cam)
 	model->draw(cam);
 	glPopMatrix();
 }
+
+void Enemy::pathfind(std::shared_ptr<Grid> worldGrid, glm::vec3 playerPos, float deltaTime)
+{
+	glm::vec2 position(getX(), getZ());
+	glm::vec2 targetPosition(playerPos.x, playerPos.z);
+
+	position = worldGrid->convertWorldToGrid(position);
+	targetPosition = worldGrid->convertWorldToGrid(targetPosition);
+
+	float speed = deltaTime * speedModifier;
+	if (glm::length(previousTargetPosition - glm::vec2(playerPos.x, playerPos.z)) > 3 || !currentNode->parent)
+	{
+		path = nullptr;
+		currentNode = nullptr;
+	}
+
+	if (!path)
+	{
+		previousTargetPosition = glm::vec2(playerPos.x, playerPos.z);
+		path = pathFinder->computePath(targetPosition, position);
+		currentNode = path;
+	}
+	
+	if (currentNode)
+	{
+		float xDist = fabs(position.x - currentNode->cellX);
+		float yDist = fabs(position.y - currentNode->cellY);
+		if (position.x != currentNode->cellX || position.y != currentNode->cellY)
+		{
+			currentNode = currentNode->parent;
+		}
+
+		if (currentNode)
+		{
+			glm::vec2 nextPosition(currentNode->cellX, currentNode->cellY);
+			nextPosition = worldGrid->revertToWorldFromGrid(nextPosition);
+			glm::vec3 movement = (glm::vec3(nextPosition.x, 0, nextPosition.y) - getPosition()) * speed;
+			accel(movement);
+		}
+	}
+
+
+}
+
+/*
+
+void update()
+{
+
+}
+
+void move(Vector2 nextPosition)
+{
+Vector2 direction = nextPosition - position;
+direction.Normalize();
+Vector2 moveTo = position + speed * direction;
+int gridX = (int)moveTo.X / 10;
+int gridY = (int)moveTo.Y / 10;
+position += speed * direction;
+}
+
+
+};
+
+*/

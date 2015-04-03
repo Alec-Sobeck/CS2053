@@ -49,6 +49,7 @@ void Sphere::draw(GLfloat x, GLfloat y, GLfloat z)
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glTranslatef(x, y, z);
+	glColor3f(0.5f, 0.5f, 0.5f);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);

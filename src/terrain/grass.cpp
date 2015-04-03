@@ -53,12 +53,10 @@ void Grass::draw(Camera *camera)
     glEnable(GL_ALPHA_TEST);
 
     glDisable(GL_CULL_FACE);
-    glLoadIdentity();
     glEnable(GL_TEXTURE_2D);
-    glScalef(1.0f,1.0f,1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
     // Translate to model co-ordinates, based on the origin of the shape
-    setLookAt(camera);
+    
 
     if(grassShader)
     {
@@ -69,7 +67,6 @@ void Grass::draw(Camera *camera)
         grassShader->glUniform1("texture1", 0);
         grassShader->glUniform3("windDirection", windDirection);
         grassShader->glUniform1("windPower", power);
-        glActiveTexture(GL_TEXTURE0);
         vbo->associatedTexture->bind();
     }
     vbo->draw(camera);

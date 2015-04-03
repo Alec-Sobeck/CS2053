@@ -32,6 +32,7 @@ void Player::reset()
 	this->invincibilityFrames = 0;
 	this->score = 0;
 	this->ammoCount = 500;
+	camera.setPosition(glm::vec3(30, 0, 30));
 }
 
 bool Player::isInvincible()

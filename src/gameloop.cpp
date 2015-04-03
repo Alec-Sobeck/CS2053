@@ -36,6 +36,7 @@
 #include "entity/enemy.h"
 #include "entity/player.h"
 #include "render/menu.h"
+#include "entity/grid.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -82,6 +83,7 @@ public:
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	AABB worldBounds;
 	std::shared_ptr<TerrainRenderer> terrainRenderer;
+	std::shared_ptr<Grid> worldGrid;
 	Level();
 	virtual void createLevel() = 0;
 	virtual void update(float deltaTime) = 0;
@@ -100,6 +102,7 @@ public:
 	void update(float deltaTime) override;
 	void draw(Camera* cam, float deltaTime) override;
 	void drawTerrain(Camera *cam);
+	void applyFog();
 };
 
 class DesertLevel : public Level
@@ -368,7 +371,6 @@ void GameLoop::loadModels()
 void GameLoop::loadWithGLContext()
 {
 	loadModels();
-
 	skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
 	terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
 	terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
@@ -601,7 +603,7 @@ void GameLoop::collisionCheck()
 /// Define methods to load the levels
 ///
 
-Level::Level() : worldBounds(AABB(0, 0, 0, 0, 0, 0))
+Level::Level() : worldBounds(AABB(0, 0, 0, 0, 0, 0)), worldGrid(nullptr)
 {
 }
 
@@ -623,6 +625,8 @@ void ForestLevel::createLevel()
 	auto terrainExp = terrain->exportToTerrainData();
 	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
 	this->terrainRenderer->create(terrainExp, tex);
+	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
+
 	// Create the grass
 	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
 	int grassDensity = (getRandomInt(1000) + 300) * 7;
@@ -654,16 +658,22 @@ void ForestLevel::createLevel()
 				retryCounter += 1;
 			}
 		}
+
+		AABB box = gameLoopObject.treeModel->getAABB();
+		glm::vec3 s((box.xMax - box.xMin), (box.yMax - box.yMin), (box.zMax - box.zMin)); // sizes
+		worldGrid->mark(x, z, s.x, s.z, true); 
+
 	}
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
+
 }
 
 void ForestLevel::update(float deltaTime)
 {
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
+		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds, worldGrid);
 	}
 	grass->update();
 
@@ -688,23 +698,36 @@ void ForestLevel::drawTerrain(Camera *cam)
 	terrainRenderer->draw(cam);
 }
 
+void ForestLevel::applyFog()
+{
+	using namespace gl;
+	GLfloat fogColor[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	glFogi(GL_FOG_MODE, static_cast<GLfloat>(GL_LINEAR));        // Fog Mode
+	glFogfv(GL_FOG_COLOR, fogColor);            // Set Fog Color
+	glFogf(GL_FOG_DENSITY, 0.35f);              // How Dense Will The Fog Be
+	glHint(GL_FOG_HINT, GL_DONT_CARE);          // Fog Hint Value
+	glFogf(GL_FOG_START, 1.0f);             // Fog Start Depth
+	glFogf(GL_FOG_END, 15.0f);               // Fog End Depth
+	glEnable(GL_FOG);                   // Enables GL_FOG
+}
+
 void ForestLevel::draw(Camera* cam, float deltaTime)
 {
 	using namespace gl;
+	gl::glLoadIdentity();
+	setLookAt(cam);
+	glEnable(GL_DEPTH_TEST);
+	
 	/// tree
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 	glDisable(GL_BLEND);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
 	for (Tree &tree : trees)
 	{
 		tree.draw(cam);
@@ -714,7 +737,9 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	/// end tree
-		
+	glLoadIdentity();
+	setLookAt(cam);
+	glEnable(GL_DEPTH_TEST);
 	grass->draw(cam);
 
 	// draw enemies
@@ -722,15 +747,11 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
 	glDisable(GL_BLEND);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_ALPHA_TEST);
-	glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
 		enemy->draw(cam);
@@ -762,13 +783,15 @@ void DesertLevel::createLevel()
 	this->terrainRenderer->create(terrainExp, tex);
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
+	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
+
 }
 
 void DesertLevel::update(float deltaTime)
 {
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
+		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds, worldGrid);
 	}
 	double chance = 0.15 * static_cast<double>(deltaTime);
 	double f = static_cast<double>(getRandomFloat());
@@ -1041,18 +1064,18 @@ void processKeyboardInput()
 		gameLoopObject.player.health = 0;
 	}
 
-	/*
+	
     static bool keylockTab = false;
-    if(manager->getKeyState('\t') == KeyManager::PRESSED && !keylockTab)
+    if(manager->getKeyState('=') == KeyManager::PRESSED && !keylockTab)
     {
         keylockTab = true;
         gameLoopObject.mouseManager.setGrabbed(!gameLoopObject.mouseManager.grabbed);
     }
-    if(manager->getKeyState('\t') == KeyManager::RELEASED)
+    if(manager->getKeyState('=') == KeyManager::RELEASED)
     {
         keylockTab = false;
     }
-	*/
+	
 	/*
     if(manager->getKeyState(' ') == KeyManager::PRESSED)
     {

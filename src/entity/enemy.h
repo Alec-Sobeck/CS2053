@@ -9,6 +9,8 @@
 #include "graphics/camera.h"
 #include "graphics/model.h"
 #include "entity/player.h"
+#include "grid.h"
+#include "pathfinder.h"
 
 enum class AIState
 {
@@ -25,6 +27,10 @@ class Enemy : public Entity
 public:
 	AIState state = AIState::IDLE;
 	float speedModifier;
+	std::shared_ptr<PathFinder> pathFinder;
+	std::shared_ptr<PlannerNode> path;
+	std::shared_ptr<PlannerNode> currentNode;
+	glm::vec2 previousTargetPosition;
 	/**
 	* Creates a new Entity and assigns it the provided entityID, model, and camera.
 	* @param entityID an int which must uniquely identify this Entity. It is suggested that this
@@ -34,7 +40,8 @@ public:
 	*/
 	Enemy(std::shared_ptr<Model> model, Camera camera);
 	~Enemy();
-	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);
+	void onGameTick(Player &player, float deltaTime, AABB &worldBounds, std::shared_ptr<Grid> worldGrid);
 	void draw(Camera* cam);
+	void pathfind(std::shared_ptr<Grid> worldGrid, glm::vec3, float deltaTime);
 };
 #endif
