@@ -24,6 +24,7 @@ public:
 	~Player();
 	void hurtPlayer(int amount);
 	bool isDead();
+	void reset();
 	bool isInvincible();
 	void update(AABB &worldBounds, float deltaTime);
 };

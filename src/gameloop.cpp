@@ -55,7 +55,6 @@ void processMouseInput();
 /// Game update/rendering functions
 ///
 void gameUpdateTick();
-
 ///
 /// Define the KeyManager class. Because GLUT is a C library, unfortunately we have to write this is a fairly C-like style.
 ///
@@ -70,14 +69,52 @@ void updateModifierState();
 ///
 /// Define the MouseManager class. Similarly to KeyManager this is in a fairly C-like style because GLUT is a C library.
 ///
-
 void mouseManagerHandleMouseClick(int button, int state, int x, int y);
 void mouseManagerHandleMouseMovementWhileClicked(int x,int y);
 void mouseManagerHandleMouseMovementWhileNotClicked(int x, int y);
 ///
-/// Define the GameLoop class.
+/// Level class
 ///
 
+class Level
+{
+public:
+	std::vector<std::shared_ptr<Enemy>> enemies;
+	AABB worldBounds;
+	std::shared_ptr<TerrainRenderer> terrainRenderer;
+	Level();
+	virtual void createLevel() = 0;
+	virtual void update(float deltaTime) = 0;
+	virtual void draw(Camera *cam, float deltaTime) = 0;
+	virtual void drawTerrain(Camera *cam) = 0;
+};
+
+class ForestLevel : public Level
+{
+public: 
+	std::list<Tree> trees;
+	std::shared_ptr<Grass> grass;
+	ForestLevel();
+	~ForestLevel();
+	void createLevel() override;
+	void update(float deltaTime) override;
+	void draw(Camera* cam, float deltaTime) override;
+	void drawTerrain(Camera *cam);
+};
+
+class DesertLevel : public Level
+{
+public:
+	DesertLevel();
+	void createLevel() override;
+	void update(float deltaTime) override;
+	void draw(Camera* cam, float deltaTime) override;
+	void drawTerrain(Camera *cam);
+};
+
+///
+/// Define the GameLoop class.
+///
 class GameLoop
 {
 public:
@@ -87,10 +124,10 @@ public:
     std::shared_ptr<TerrainData> terrain;
     Map map;
     long startTime;
-    std::shared_ptr<TerrainRenderer> terrainRenderer;
+    
     KeyManager keyManager;
     MouseManager mouseManager;
-    Grass *grass; 
+  
     std::shared_ptr<Model> treeModel;
 	std::shared_ptr<Model> gunModel;
 	std::shared_ptr<Model> zombieModel;
@@ -107,26 +144,27 @@ public:
 	FMOD::Studio::EventInstance* eventInstance;
 	FMOD::Studio::EventInstance* bgmInstance;
 	FMOD::Studio::EventInstance* hurtInstance;
-	std::list<Tree> trees;
 	bool hasStartedBGM = false;
-	std::vector<std::shared_ptr<Enemy>> enemies;
 	std::shared_ptr<Texture> skyboxTexture;
-	AABB worldBounds;
 	std::stack<std::shared_ptr<Menu>> menus;
-
 	std::shared_ptr<Texture> startDesertButtonTexture;
 	std::shared_ptr<Texture> startForestButtonTexture;
 	std::shared_ptr<Texture> helpButtonTexture;
 	std::shared_ptr<Texture> optionsButtonTexture;
 	std::shared_ptr<Texture> backButtonTexture;
 	std::shared_ptr<Texture> helpTexture;
+	std::shared_ptr<Menu> mainMenu;
+	std::shared_ptr<Texture> terrainTextureGrass;
+	std::shared_ptr<Texture> terrainTextureSand;	
+	std::shared_ptr<Level> activeLevel;
 
     GameLoop();
 	~GameLoop();
-    void buildSampleTerrain();
+	void loadWithGLContext();
 	void update();
 	void endOfTick();
 	void collisionCheck();
+	void loadModels();
 	float getDeltaTime();
 	///
     /// Draws a basic text string.
@@ -151,7 +189,6 @@ public:
 ///***********************************************************************
 ///***********************************************************************
 GameLoop gameLoopObject;
-
 ///***********************************************************************
 ///***********************************************************************
 /// Define initialization functions
@@ -250,7 +287,7 @@ void initializeEngine()
 	ERRCHECK(gameLoopObject.eventInstance->set3DAttributes(&attributes));
 
 	// Build the terrain
-	gameLoopObject.buildSampleTerrain();
+	gameLoopObject.loadWithGLContext();
 }
 
 ///***********************************************************************
@@ -258,8 +295,8 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
-GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), map(Map(AABB(-200, -10, -200, 200, 10, 200))), startTime(getCurrentTimeMillis()),
-terrainRenderer(std::shared_ptr<TerrainRenderer>(nullptr)), grass(nullptr), previousFrameTime(getCurrentTimeMillis()), worldBounds(AABB(0, 0, 0, 0, 0, 0))
+GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), map(Map(AABB(-200, -10, -200, 200, 10, 200))), 
+startTime(getCurrentTimeMillis()), previousFrameTime(getCurrentTimeMillis())
 {
 	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
@@ -272,41 +309,21 @@ GameLoop::~GameLoop()
 	{
 		ERRCHECK(system->release());
 	}
-	if (grass)
-	{
-		delete grass;
-	}
 }
 
-void GameLoop::buildSampleTerrain()
+void GameLoop::loadModels()
 {
-    glm::vec3 v(getWindowWidth(), getWindowHeight(), 1.0);
-    std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
-	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
-
-	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
-
-	
-
-	auto tex = getTexture(buildPath("res/terrain.png"));
-	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
-	auto terrainExp = terrain->exportToTerrainData();
-    this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
-    this->terrainRenderer->create(terrainExp, tex);
-	int grassDensity = (getRandomInt(1000) + 300) * 7;
-	this->grass = new Grass(grassDensity, glm::vec3(-20, 0, -20), glm::vec3(2.0f, 0, 2.0f), 80, grassTexture);
-	
 	// Load the tree model
 	ObjParser parser(
 		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
-		"Branches0018_1_S.png", false );
+		"Branches0018_1_S.png", false);
 	gameLoopObject.treeModel = parser.exportModel();
 	auto treeTexture = getTexture(buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
 	auto branchTexture = getTexture(buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
 	std::map<std::string, std::shared_ptr<Texture>> textures;
-    textures["tree"] = treeTexture;
-    textures["leaves"] = branchTexture;
-    gameLoopObject.treeModel->createVBOs(textures);
+	textures["tree"] = treeTexture;
+	textures["leaves"] = branchTexture;
+	gameLoopObject.treeModel->createVBOs(textures);
 
 	// Load the gun model
 	parser = ObjParser(
@@ -323,34 +340,6 @@ void GameLoop::buildSampleTerrain()
 		vbo->associatedTexture = Handgun_D;
 	}
 	gameLoopObject.gunModel->generateAABB();
-
-	for (int i = 0; i < 15; i++)
-	{
-		int x = getRandomInt(70) - 35;
-		int y = 0;
-		int z = getRandomInt(70) - 35;
-
-		int retryCounter = 0;
-		while (retryCounter < 20)
-		{
-			bool success = true;
-			for (Tree &tree : gameLoopObject.trees)
-			{
-				float distanceSquared = square(tree.x - x) + square(tree.y - y);
-				if (distanceSquared < 25)
-				{
-					success = false;
-					break;
-				}
-			}
-			retryCounter++;
-			if (success)
-			{
-				gameLoopObject.trees.push_back(Tree(treeModel, x, y, z));
-				retryCounter += 1;
-			}
-		}		
-	}
 
 	// Load the zombie
 	parser = ObjParser(buildPath("res/models/zombie/"), buildPath("res/models/zombie/Lambent_Male.obj"), "", true);
@@ -369,8 +358,16 @@ void GameLoop::buildSampleTerrain()
 	{
 		vbo->associatedTexture = _D;
 	}
-	gameLoopObject.zombieModel->generateAABB(); 
+	gameLoopObject.zombieModel->generateAABB();
+}
 
+void GameLoop::loadWithGLContext()
+{
+	loadModels();
+
+	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
+	gameLoopObject.terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
+	gameLoopObject.terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
 	// Create the menu(s)
 	gameLoopObject.startDesertButtonTexture = getTexture(buildPath("res/button_start.png"));
 	gameLoopObject.startForestButtonTexture = getTexture(buildPath("res/button_start2.png"));
@@ -379,22 +376,30 @@ void GameLoop::buildSampleTerrain()
 	gameLoopObject.backButtonTexture = getTexture(buildPath("res/button_back.png"));
 	gameLoopObject.helpTexture = getTexture(buildPath("res/help.png"));
 	auto backButtonTexture = this->backButtonTexture;
-	auto helpTexture = this->helpTexture;
-	
-	std::shared_ptr<Menu> mainMenu(new MainMenu(startDesertButtonTexture, startForestButtonTexture, helpButtonTexture, optionsButtonTexture, 
-		[](){
+	auto helpTexture = this->helpTexture;	
+	std::shared_ptr<Level> *activeLevel = &this->activeLevel;
+	mainMenu = std::shared_ptr<Menu>(new MainMenu(startDesertButtonTexture, startForestButtonTexture, helpButtonTexture, optionsButtonTexture,
+		[activeLevel](){
 			// DesertEvt
-					
+			if (!(*activeLevel))
+			{
+				*activeLevel = std::shared_ptr<Level>(new DesertLevel());
+				(*activeLevel)->createLevel();
+			}
 		},
-		[](){
+		[activeLevel](){
 			// forestEvt
-
+			if (!(*activeLevel))
+			{
+				*activeLevel = std::shared_ptr<Level>(new ForestLevel());
+				(*activeLevel)->createLevel();
+			}
 		},
-			[backButtonTexture, helpTexture](){
+		[backButtonTexture, helpTexture](){
 			// helpEvn
 			gameLoopObject.menus.push(std::shared_ptr<Menu>(new HelpMenu(backButtonTexture, helpTexture)));
 		},
-			[backButtonTexture](){
+		[backButtonTexture](){
 			// optionsEvn
 			gameLoopObject.menus.push(std::shared_ptr<Menu>(new OptionsMenu(backButtonTexture)));
 		}
@@ -431,29 +436,47 @@ float GameLoop::getDeltaTime()
 
 void GameLoop::update()
 {
+	system->update();
 	unsigned long long currentTime = getCurrentTimeMillis();
 	unsigned long long deltaTimeMillis = currentTime - previousFrameTime;
 	this->deltaTime = static_cast<float>(deltaTimeMillis) / 1000.0f;
 	previousFrameTime = currentTime;
 	keyManager.update();
+	
+	if (player.isDead() && activeLevel)
+	{
+		activeLevel = nullptr;
+		menus.push(mainMenu);
+		menus.push(std::shared_ptr<Menu>(new GameOverMenu(backButtonTexture)));
+		bgmInstance->stop(FMOD_STUDIO_STOP_MODE::FMOD_STUDIO_STOP_IMMEDIATE);
+	}
+	if (activeLevel && menus.size() > 0)
+	{
+		while (menus.size() > 0)
+		{
+			menus.pop();
+		}
+	}
 
-	if (menus.size() == 0)
+	if (activeLevel)
 	{
 		if (!hasStartedBGM)
 		{
 			hasStartedBGM = true;
-			ERRCHECK(gameLoopObject.bgmInstance->start());
+			ERRCHECK(bgmInstance->start());
 		}
 		else
 		{
 			FMOD_STUDIO_PLAYBACK_STATE bgmState;
-			gameLoopObject.bgmInstance->getPlaybackState(&bgmState);
+			bgmInstance->getPlaybackState(&bgmState);
 			if (bgmState == FMOD_STUDIO_PLAYBACK_STOPPED)
 			{
-				ERRCHECK(gameLoopObject.bgmInstance->start());
+				ERRCHECK(bgmInstance->start());
 			}
 		}
 		// Check collisions
+		activeLevel->update(this->deltaTime);
+		player.update(activeLevel->worldBounds, deltaTime);
 		collisionCheck();
 	}
 }
@@ -465,6 +488,7 @@ void GameLoop::endOfTick()
 
 void GameLoop::collisionCheck()
 {
+	std::vector<std::shared_ptr<Enemy>> enemies = activeLevel->enemies;
 	// Player - monster collision
 	for (int i = 0; i < enemies.size(); i++)
 	{
@@ -536,7 +560,180 @@ void GameLoop::collisionCheck()
 			continue;
 		}
 	}
+}
 
+///
+/// Define methods to load the levels
+///
+
+Level::Level() : worldBounds(AABB(0,0,0,0,0,0))
+{
+}
+
+ForestLevel::ForestLevel() : Level()
+{
+}
+
+ForestLevel::~ForestLevel()
+{
+}
+
+void ForestLevel::createLevel()
+{
+	// Generate a forest level
+	// Create the terrain	
+	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
+	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
+	auto tex = getTexture(buildPath("res/grass1.png"));
+	auto terrainExp = terrain->exportToTerrainData();
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
+	this->terrainRenderer->create(terrainExp, tex);
+	// Create the grass
+	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
+	int grassDensity = (getRandomInt(1000) + 300) * 7;
+	this->grass = std::shared_ptr<Grass>(new Grass(grassDensity, glm::vec3(-20, 0, -20), glm::vec3(2.0f, 0, 2.0f), 80, grassTexture));
+	//Generate some trees.
+	for (int i = 0; i < 15; i++)
+	{
+		int x = getRandomInt(70) - 35;
+		int y = 0;
+		int z = getRandomInt(70) - 35;
+
+		int retryCounter = 0;
+		while (retryCounter < 20)
+		{
+			bool success = true;
+			for (Tree &tree : trees)
+			{
+				float distanceSquared = square(tree.x - x) + square(tree.y - y);
+				if (distanceSquared < 25)
+				{
+					success = false;
+					break;
+				}
+			}
+			retryCounter++;
+			if (success)
+			{
+				trees.push_back(Tree(gameLoopObject.treeModel, x, y, z));
+				retryCounter += 1;
+			}
+		}
+	}
+	gameLoopObject.projectiles.clear();
+	gameLoopObject.player.reset();
+}
+
+void ForestLevel::update(float deltaTime)
+{
+	for (std::shared_ptr<Enemy> enemy : enemies)
+	{
+		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
+	}
+	grass->update();
+}
+
+void ForestLevel::drawTerrain(Camera *cam)
+{
+	terrainRenderer->draw(cam);
+}
+
+void ForestLevel::draw(Camera* cam, float deltaTime)
+{
+	using namespace gl;
+	/// tree
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	gl::glLoadIdentity();
+	glEnable(GL_TEXTURE_2D);
+	setLookAt(cam);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	for (Tree &tree : trees)
+	{
+		tree.draw(cam);
+	}
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	/// end tree
+		
+	grass->draw(cam);
+}
+
+DesertLevel::DesertLevel() : Level()
+{
+}
+
+void DesertLevel::drawTerrain(Camera *cam)
+{
+	terrainRenderer->draw(cam);
+}
+
+void DesertLevel::createLevel()
+{
+	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
+	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
+	auto tex = getTexture(buildPath("res/sand1.png"));
+	auto terrainExp = terrain->exportToTerrainData();
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
+	this->terrainRenderer->create(terrainExp, tex);
+	gameLoopObject.projectiles.clear();
+	gameLoopObject.player.reset();
+}
+
+void DesertLevel::update(float deltaTime)
+{
+	for (std::shared_ptr<Enemy> enemy : enemies)
+	{
+		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
+	}
+	/*
+	// Try to spawn an enemy
+	std::shared_ptr<Enemy> enemy(new Enemy(
+		gameLoopObject.zombieModel, 
+		Camera(glm::vec3(static_cast<float>(getRandomInt(30) - 15), 0, static_cast<float>(getRandomInt(30) - 15)), 
+		glm::vec3(0, 0, 0)))
+	);
+	enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
+	enemies.push_back(enemy);
+	*/
+}
+
+void DesertLevel::draw(Camera* cam, float deltaTime)
+{
+	using namespace gl;
+	// draw enemies
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	glLoadIdentity();
+	glEnable(GL_TEXTURE_2D);
+	setLookAt(cam);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	for (std::shared_ptr<Enemy> enemy : enemies)
+	{
+		enemy->draw(cam);
+	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	// End draw enemies
 }
 
 ///***********************************************************************
@@ -547,10 +744,8 @@ void GameLoop::collisionCheck()
 
 void gameUpdateTick()
 {
-    using namespace gl;
-	gameLoopObject.system->update();
+    using namespace gl;	
 	float deltaTime = gameLoopObject.getDeltaTime();
-
 	gameLoopObject.update();
     if (gameLoopObject.menus.size() > 0)
 	{
@@ -577,21 +772,19 @@ void gameUpdateTick()
 
     //Draw here
     startRenderCycle();
-    gl::glClearDepth(1.0f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
     Camera *cam = gameLoopObject.player.getCamera();
     startRenderCycle();
     start3DRenderCycle();
-	
-	AABB box = gameLoopObject.treeModel->getAABB();
 	renderAxes(cam);
-	drawSkybox(gameLoopObject.skyboxTexture, cam);
-	gameLoopObject.player.update(gameLoopObject.worldBounds, deltaTime);
-    gameLoopObject.terrainRenderer->draw(cam);
+	drawSkybox(gameLoopObject.skyboxTexture, cam);	
+	gameLoopObject.activeLevel->drawTerrain(cam);
 
-	glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
 	glDisable(GL_TEXTURE_2D);
 	for (int i = 0; i < gameLoopObject.projectiles.size(); )
@@ -609,60 +802,12 @@ void gameUpdateTick()
 			i++;
 		}
 	}
+
+	glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
 
-	/// DRAW -- tree
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glDisable(GL_BLEND);
-    glAlphaFunc(GL_GREATER, 0.1f);
-    glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
-    glEnable(GL_TEXTURE_2D);
-    setLookAt(cam);
-    glDisable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
-    for(Tree &tree : gameLoopObject.trees)
-    {
-        tree.draw(cam);
-    }
-	glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	/// END DRAW -- tree
-	// draw enemies
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
-	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	for (std::shared_ptr<Enemy> enemy: gameLoopObject.enemies)
-	{
-		enemy->onGameTick(gameLoopObject.player, deltaTime, gameLoopObject.worldBounds);
-		enemy->draw(cam);
-	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	// End draw enemies
-
-	gameLoopObject.grass->update(cam);
-    gameLoopObject.grass->draw(cam);
-    
+	gameLoopObject.activeLevel->draw(cam, deltaTime);
+	    
 	// Draw the player's gun
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -671,25 +816,20 @@ void gameUpdateTick()
 
 	glDisable(GL_BLEND);
 	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	//glDisable(GL_CULL_FACE);
-	
+	glEnable(GL_ALPHA_TEST);	
 	glMatrixMode(GL_MODELVIEW);
-	gl::glPushMatrix();
-	gl::glLoadIdentity();
-	// Translate to model co-ordinates, based on the origin of the shape
-	
+	glPushMatrix();
+	glLoadIdentity();
 	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-
 	glm::vec3 lookAt = glm::normalize(glm::vec3(
 		+ sin(cam->rotation.y),
 		- sin(cam->rotation.x),
 		- cos(cam->rotation.y)
 	));
 	glm::vec3 offset = lookAt;
-	gl::glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
+	glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
 	glm::vec3 forward(
 		cam->position.x + sin(cam->rotation.y),
 		cam->position.y - sin(cam->rotation.x),
@@ -697,23 +837,18 @@ void gameUpdateTick()
 		);
 	glm::vec3 up(0, cos(cam->rotation.x), 0);
 	glm::vec3 left = glm::cross(up, forward);
-	//glRotatef(toDeg(cam->rotation.x + cam->rotation.z), left.x, left.y, left.z);
-	gl::glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
+	glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
-	gameLoopObject.gunModel->draw(cam);
-	
+	gameLoopObject.gunModel->draw(cam);	
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	gl::glPopMatrix();
-
-
+	glPopMatrix();
 	// End gun draw
 	end3DRenderCycle();
 
     start2DRenderCycle();
-    gameLoopObject.drawString("hello world", 50, 50, 0, RED);
 	drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
     end2DRenderCycle();
     endRenderCycle();
@@ -807,19 +942,6 @@ void processKeyboardInput()
     {
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
-	
-	static bool enemyLock = false;
-	if (manager->isKeyDown('m') && !enemyLock)
-	{
-		enemyLock = true;
-		std::shared_ptr<Enemy> enemy(new Enemy(gameLoopObject.zombieModel, Camera(glm::vec3(static_cast<float>(getRandomInt(30) - 15), 0, static_cast<float>(getRandomInt(30) - 15)), glm::vec3(0, 0, 0))));
-		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
-		gameLoopObject.enemies.push_back(enemy);
-	}
-	if (!manager->isKeyDown('m'))
-	{
-		enemyLock = false;
-	}
 
 	// Use a healthkit if the player has less than their maximum health. 
 	static bool healLock = false;
@@ -834,6 +956,11 @@ void processKeyboardInput()
 	if (!manager->isKeyDown('h'))
 	{
 		healLock = false;
+	}
+
+	if (manager->isKeyDown('-'))
+	{
+		gameLoopObject.player.health = 0;
 	}
 
     static bool keylockTab = false;

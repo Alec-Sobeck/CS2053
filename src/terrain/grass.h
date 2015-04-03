@@ -12,7 +12,7 @@ class Grass
 {
 public:
     Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, float range, std::shared_ptr<Texture> texture);
-    void update(Camera *camera);
+    void update();
     void draw(Camera *camera);
 private:
     std::shared_ptr<Texture> texture;

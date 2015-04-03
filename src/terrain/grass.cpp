@@ -16,7 +16,7 @@ Grass::Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, floa
     createVBO(center, range);
 }
 
-void Grass::update(Camera *camera)
+void Grass::update()
 {
     unsigned long long previousUpdateTime = previousTime;
     unsigned long long currentTime = getCurrentTimeMillis();

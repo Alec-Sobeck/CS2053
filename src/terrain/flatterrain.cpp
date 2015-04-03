@@ -12,7 +12,7 @@ float FlatTerrain::getHeight(double x, double y)
 
 Colour FlatTerrain::getColour(double x, double y)
 {
-    return Colour(0, 1, 0, 1);
+    return Colour(1, 1, 1, 1);
 }
 
 void FlatTerrain::generateTerrain(int LoD, float size)

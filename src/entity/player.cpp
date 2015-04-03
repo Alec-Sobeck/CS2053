@@ -25,6 +25,15 @@ void Player::hurtPlayer(int amount)
 	}
 }
 
+void Player::reset()
+{
+	this->health = maxHealth;
+	this->healingItemCount = 3;
+	this->invincibilityFrames = 0;
+	this->score = 0;
+	this->ammoCount = 500;
+}
+
 bool Player::isInvincible()
 {
 	return invincibilityFrames > 0.0f;
