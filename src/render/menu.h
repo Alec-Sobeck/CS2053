@@ -4,7 +4,7 @@
 #include <functional>
 #include "graphics/button.h"
 #include "gameloop.h"
-
+#include "graphics/slider.h"
 
 class Menu
 {
@@ -41,10 +41,11 @@ public:
 class OptionsMenu : public Menu
 {
 private:
-//	Button <DO SOMETHING>
+	Slider volumeSlider;
 	Button backButton;
+	std::function<void(float)> onVolumeChange;
 public:
-	OptionsMenu(std::shared_ptr<Texture> backTex);
+	OptionsMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> volumeTexture, float volume, std::function<void(float)> onVolumeChange);
 	void draw(float deltaTime);
 	void update(MouseManager* manager, float deltaTime);
 };

@@ -218,10 +218,10 @@ void drawSkybox(std::shared_ptr<Texture> skyboxTexture, Camera *cam)
 			 0.5f, 0.666f,
 
 			 // bottom quad
-			 0.25f, 0.666f,
 			 0.25f, 0.333f,
-			 0.5f, 0.333f,
-			 0.5f, 0.666f
+			 0.25f, 0.0f,
+			 0.5f, 0.0f,
+			 0.5f, 0.333f
 		 };
 		 FlexArray<float> _vertexData(sizeof(vertexData) / sizeof(float));
 		 FlexArray<float> _normalData(sizeof(normalData) / sizeof(float));

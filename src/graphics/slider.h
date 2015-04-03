@@ -1,5 +1,5 @@
-#ifndef GUI_BUTTON_H
-#define GUI_BUTTON_H
+#ifndef GUI_SLIDER_H
+#define GUI_SLIDER_H
 
 #include <string>
 #include "componentbase.h"
@@ -13,9 +13,10 @@
 * @version     1.0
 * @since       1.0
 */
-class Button : public ComponentBase
+class Slider : public ComponentBase
 {
 public:
+	float value;
 	/**
 	* Constructs a new instance of GuiButton and initializes the button with the specified
 	* values.
@@ -23,7 +24,7 @@ public:
 	* @param x the x position of the button, as a percent of the screen, from 0.0F to 1.0F
 	* @param y the y position of the button, as a percent of the screen, from 0.0F to 1.0F
 	*/
-	Button(std::shared_ptr<Texture> tex, double x, double y, double width, double height);
+	Slider(std::shared_ptr<Texture> tex, double x, double y, double width, double height);
 	/**
 	 * Draws the button, and fixes the position if the screen has been resized
 	 */

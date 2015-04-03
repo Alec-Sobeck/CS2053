@@ -49,7 +49,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 	}
 	else if (state == AIState::ATTACK)
 	{
-		if (distanceSquared > 400 && distanceSquared < 35 * 35)
+		if (distanceSquared > 13 * 13 && distanceSquared < 25 * 25)
 		{
 			state = AIState::LOSING_SIGHT;
 		}
@@ -59,7 +59,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 	}
 	else if (state == AIState::LOSING_SIGHT)
 	{
-		if (distanceSquared > 35 * 35)
+		if (distanceSquared > 25 * 25)
 		{
 			state = AIState::IDLE;
 		}

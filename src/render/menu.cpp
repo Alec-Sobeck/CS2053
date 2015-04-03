@@ -84,17 +84,23 @@ void MainMenu::update(MouseManager *manager, float deltaTime)
 /// Define the OptionsMenu class
 /// 
 
-OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex) : Menu(), backButton(Button(backTex, 10, -50, 256, 32))
+OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> volumeTexture, float volume, std::function<void(float)> onVolumeChange) 
+	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), volumeSlider(Slider(volumeTexture, 10, 30, 256, 32)), onVolumeChange(onVolumeChange)
 {
+	volumeSlider.value = volume;
 }
 
 void OptionsMenu::draw(float deltaTime)
 {
 	backButton.draw();
+	volumeSlider.x = (getWindowWidth() / 2) - (volumeSlider.width / 2);
+	volumeSlider.draw();
 }
 
 void OptionsMenu::update(MouseManager *manager, float deltaTime)
 {
+	volumeSlider.update(manager);
+	onVolumeChange(volumeSlider.value);
 	if (backButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;

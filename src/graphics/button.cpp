@@ -17,6 +17,6 @@ void Button::draw()
 	drawBackground();
 }
 
-void Button::update()
+void Button::update(MouseManager *manager)
 {
 }

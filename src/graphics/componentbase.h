@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include "render/texture.h"
+#include "gameloop.h"
 
 /**
 * GuiComponent defines an abstract base class for all GuiComponents, therefore it may not be instantiated. In order to
@@ -48,7 +49,7 @@ public:
 	* Update is called when the frame's update method is called, which should be on every game tick. If a component needs periodically
 	* updated, it should do so using this method.
 	*/
-	virtual void update() = 0;
+	virtual void update(MouseManager *manager) = 0;
 	/**
 	* Gets whether or not a point is inside this LWJGLComponent, including whether or not it is inside the border.
 	* @param x the x value of the point to compare
