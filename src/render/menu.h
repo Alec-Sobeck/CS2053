@@ -24,6 +24,7 @@ private:
 	Button startForestLevel;
 	Button helpButton;
 	Button optionsButton;
+	std::shared_ptr<Texture> logo;
 	std::function<void()> desertEvent;
 	std::function<void()> forestEvent;
 	std::function<void()> helpEvent;
@@ -31,7 +32,8 @@ private:
 
 public:
 	MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture> forestTex, std::shared_ptr<Texture> helpTex, std::shared_ptr<Texture> optionsTex,
-		std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent);
+		std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent, 
+		std::shared_ptr<Texture> logo);
 	void draw(float deltaTime);
 	void update(MouseManager* manager, float deltaTime);
 };
@@ -61,9 +63,10 @@ public:
 class GameOverMenu : public Menu
 {
 private:
+	std::shared_ptr<Texture> gameOverTexture;
 	Button backButton;
 public:
-	GameOverMenu(std::shared_ptr<Texture> backTex);
+	GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture);
 	void draw(float deltaTime);
 	void update(MouseManager* manager, float deltaTime);
 };

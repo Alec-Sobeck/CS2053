@@ -137,6 +137,7 @@ public:
 	std::shared_ptr<Texture> ammoTexture;
 	std::shared_ptr<Texture> medkitTexture;
 	std::shared_ptr<Texture> gunTexture;
+	std::shared_ptr<Texture> logo;
 	std::vector<std::shared_ptr<Projectile>> projectiles;
 	FMOD::Studio::System* system = NULL;
 	FMOD::Sound *music;
@@ -153,6 +154,7 @@ public:
 	std::shared_ptr<Texture> optionsButtonTexture;
 	std::shared_ptr<Texture> backButtonTexture;
 	std::shared_ptr<Texture> helpTexture;
+	std::shared_ptr<Texture> gameOverTexture;
 	std::shared_ptr<Menu> mainMenu;
 	std::shared_ptr<Texture> terrainTextureGrass;
 	std::shared_ptr<Texture> terrainTextureSand;	
@@ -365,16 +367,18 @@ void GameLoop::loadWithGLContext()
 {
 	loadModels();
 
-	gameLoopObject.skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
-	gameLoopObject.terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
-	gameLoopObject.terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
+	skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
+	terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
+	terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
+	logo = getTexture(buildPath("res/logo.png"));
+	gameOverTexture = getTexture(buildPath("res/game_over.png"));
 	// Create the menu(s)
-	gameLoopObject.startDesertButtonTexture = getTexture(buildPath("res/button_start.png"));
-	gameLoopObject.startForestButtonTexture = getTexture(buildPath("res/button_start2.png"));
-	gameLoopObject.helpButtonTexture = getTexture(buildPath("res/button_help.png"));
-	gameLoopObject.optionsButtonTexture = getTexture(buildPath("res/button_options.png"));
-	gameLoopObject.backButtonTexture = getTexture(buildPath("res/button_back.png"));
-	gameLoopObject.helpTexture = getTexture(buildPath("res/help.png"));
+	startDesertButtonTexture = getTexture(buildPath("res/button_start.png"));
+	startForestButtonTexture = getTexture(buildPath("res/button_start2.png"));
+	helpButtonTexture = getTexture(buildPath("res/button_help.png"));
+	optionsButtonTexture = getTexture(buildPath("res/button_options.png"));
+	backButtonTexture = getTexture(buildPath("res/button_back.png"));
+	helpTexture = getTexture(buildPath("res/help.png"));
 	auto backButtonTexture = this->backButtonTexture;
 	auto helpTexture = this->helpTexture;	
 	std::shared_ptr<Level> *activeLevel = &this->activeLevel;
@@ -402,7 +406,8 @@ void GameLoop::loadWithGLContext()
 		[backButtonTexture](){
 			// optionsEvn
 			gameLoopObject.menus.push(std::shared_ptr<Menu>(new OptionsMenu(backButtonTexture)));
-		}
+		}, 
+		logo
 	));
 	menus.push(mainMenu);
 }
@@ -447,7 +452,7 @@ void GameLoop::update()
 	{
 		activeLevel = nullptr;
 		menus.push(mainMenu);
-		menus.push(std::shared_ptr<Menu>(new GameOverMenu(backButtonTexture)));
+		menus.push(std::shared_ptr<Menu>(new GameOverMenu(backButtonTexture, gameOverTexture)));
 		bgmInstance->stop(FMOD_STUDIO_STOP_MODE::FMOD_STUDIO_STOP_IMMEDIATE);
 	}
 	if (activeLevel && menus.size() > 0)
@@ -886,7 +891,7 @@ void processKeyboardInput()
 				sin(gameLoopObject.player.getCamera()->rotation.y),
 				0,
 				-cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 5.0f
+			) * deltaTime * 3.8f
 		);
     }
     if(manager->getKeyState('s') == KeyManager::PRESSED)
@@ -896,7 +901,7 @@ void processKeyboardInput()
 				-sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 5.0f
+			) * deltaTime * 2.6f
 		);
     }
     if(manager->getKeyState('a') == KeyManager::PRESSED)
@@ -905,7 +910,7 @@ void processKeyboardInput()
 			glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 -sin(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 5.0f
+				) * deltaTime * 3.8f
 		);
     }
     if(manager->getKeyState('d') == KeyManager::PRESSED)
@@ -914,7 +919,7 @@ void processKeyboardInput()
 			glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 sin(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 5.0f
+				) * deltaTime * 3.8f
 		);
     }
 

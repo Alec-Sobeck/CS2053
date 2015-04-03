@@ -12,7 +12,7 @@
 * @param model a Model that will be used for this entity
 * @param camera a Camera that will be used for this entity
 */
-Enemy::Enemy(std::shared_ptr<Model> model, Camera camera) : Entity(model, camera)
+Enemy::Enemy(std::shared_ptr<Model> model, Camera camera) : Entity(model, camera), speedModifier(2.0f)
 {
 	if (model)
 	{
@@ -54,8 +54,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 			state = AIState::LOSING_SIGHT;
 		}
 		// Else chase and attack
-		float movementSpeed = 3.0f * deltaTime;
-		this->accel(toPlayer * movementSpeed);
+		this->accel(toPlayer * deltaTime * speedModifier);
 		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 	else if (state == AIState::LOSING_SIGHT)
@@ -69,8 +68,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 			state = AIState::ATTACK;
 		}
 		// Persue at this distance if previously chasing the player. otherwise, ignore them.
-		float movementSpeed = 3.0f * deltaTime;
-		this->accel(toPlayer * movementSpeed);
+		this->accel(toPlayer * deltaTime * speedModifier);
 		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
 

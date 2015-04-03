@@ -1,6 +1,6 @@
 
 #include "menu.h"
-
+#include "graphics/windowhelper.h"
 
 ///
 /// Define Menu class methods
@@ -20,11 +20,11 @@ bool Menu::shouldPopThisMenu()
 /// 
 
 MainMenu::MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture> forestTex, std::shared_ptr<Texture> helpTex, std::shared_ptr<Texture> optionsTex, 
-	std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent
-	) 
-	: Menu(), startDesertLevel(Button(desertText, 10, 10, 256, 32)), startForestLevel(Button(forestTex, 10, 50, 256, 32)), 
-	helpButton(Button(helpTex, 10, 90, 256, 32)), optionsButton(Button(optionsTex, 10, 130, 256, 32)),
-	desertEvent(desertEvent), forestEvent(forestEvent), helpEvent(helpEvent), optionsEvent(optionsEvent)
+	std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent,
+	std::shared_ptr<Texture> logo) 
+	: Menu(), startDesertLevel(Button(desertText, 10, -170, 256, 32)), startForestLevel(Button(forestTex, 10, -130, 256, 32)), 
+	helpButton(Button(helpTex, 10, -90, 256, 32)), optionsButton(Button(optionsTex, 10, -50, 256, 32)),
+	desertEvent(desertEvent), forestEvent(forestEvent), helpEvent(helpEvent), optionsEvent(optionsEvent), logo(logo)
 
 {
 }
@@ -35,6 +35,28 @@ void MainMenu::draw(float deltaTime)
 	startForestLevel.draw();
 	helpButton.draw();
 	optionsButton.draw();
+
+	using namespace gl;
+	float x = getWindowWidth() / 2 - 256;
+	float y = 0;
+	float width = 512;
+	float height = 512;
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_TEXTURE_2D);
+	logo->bind();
+	glColor4f(1, 1, 1, 1);
+	glBegin(GL_QUADS);
+		glVertex3d(x, y + height, 0);
+		glTexCoord2f(1, 0);
+		glVertex3d(x + width, y + height, 0);
+		glTexCoord2f(1, 1);
+		glVertex3d(x + width, y, 0);
+		glTexCoord2f(0, 1);
+		glVertex3d(x, y, 0);
+		glTexCoord2f(0, 0);
+	glEnd();
 }
 
 void MainMenu::update(MouseManager *manager, float deltaTime)
@@ -62,7 +84,7 @@ void MainMenu::update(MouseManager *manager, float deltaTime)
 /// Define the OptionsMenu class
 /// 
 
-OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex) : Menu(), backButton(Button(backTex, 10, 10, 256, 32))
+OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex) : Menu(), backButton(Button(backTex, 10, -50, 256, 32))
 {
 }
 
@@ -79,12 +101,11 @@ void OptionsMenu::update(MouseManager *manager, float deltaTime)
 	}
 }
 
-
 ///
 /// define the HelpMenu class
 ///
 
-HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide) : Menu(), backButton(Button(backTex, 10, 10, 256, 32)), guide(guide)
+HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide) : Menu(), backButton(Button(backTex, 10, -50, 256, 32)), guide(guide)
 {
 }
 
@@ -127,13 +148,37 @@ void HelpMenu::update(MouseManager *manager, float deltaTime)
 /// Define the GameOverMenu class
 /// 
 
-GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex) : Menu(), backButton(Button(backTex, 10, 10, 256, 32))
+GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture) : Menu(), backButton(Button(backTex, 10, -50, 256, 32)),
+	gameOverTexture(gameOverTexture)
 {
 }
 
 void GameOverMenu::draw(float deltaTime)
 {
+	using namespace gl;
 	backButton.draw();
+
+	float x = getWindowWidth() / 2 - 256;
+	float y = 50;
+	float width = 512;
+	float height = 512;
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	glEnable(GL_TEXTURE_2D);
+	gameOverTexture->bind();
+	glColor4f(1, 1, 1, 1);
+	glBegin(GL_QUADS);
+		glVertex3d(x, y + height, 0);
+		glTexCoord2f(1, 0);
+		glVertex3d(x + width, y + height, 0);
+		glTexCoord2f(1, 1);
+		glVertex3d(x + width, y, 0);
+		glTexCoord2f(0, 1);
+		glVertex3d(x, y, 0);
+		glTexCoord2f(0, 0);
+	glEnd();
+
 }
 
 void GameOverMenu::update(MouseManager *manager, float deltaTime)

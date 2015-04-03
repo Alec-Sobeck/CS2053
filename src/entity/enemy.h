@@ -24,6 +24,7 @@ class Enemy : public Entity
 {
 public:
 	AIState state = AIState::IDLE;
+	float speedModifier;
 	/**
 	* Creates a new Entity and assigns it the provided entityID, model, and camera.
 	* @param entityID an int which must uniquely identify this Entity. It is suggested that this
