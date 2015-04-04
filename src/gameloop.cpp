@@ -36,6 +36,7 @@
 #include "entity/enemy.h"
 #include "entity/player.h"
 #include "render/menu.h"
+#include "entity/grid.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -82,6 +83,7 @@ public:
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	AABB worldBounds;
 	std::shared_ptr<TerrainRenderer> terrainRenderer;
+	std::shared_ptr<Grid> worldGrid;
 	Level();
 	virtual void createLevel() = 0;
 	virtual void update(float deltaTime) = 0;
@@ -131,6 +133,7 @@ public:
     std::shared_ptr<Model> treeModel;
 	std::shared_ptr<Model> gunModel;
 	std::shared_ptr<Model> zombieModel;
+	std::shared_ptr<Model> zombieModel2;
 	std::shared_ptr<GLFont> fontRenderer;
 	unsigned long long previousFrameTime;
 	float deltaTime;
@@ -364,6 +367,19 @@ void GameLoop::loadModels()
 		vbo->associatedTexture = _D;
 	}
 	gameLoopObject.zombieModel->generateAABB();
+
+	// Load the second zombie
+	parser = ObjParser(buildPath("res/models/zombie2/"), buildPath("res/models/zombie2/Lambent_Female.obj"), "", true);
+	gameLoopObject.zombieModel2 = parser.exportModel();
+	auto __D = getTexture(buildPath("res/models/zombie2/Lambent_Female_D.png"));
+	textures = std::map<std::string, std::shared_ptr<Texture>>();
+	textures["Lambent_Female_D.tga"] = __D;
+	gameLoopObject.zombieModel2->createVBOs(textures);
+	for (std::shared_ptr<VBO> vbo : gameLoopObject.zombieModel2->vbos)
+	{
+		vbo->associatedTexture = __D;
+	}
+	gameLoopObject.zombieModel2->generateAABB();
 }
 
 void GameLoop::loadWithGLContext()
@@ -617,6 +633,7 @@ ForestLevel::~ForestLevel()
 
 void ForestLevel::createLevel()
 {
+	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
 	// Generate a forest level
 	// Create the terrain	
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
@@ -656,6 +673,9 @@ void ForestLevel::createLevel()
 				retryCounter += 1;
 			}
 		}
+		AABB box = gameLoopObject.treeModel->getAABB();
+		glm::vec3 s((box.xMax - box.xMin), (box.yMax - box.yMin), (box.zMax - box.zMin)); // sizes
+		worldGrid->mark(x, z, s.x, s.z, true);
 	}
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
@@ -758,6 +778,7 @@ void DesertLevel::drawTerrain(Camera *cam)
 
 void DesertLevel::createLevel()
 {
+	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/sand1.png"));
@@ -780,7 +801,7 @@ void DesertLevel::update(float deltaTime)
 	{
 		// Try to spawn an enemy
 		std::shared_ptr<Enemy> enemy(new Enemy(
-			gameLoopObject.zombieModel,
+			gameLoopObject.zombieModel2,
 			Camera(glm::vec3(static_cast<float>(getRandomInt(80) - 60), 0, static_cast<float>(getRandomInt(80) - 60)),
 			glm::vec3(0, 0, 0)))
 			);
@@ -956,7 +977,7 @@ void processKeyboardInput()
     Camera *camera = gameLoopObject.player.getCamera();
     KeyManager *manager = &gameLoopObject.keyManager;
    
-    if (manager->getKeyState(27) == KeyManager::PRESSED) // Escape key
+    if (manager->getKeyState('=') == KeyManager::PRESSED) // Escape key
 	{
 		exit(0);
 	}
@@ -999,7 +1020,7 @@ void processKeyboardInput()
 				) * deltaTime * 3.8f
 		);
     }
-
+	/*
     if(manager->isKeyDown('1'))
     {
         camera->rotate(glm::vec3(0.01f, 0, 0));
@@ -1024,7 +1045,7 @@ void processKeyboardInput()
     {
         camera->rotate(glm::vec3(0, 0, -.01f));
     }
-
+	*/
 	// Use a healthkit if the player has less than their maximum health. 
 	static bool healLock = false;
 	if (manager->isKeyDown('h') && !healLock)
