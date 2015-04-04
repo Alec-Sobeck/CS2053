@@ -130,4 +130,14 @@ void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	}
 	glVertex2f(radius, height - radius);
 	glEnd();
+
+	// Score
+	glEnable(GL_TEXTURE_2D);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
+	std::stringstream scoress;
+	scoress << "score: " << player.score;
+	font->TextOut(scoress.str(), 30, 10, 0);
 }

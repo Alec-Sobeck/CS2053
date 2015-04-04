@@ -667,7 +667,7 @@ void ForestLevel::update(float deltaTime)
 	}
 	grass->update();
 
-	double chance = 0.20 * static_cast<double>(deltaTime);
+	double chance = 0.30 * static_cast<double>(deltaTime);
 	double f = static_cast<double>(getRandomFloat());
 	if (f < chance)
 	{
@@ -770,14 +770,14 @@ void DesertLevel::update(float deltaTime)
 	{
 		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
 	}
-	double chance = 0.15 * static_cast<double>(deltaTime);
+	double chance = 0.225 * static_cast<double>(deltaTime);
 	double f = static_cast<double>(getRandomFloat());
 	if (f < chance)
 	{
 		// Try to spawn an enemy
 		std::shared_ptr<Enemy> enemy(new Enemy(
 			gameLoopObject.zombieModel,
-			Camera(glm::vec3(static_cast<float>(getRandomInt(100) - 50), 0, static_cast<float>(getRandomInt(100) - 50)),
+			Camera(glm::vec3(static_cast<float>(getRandomInt(80) - 60), 0, static_cast<float>(getRandomInt(80) - 60)),
 			glm::vec3(0, 0, 0)))
 			);
 		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
@@ -857,7 +857,7 @@ void gameUpdateTick()
     Camera *cam = gameLoopObject.player.getCamera();
     startRenderCycle();
     start3DRenderCycle();
-	renderAxes(cam);
+	//renderAxes(cam);
 	drawSkybox(gameLoopObject.skyboxTexture, cam);	
 	gameLoopObject.activeLevel->drawTerrain(cam);
 
