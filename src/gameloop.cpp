@@ -148,6 +148,7 @@ public:
 	FMOD::Studio::EventInstance* hurtInstance;
 	bool hasStartedBGM = false;
 	std::shared_ptr<Texture> skyboxTexture;
+	std::shared_ptr<Texture> desertSkyboxTexture;
 	std::stack<std::shared_ptr<Menu>> menus;
 	std::shared_ptr<Texture> startDesertButtonTexture;
 	std::shared_ptr<Texture> startForestButtonTexture;
@@ -368,7 +369,8 @@ void GameLoop::loadModels()
 void GameLoop::loadWithGLContext()
 {
 	loadModels();
-
+	int i = 0;
+	desertSkyboxTexture = getTexture(buildPath("res/skybox_desert.png"));
 	skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
 	terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
 	terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
@@ -685,6 +687,7 @@ void ForestLevel::update(float deltaTime)
 
 void ForestLevel::drawTerrain(Camera *cam)
 {
+	drawSkybox(gameLoopObject.skyboxTexture, cam);
 	terrainRenderer->draw(cam);
 }
 
@@ -749,6 +752,7 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
+	drawSkybox(gameLoopObject.desertSkyboxTexture, cam);
 	terrainRenderer->draw(cam);
 }
 
@@ -858,7 +862,7 @@ void gameUpdateTick()
     startRenderCycle();
     start3DRenderCycle();
 	//renderAxes(cam);
-	drawSkybox(gameLoopObject.skyboxTexture, cam);	
+	
 	gameLoopObject.activeLevel->drawTerrain(cam);
 
 	glDisable(GL_CULL_FACE);
