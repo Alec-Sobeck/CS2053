@@ -16,9 +16,6 @@ class Plane3;
  * <br> <br>
  * Polygon3 prevents the Vector
  * @author      Alec Sobeck
- * @author      Matthew Robertson
- * @version     1.0
- * @since       1.0
  */
 class Polygon3
 {

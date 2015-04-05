@@ -9,9 +9,6 @@
 * When the button is clicked it will toggle through the different possible values.
 * The value will remain the same if there is only one value.
 * @author      Alec Sobeck
-* @author      Matthew Robertson
-* @version     1.0
-* @since       1.0
 */
 class Button : public ComponentBase
 {

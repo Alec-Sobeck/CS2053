@@ -11,9 +11,6 @@
 * LineSegment represents a line segment in nth Dimensional space. A line segment is a line that has
 * 2 defined end points and will not continue forever.
 * @author      Alec Sobeck
-* @author      Matthew Robertson
-* @version     1.0
-* @since       1.0
 */
 class LineSegment : public ILineVariant
 {

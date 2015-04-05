@@ -18,9 +18,6 @@ class Polygon3;
  * <br><br>
  * Plane3 are immutable.
  * @author      Alec Sobeck
- * @author      Matthew Robertson
- * @version     1.0
- * @since       1.0
  */
 class Plane3
 {

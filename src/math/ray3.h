@@ -10,9 +10,6 @@
 * infinity in the direction of the provided glm::vec3. It is presumed that the ray begins at
 * the point provided.
 * @author      Alec Sobeck
-* @author      Matthew Robertson
-* @version     1.0
-* @since       1.0
 */
 class Ray3 : public ILineVariant
 {

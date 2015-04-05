@@ -13,9 +13,6 @@
  * Defines the base class for anything that draws something to screen in this application. All Textures are stored here.
  * as public static fields.
  * @author      Alec Sobeck
- * @author      Matthew Robertson
- * @version     1.0
- * @since       1.0
  */
 class Render
 {

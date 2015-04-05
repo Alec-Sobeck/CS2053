@@ -9,9 +9,6 @@
  * with an integer value (the textureID), and can then be bound using {@link #bind()}. This will cause
  * images drawn to use this texture, until another Texture object's bind() method is called.
  * @author      Alec Sobeck
- * @author      Matthew Robertson
- * @version     1.0
- * @since       1.0
  */
 class Texture
 {

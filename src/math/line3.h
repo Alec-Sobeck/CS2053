@@ -8,9 +8,6 @@
 * Line3 represents a line in 3D space. A line has one defined point and continues on to
 * infinity in both directions using a direction vector
 * @author      Alec Sobeck
-* @author      Matthew Robertson
-* @version     1.0
-* @since       1.0
 */
 class Line3 : public ILineVariant
 {
