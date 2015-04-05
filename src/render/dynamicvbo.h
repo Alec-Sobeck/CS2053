@@ -39,22 +39,10 @@ public:
 	 * indicating the requested operations are invalid.
 	 */
 	DynamicVBO();
-	/**
-	 * Initializes the VBO and IBO, and assigns indexes to each of the TerrainPolygons as the indexes
-	 * appear in the VBO. This method must be invoked otherwise the draw method will cause the
-	 * dynamic vbo to throw an exception.
-	 * <br><br>
-	 * <b><u>Note:</u>Re-adding a TerrainPolygon to the same VBO without removing it or adding a TerrainPolygon to
-	 * two or more VBOs at the same time will cause the IBO indexes to be overwritten. This makes it
-	 * functionally impossible to remove the TerrainPolygon from any VBOs but the last, a
-	 * pseudo memory leak</b>
-	 */
 	void create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::shared_ptr<Texture> texture);
 	/**
 	 * Draws the terrain as specified by the index buffer object associated with this terrain renderer.
 	 * @param cam the Camera that will be used to properly display the terrain
-	 * @throws IllegalStateException - the create(...) method has not been called so there is no data
-	 * in the buffer to draw
 	 */
 	void draw(Camera *cam);
 	/**
@@ -62,30 +50,12 @@ public:
 	 * Iteration 1: the number of vertices to remove is not strictly enforced
 	 * likewise, it's assumed the vbo:ibo mapping is one to one, that is each
 	 * of the ibo indexes maps one-to-one to a set of vertex data in the vbo
-	 *
-	 * @param iboIndexes an int[], where each element of the array is a value
-	 * that will be removed from the vbo. The vertex removed for each element e, will
-	 * be the one at ibo.get(e), however, this data will also be purged from the vbo
-	 * when the index is removed from the ibo.
-	 * @throws IllegalStateException - the create(...) method has not been called so there is no data
-	 * in the buffer to draw
 	 */
 	void remove(FlexArray<int> iboIndexes);
 	/**
 	 * Adds a TerrainPolygon to this Dynamic VBO.
-	 * <br><br>
-	 * <b><u>Note:</u>Re-adding a TerrainPolygon to the same VBO without removing it or adding a TerrainPolygon to
-	 * two or more VBOs at the same time will cause the IBO indexes to be overwritten. This makes it
-	 * functionally impossible to remove the TerrainPolygon from any VBOs but the last, a
-	 * pseudo memory leak</b>
-	 * @param poly
-	 * @throws IllegalStateException - the create(...) method has not been called so there is no data
-	 * in the buffer to draw
 	 */
 	void add(TerrainPolygon &poly);
-	/**
-	 * Frees the allocated resources.
-	 */
 	~DynamicVBO();
 };
 

@@ -19,64 +19,6 @@ public:
     void create(std::shared_ptr<TerrainData> terrain, std::shared_ptr<Texture> terrainTexture);
 	void draw(Camera *cam);
     ~TerrainRenderer();
-
-/*
-	public static void doStuffAdd1()
-	{
-		if(p.getIBOIndexes() == null)
-		{
-			vbo.add(p);
-			vbo.add(p1);
-		}
-		else
-		{
-			System.out.println("DerpA1");
-		}
-	}
-
-	public static void doStuffRemove1()
-	{
-		if(p.getIBOIndexes() != null)
-		{
-			vbo.remove(p.getIBOIndexes());
-			p.setIBOIndexes(null);
-			vbo.remove(p1.getIBOIndexes());
-			p1.setIBOIndexes(null);
-		}
-		else
-		{
-			System.out.println("DerpR1");
-		}
-	}
-
-	public static void doStuffAdd2()
-	{
-		if(p2.getIBOIndexes() == null)
-		{
-			vbo.add(p2);
-			vbo.add(p3);
-		}
-		else
-		{
-			System.out.println("DerpA2");
-		}
-	}
-
-	public static void doStuffRemove2()
-	{
-		if(p2.getIBOIndexes() != null)
-		{
-			vbo.remove(p2.getIBOIndexes());
-			p2.setIBOIndexes(null);
-			vbo.remove(p3.getIBOIndexes());
-			p3.setIBOIndexes(null);
-		}
-		else
-		{
-			System.out.println("DerpR2");
-		}
-	}
-*/
 };
 
 
