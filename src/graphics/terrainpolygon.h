@@ -4,7 +4,6 @@
 #include "glm/vec3.hpp"
 #include "utils/flexarray.h"
 #include "math/polygon3.h"
-#include "math/ioctreeelement.h"
 #include "physics/aabb.h"
 
 struct RawPolygonData
@@ -21,7 +20,7 @@ public:
  * TerrainPolygon associates a Polygon3 with its AABB, constructing said AABB when passed
  * a Polygon3 in the constructor {@link #TerrainPolygon(Polygon3)}.
  */
-class TerrainPolygon : public Polygon3, public IOctreeElement
+class TerrainPolygon : public Polygon3
 {
 public:
 	/**

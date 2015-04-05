@@ -10,12 +10,6 @@ int getNextModelID()
     return modelID++;
 }
 
-void Model::onAABBCollision(AABB &boundsCollidedWith)
-{
-
-
-}
-
 AABB Model::getAABB()
 {
 	return aabb;

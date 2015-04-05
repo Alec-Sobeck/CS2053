@@ -4,7 +4,6 @@
 #include <memory>
 #include <map>
 #include <glm/vec3.hpp>
-#include "math/ioctreeelement.h"
 #include "physics/aabb.h"
 #include "world/meshdata.h"
 #include "graphics/camera.h"
@@ -16,7 +15,7 @@ int getNextModelID();
 /**
  * Describes a basic 3d model.
  */
-class Model : public IOctreeElement
+class Model 
 {
 private:
     int modelID;
@@ -30,9 +29,7 @@ public:
 	std::vector<std::shared_ptr<MeshData>> data;
 	std::vector<std::shared_ptr<VBO>> vbos;
 	std::shared_ptr<Texture> overrideTexture;
-	void onAABBCollision(AABB &boundsCollidedWith) override;
-
-	AABB getAABB() override;
+	AABB getAABB();
 	AABB generateAABB();
 	~Model();
 	/**

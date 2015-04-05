@@ -15,10 +15,8 @@
 #include "entity/entity.h"
 #include "terrain/terraindata.h"
 #include "render/terrainrenderer.h"
-#include "world/map.h"
 #include "graphics/rendersettingshelper.h"
 #include "utils/timehelper.h"
-#include "terrain/midpointterrain.h"
 #include "terrain/flatterrain.h"
 #include "graphics/gluhelper.h"
 #include "render/render.h"
@@ -36,7 +34,6 @@
 #include "entity/enemy.h"
 #include "entity/player.h"
 #include "render/menu.h"
-#include "entity/grid.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -83,7 +80,6 @@ public:
 	std::vector<std::shared_ptr<Enemy>> enemies;
 	AABB worldBounds;
 	std::shared_ptr<TerrainRenderer> terrainRenderer;
-	std::shared_ptr<Grid> worldGrid;
 	Level();
 	virtual void createLevel() = 0;
 	virtual void update(float deltaTime) = 0;
@@ -124,7 +120,6 @@ public:
     bool gameIsRunning;
     Player player;
     std::shared_ptr<TerrainData> terrain;
-    Map map;
     long startTime;
     
     KeyManager keyManager;
@@ -303,8 +298,8 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
-GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), map(Map(AABB(-200, -10, -200, 200, 10, 200))),
-startTime(getCurrentTimeMillis()), previousFrameTime(getCurrentTimeMillis()), volume(0.5f)
+GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), startTime(getCurrentTimeMillis()),
+	previousFrameTime(getCurrentTimeMillis()), volume(0.5f)
 {
 	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
@@ -633,7 +628,6 @@ ForestLevel::~ForestLevel()
 
 void ForestLevel::createLevel()
 {
-	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
 	// Generate a forest level
 	// Create the terrain	
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
@@ -673,9 +667,6 @@ void ForestLevel::createLevel()
 				retryCounter += 1;
 			}
 		}
-		AABB box = gameLoopObject.treeModel->getAABB();
-		glm::vec3 s((box.xMax - box.xMin), (box.yMax - box.yMin), (box.zMax - box.zMin)); // sizes
-		worldGrid->mark(x, z, s.x, s.z, true);
 	}
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
@@ -778,7 +769,6 @@ void DesertLevel::drawTerrain(Camera *cam)
 
 void DesertLevel::createLevel()
 {
-	worldGrid = std::shared_ptr<Grid>(new Grid(-100, -100, 160, 160, 80, 80));
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/sand1.png"));
@@ -977,7 +967,7 @@ void processKeyboardInput()
     Camera *camera = gameLoopObject.player.getCamera();
     KeyManager *manager = &gameLoopObject.keyManager;
    
-    if (manager->getKeyState('=') == KeyManager::PRESSED) // Escape key
+    if (manager->getKeyState('=') == KeyManager::PRESSED) 
 	{
 		exit(0);
 	}
