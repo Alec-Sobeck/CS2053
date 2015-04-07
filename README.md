@@ -1,2 +1,2 @@
-# CS2053
-Game for CS2053 Course 
+# 3D-Game
+3D game developed using C++11 and OpenGL
