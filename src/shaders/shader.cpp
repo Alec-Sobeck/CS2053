@@ -82,7 +82,7 @@ void Shader::glUniform4(std::string attributeName, gl::GLfloat v0, gl::GLfloat v
     gl::glUniform4f(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
 }
 
-void Shader::glUniform4(std::string attributeName, glm::vec4 v)
+void Shader::glUniform4(std::string attributeName, glm::vec4 &v)
 {
     gl::glUseProgram(programID);
     gl::glUniform4f(gl::glGetUniformLocation(programID, attributeName.c_str()), v.x, v.y, v.z, v.w);

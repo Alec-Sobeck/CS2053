@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include "menu.h"
 #include "graphics/windowhelper.h"
 
@@ -154,8 +155,8 @@ void HelpMenu::update(MouseManager *manager, float deltaTime)
 /// Define the GameOverMenu class
 /// 
 
-GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture) : Menu(), backButton(Button(backTex, 10, -50, 256, 32)),
-	gameOverTexture(gameOverTexture)
+GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer) 
+	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), gameOverTexture(gameOverTexture), score(score), fontRenderer(renderer)
 {
 }
 
@@ -184,7 +185,6 @@ void GameOverMenu::draw(float deltaTime)
 		glVertex3d(x, y, 0);
 		glTexCoord2f(0, 0);
 	glEnd();
-
 }
 
 void GameOverMenu::update(MouseManager *manager, float deltaTime)

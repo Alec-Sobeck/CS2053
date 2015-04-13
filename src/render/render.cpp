@@ -198,6 +198,8 @@ void drawSkybox(std::shared_ptr<Texture> skyboxTexture, Camera *cam)
 		 vbo = std::shared_ptr<VBO>(new VBO(m, skyboxTexture));
 	 }
 
+	 vbo->associatedTexture = skyboxTexture;
+
 	 glPushMatrix();
 	 glLoadIdentity();
 	 setLookAt(cam);

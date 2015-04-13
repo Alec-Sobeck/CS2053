@@ -69,7 +69,7 @@ public:
 	 * @param v a Vector4 which will have its values assigned to the corresponding uniform variable, with a name of
 	 * attributeName, in the shader.
 	 */
-	void glUniform4(std::string attributeName, glm::vec4 v);
+	void glUniform4(std::string attributeName, glm::vec4 &v);
 	void glUniform4(std::string attributeName, gl::GLint v0, gl::GLint v1, gl::GLint v2, gl::GLint v3);
 	//void glUniformMatrix2(std::string attributeName, bool transpose, java.nio.FloatBuffer matrices);
 	//void glUniformMatrix3(std::string attributeName, bool transpose, java.nio.FloatBuffer matrices);

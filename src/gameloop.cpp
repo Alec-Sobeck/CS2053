@@ -145,8 +145,8 @@ public:
 	FMOD::Studio::EventInstance* bgmInstance;
 	FMOD::Studio::EventInstance* hurtInstance;
 	bool hasStartedBGM = false;
-	std::shared_ptr<Texture> skyboxTexture;
-	std::shared_ptr<Texture> desertSkyboxTexture;
+	std::shared_ptr<Texture> skyboxTextureForest;
+	std::shared_ptr<Texture> skyboxTextureDesert;
 	std::stack<std::shared_ptr<Menu>> menus;
 	std::shared_ptr<Texture> startDesertButtonTexture;
 	std::shared_ptr<Texture> startForestButtonTexture;
@@ -381,8 +381,8 @@ void GameLoop::loadWithGLContext()
 {
 	loadModels();
 	int i = 0;
-	desertSkyboxTexture = getTexture(buildPath("res/skybox_desert.png"));
-	skyboxTexture = getTexture(buildPath("res/skybox_texture.jpg"));
+	skyboxTextureDesert = getTexture(buildPath("res/skybox_desert.png"));
+	skyboxTextureForest = getTexture(buildPath("res/skybox_texture.jpg"));
 	terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
 	terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
 	logo = getTexture(buildPath("res/logo.png"));
@@ -473,7 +473,7 @@ void GameLoop::update()
 	// So, if there's a menu just free the mouse at the start of the frame, otherwise grab it.
 	if (menus.size() > 0)
 	{
-		gameLoopObject.mouseManager.setGrabbed(false);
+		gameLoopObject.mouseManager.setGrabbed(false);		
 	}
 	else
 	{
@@ -484,8 +484,9 @@ void GameLoop::update()
 	{
 		activeLevel = nullptr;
 		menus.push(mainMenu);
-		menus.push(std::shared_ptr<Menu>(new GameOverMenu(backButtonTexture, gameOverTexture)));
+		menus.push(std::shared_ptr<Menu>(new GameOverMenu(backButtonTexture, gameOverTexture, player.score, fontRenderer)));
 		bgmInstance->stop(FMOD_STUDIO_STOP_MODE::FMOD_STUDIO_STOP_IMMEDIATE);
+		activeLevel = nullptr;
 	}
 	if (activeLevel && menus.size() > 0)
 	{
@@ -698,7 +699,7 @@ void ForestLevel::update(float deltaTime)
 
 void ForestLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.skyboxTexture, cam);
+	drawSkybox(gameLoopObject.skyboxTextureForest, cam);
 	terrainRenderer->draw(cam);
 }
 
@@ -763,7 +764,7 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.desertSkyboxTexture, cam);
+	drawSkybox(gameLoopObject.skyboxTextureDesert, cam);
 	terrainRenderer->draw(cam);
 }
 
@@ -835,6 +836,11 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 ///***********************************************************************
 ///***********************************************************************
 
+void drawLaserSight()
+{
+
+}
+
 void gameUpdateTick()
 {
     using namespace gl;	
@@ -901,6 +907,8 @@ void gameUpdateTick()
 
 	gameLoopObject.activeLevel->draw(cam, deltaTime);
 	    
+	drawLaserSight();
+
 	// Draw the player's gun
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);

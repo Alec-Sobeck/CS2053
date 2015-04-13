@@ -5,6 +5,7 @@
 #include "graphics/button.h"
 #include "gameloop.h"
 #include "graphics/slider.h"
+#include "glfont.h"
 
 class Menu
 {
@@ -66,8 +67,10 @@ class GameOverMenu : public Menu
 private:
 	std::shared_ptr<Texture> gameOverTexture;
 	Button backButton;
+	int score;
+	std::shared_ptr<GLFont> fontRenderer;
 public:
-	GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture);
+	GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer);
 	void draw(float deltaTime);
 	void update(MouseManager* manager, float deltaTime);
 };
