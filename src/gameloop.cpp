@@ -838,7 +838,45 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 
 void drawLaserSight()
 {
+	return;
+	Camera *cam = gameLoopObject.player.getCamera();
+	glm::vec3 forward(
+		cam->position.x + sin(cam->rotation.y),
+		cam->position.y - sin(cam->rotation.x),
+		cam->position.z - cos(cam->rotation.y)
+		);
+	forward = glm::normalize(forward);
+	glm::vec3 up = glm::vec3(0, 1, 0);
+	glm::vec3 left = glm::normalize(glm::cross(forward, up));
 
+	glm::vec3 lookAt = glm::normalize(glm::vec3(
+		sin(cam->rotation.y * -1.0f),
+		0,
+		cos(cam->rotation.y * -1.0f)
+		)) * -1.0f;
+	AABB gunbox = gameLoopObject.gunModel->getAABB();
+	float yDelta = gunbox.yMax - gunbox.yMin;
+	lookAt = lookAt + lookAt * yDelta;
+	
+	glm::vec3 start = (gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.05f, 0.0f));
+	glm::vec3 end = start + (lookAt * 200.0f);
+
+
+
+
+	using namespace gl;
+	glPushMatrix();
+	glLoadIdentity();
+	setLookAt(cam);
+	glDisable(GL_TEXTURE_2D);
+
+	glColor3f(1, 0, 0);
+	glBegin(GL_LINES);
+	glVertex3f(start.x, start.y, start.z);
+	glVertex3f(end.x, end.y, end.z);
+	glEnd();
+
+	glPopMatrix();
 }
 
 void gameUpdateTick()

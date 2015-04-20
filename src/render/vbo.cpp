@@ -3,10 +3,6 @@
 #include "render/render.h"
 #include <iostream>
 
-/**
- * Convience method to create a VBOID. Equivalent to a call to GL15.glGenBuffers().
- * @return a unique int ID that can be used to access a VBO that has been allocated to VRAM
- */
 gl::GLuint createVBOID()
 {
     gl::GLuint output;
@@ -14,10 +10,6 @@ gl::GLuint createVBOID()
     return output;
 }
 
-/**
- * Creates a new VBO and initializes it. This should cause allocation of the data to VRam.
- * @param data a ModelData object that contains the values required to initialize this VBO
- */
 VBO::VBO(MeshData &data, std::shared_ptr<Texture> associatedTexture)
 {
     using namespace gl;
@@ -118,9 +110,6 @@ VBO::VBO(std::shared_ptr<MeshData> data, std::shared_ptr<Texture> texture)
     glBufferData(GL_ARRAY_BUFFER, data->combinedData.size() * sizeof(float), rawArray, GL_STATIC_DRAW);
 }
 
-/**
- * Draws the VBO's contents.
- */
 void VBO::draw(Camera *camera)
 {
     using namespace gl;

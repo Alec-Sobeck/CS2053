@@ -1,4 +1,5 @@
 
+#include <iostream>
 #include <cmath>
 #include <stdexcept>
 #include <sstream>
@@ -23,7 +24,7 @@ Polygon3::Polygon3(FlexArray<glm::vec3> points)
 		throw std::invalid_argument("A Polygon3 must be coplanar. The provided glm::vec3[] does not describe a coplanar polygon.");
 	}
 }
-#include <iostream>
+
 void Polygon3::computeIsCoplanar()
 {
 	for (int i = 2; i < static_cast<int>(points.size()); i++)

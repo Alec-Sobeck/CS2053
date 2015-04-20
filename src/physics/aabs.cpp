@@ -6,17 +6,18 @@
 #include "math/polygon3.h"
 #include "math/gamemath.h"
 
-AABS::AABS() : x(0), y(0), z(0), radius(0)
+AABS::AABS()
+	: x(0), y(0), z(0), radius(0)
 {
-
 }
 
-AABS::AABS(glm::vec3 pos, float radius) : x(pos.x), y(pos.y), z(pos.z), radius(radius)
+AABS::AABS(glm::vec3 pos, float radius)
+	: x(pos.x), y(pos.y), z(pos.z), radius(radius)
 {
-
 }
 
-AABS::AABS(float x, float y, float z, float radius) : x(x), y(y), z(z), radius(radius)
+AABS::AABS(float x, float y, float z, float radius) 
+	: x(x), y(y), z(z), radius(radius)
 {
 }
 

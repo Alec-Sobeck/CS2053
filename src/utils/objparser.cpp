@@ -9,7 +9,8 @@
 #include "utils/misc.h"
 #include "utils/materialparser.h"
 
-ObjParser::ObjParser(std::string filePath, std::string fileName, std::string textureName, bool dataIsTriangles) : filePath(filePath), fileName(fileName), textureName(textureName), modelName("")
+ObjParser::ObjParser(std::string filePath, std::string fileName, std::string textureName, bool dataIsTriangles) 
+	: filePath(filePath), fileName(fileName), textureName(textureName), modelName("")
 {
     loadData(dataIsTriangles);
 }
@@ -61,10 +62,6 @@ void ObjParser::loadData(bool dataIsTriangles)
                     make1DFlex(faceTextures)
                 );
                 meshes.push_back(data);
-              //  vertices = std::vector<glm::vec3>();
-              //  normals = std::vector<glm::vec3>();
-              //  colours = std::vector<Colour>();
-                //textureCoords = std::vector<glm::vec2>();
                 faceVerts = std::vector<glm::vec3>();
                 faceNormals = std::vector<glm::vec3>();
                 faceTextures = std::vector<glm::vec3>();
@@ -72,7 +69,6 @@ void ObjParser::loadData(bool dataIsTriangles)
             hasEncounteredMesh = true;
             std::cout << "MeshName: >" << splitLine.at(1) << "<" << std::endl;
             meshName = splitLine.at(1);
-           // std::cout << "MeshName:>>" << meshName << "<<" <<  std::endl;
         }
         else if (line.find("v ") == 0)
         {
@@ -151,7 +147,6 @@ void ObjParser::loadData(bool dataIsTriangles)
                             static_cast<int>(parseDouble(thirdVert.at(2))),
                             static_cast<int>(parseDouble(fourthVert.at(2)))));
                 }
-
             }
         }
         else if(line.find("mtllib ") == 0)
@@ -177,9 +172,7 @@ void ObjParser::loadData(bool dataIsTriangles)
             activeMaterial = materials[splitLine.at(1)];
         }
     }
-
-
-
+	
     std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
         renderMode,
         activeMaterial,

@@ -165,12 +165,11 @@ void _printProgramInfoLog(gl::GLuint obj)
     }
 }
 
-/**
- * Creates an OpenGL shader.
- * @param filename a String which has the filepath to the GLSL shader file to use
- * @param shaderType the type of the shader to use - either GL_FRAGMENT_SHADER_ARB or GL_VERTEX_SHADER_ARB depending on the shader type
- * @return an gl::GLuint which uniquely identifies this shader within the program.
- */
+///
+/// Creates an OpenGL shader.
+/// \param filename a String which has the filepath to the GLSL shader file to use
+/// \param shaderType the type of the shader to use - either GL_FRAGMENT_SHADER_ARB or GL_VERTEX_SHADER_ARB depending on the shader type
+/// \return an gl::GLuint which uniquely identifies this shader within the program.
 int createShader(const std::string *filename, gl::GLenum shaderType)
 {
     using namespace gl;
@@ -207,14 +206,14 @@ int createShader(const std::string *filename, gl::GLenum shaderType)
     }
 }
 
-/**
- * Attempts to create a shader. This may have either a vertex shader part, fragment shader part, or both.
- * @param vertFilepath a String which has the filepath of the source code to use for the vertex shader, or
- * null if no vertex shader is to be used.
- * @param fragFilepath a String which has the filepath of the source code to use for the fragment shader,
- * or null if no fragment shader is to be used.
- * @return a Shader object with no variables assigned any values, or null if shader creation fails.
- */
+///
+/// Attempts to create a shader. This may have either a vertex shader part, fragment shader part, or both.
+/// \param vertFilepath a String which has the filepath of the source code to use for the vertex shader, or
+/// nullptr if no vertex shader is to be used.
+/// \param fragFilepath a String which has the filepath of the source code to use for the fragment shader,
+/// or nullptr if no fragment shader is to be used.
+/// \return a Shader object with no variables assigned any values, or null if shader creation fails.
+///
 std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std::string *fragFilepath)
 {
     using namespace gl;

@@ -9,14 +9,15 @@
 #include "math/ray3.h"
 #include "math/plane3.h"
 
-Plane3::Plane3(glm::vec3 pointOnPlane, glm::vec3 normal) : normal(normal), pointOnPlane(pointOnPlane)
+Plane3::Plane3(glm::vec3 pointOnPlane, glm::vec3 normal) 
+	: normal(normal), pointOnPlane(pointOnPlane)
 {
 }
 
-Plane3::Plane3(glm::vec3 pointOnPlane, std::vector<glm::vec3> directions) :
-//TODO ensure this calculation works properly
-	pointOnPlane(pointOnPlane)
+Plane3::Plane3(glm::vec3 pointOnPlane, std::vector<glm::vec3> directions) 
+	: pointOnPlane(pointOnPlane)
 {
+	//@TODO ensure this calculation works properly
 	normal = glm::cross(directions.at(0), glm::normalize(directions.at(1)));
 }
 
@@ -35,7 +36,7 @@ Plane3::Plane3(double a, double b, double c, double d)
 
 Plane3::Plane3(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3)
 {
-	//TODO test this calculation works
+	//@TODO test this calculation works
 	pointOnPlane = point1;
 	glm::vec3 first = point2 - point1;
 	glm::vec3 second = point3 - point1;
@@ -51,7 +52,8 @@ bool Plane3::isPerpendicular(glm::vec3 other)
 	return parallel(normal, other);
 }
 
-bool Plane3::does_intersect_line(ILineVariant &line){
+bool Plane3::does_intersect_line(ILineVariant &line)
+{
 	if (glm::dot(line.getDirection(), getNormal()) == 0)
 	{
 		return false;
@@ -82,7 +84,7 @@ bool Plane3::does_intersect_line(ILineVariant &line){
 
 bool Plane3::doesIntersectPoly(Polygon3 &poly)
 {
-	//Stores the difference in number of verts on either side of a plane
+	// Stores the difference in number of verts on either side of a plane
 	// a negative number implies more points are beneath than above
 	int count = 0;
 	for (int i = 0; i < static_cast<int>(poly.points.size()); i++)
@@ -96,7 +98,6 @@ bool Plane3::doesIntersectPoly(Polygon3 &poly)
 		{
 			count--;
 		}
-
 	}
 	if (abs(count) != static_cast<int>(poly.points.size()))
 	{
@@ -130,12 +131,10 @@ glm::vec4 Plane3::getGeneralEquation()
 double Plane3::distanceToPoint(glm::vec3 vector)
 {
 	glm::vec4 planeEquation = getGeneralEquation();
-
 	double result = planeEquation.x * vector.x +
 		planeEquation.y * vector.y +
 		planeEquation.z * vector.z +
 		planeEquation.w;
-
 	result /= glm::length(planeEquation);
 	return result;
 }
@@ -155,10 +154,3 @@ glm::vec3 Plane3::getPointOnPlane()
 	return Plane3::pointOnPlane;
 }
 
-std::string Plane3::toString()
-{
-	std::stringstream ss;
-	ss << "Plane3[point=<" << pointOnPlane.x << "," << pointOnPlane.y << "," << pointOnPlane.z << ">, normal=<"
-		<< normal.x << ", " << normal.y << ", " << normal.z << ">]";
-	return ss.str();
-}

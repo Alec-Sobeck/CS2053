@@ -17,21 +17,11 @@ enum class AIState
 	IDLE
 };
 
-/**
-* Entity is the base class for all things that exist in the world with some sort of model, and position.
-*/
 class Enemy : public Entity
 {
 public:
 	AIState state = AIState::IDLE;
 	float speedModifier;
-	/**
-	* Creates a new Entity and assigns it the provided entityID, model, and camera.
-	* @param entityID an int which must uniquely identify this Entity. It is suggested that this
-	* be a value generated from {@link #getNextEntityID()}
-	* @param model a Model that will be used for this entity
-	* @param camera a Camera that will be used for this entity
-	*/
 	Enemy(std::shared_ptr<Model> model, Camera camera);
 	~Enemy();
 	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);

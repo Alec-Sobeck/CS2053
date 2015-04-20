@@ -70,10 +70,6 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::
     delete[] rawData;
 }
 
-/**
- * Draws the terrain as specified by the index buffer object associated with this terrain renderer.
- * @param cam the Camera that will be used to properly display the terrain
- */
 void DynamicVBO::draw(Camera *cam)
 {
     if(!initialized)
@@ -200,9 +196,6 @@ void DynamicVBO::remove(FlexArray<int> iboIndexes)
     indicesCount -= verts;
 }
 
-/**
- * Adds a TerrainPolygon to this Dynamic VBO.
- */
 void DynamicVBO::add(TerrainPolygon &poly)
 {
     if(!initialized)

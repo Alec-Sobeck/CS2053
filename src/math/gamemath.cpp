@@ -34,9 +34,7 @@ double toDeg(int rad)
     return static_cast<double>(rad) * (180.0 / PI_D);
 }
 
-
-
-// TODO -- verify this is working as intended
+// @TODO -- verify this is working as intended
 bool approximatelyEqual(float a, float b)
 {
     return ((a - b) < 0.00001 && (a - b) > -0.00001) ? true : false;
@@ -54,8 +52,6 @@ bool perpendicular(glm::vec3 v1, glm::vec3 v2)
 {
 	return approximatelyEqual(glm::dot(v1, v2), 0);
 }
-
-
 
 float round2(float val)
 {

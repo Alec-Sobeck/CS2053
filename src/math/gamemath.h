@@ -36,24 +36,22 @@ inline double cube(double val)
 {
 	return val * val * val;
 }
-/**
- * Checks if two floats are approximately equal. This is done by seeing if the floats are within
- * 1E-6 of each other.
- * @param a the first float to check for approximate equality
- * @param b the second float to check for approximate equality
- * @return a boolean, true, if the numbers are reasonably close together; otherwise false
-*/
-
+/// 
+/// Checks if two floats are approximately equal. This is done by seeing if the floats are within 1E-6 of each other.
+/// \param a the first float to check for approximate equality
+/// \param b the second float to check for approximate equality
+/// \return a boolean, true, if the numbers are reasonably close together; otherwise false
+/// 
 bool approximatelyEqual(float, float);
 
-/**
-* Checks to see if a Vector is parallel to another, which is to say that the vectors share a direction.
-* @return a boolean, true if the Vectors are parallel, or false otherwise
-*/
+/// 
+/// Checks to see if a vector is parallel to another, which is to say that the vectors share a direction.
+/// \return a boolean, true if the Vectors are parallel, or false otherwise
+/// 
 bool parallel(glm::vec3, glm::vec3);
-/**
-* Checks to see if two Vectors are perpendicular.
-*/
+/// 
+/// Checks to see if two vectors are perpendicular.
+/// 
 bool perpendicular(glm::vec3, glm::vec3);
 
 inline float clamp(float val, float min = 0.0f, float max = 1.0f)
@@ -62,7 +60,6 @@ inline float clamp(float val, float min = 0.0f, float max = 1.0f)
 }
 
 float round2(float val);
-
 glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up);
 
 

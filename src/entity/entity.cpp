@@ -6,7 +6,6 @@
 //
 int getNextEntityID()
 {
-    // TODO -- make this function threadsafe
     static int nextEntityID = 0;
     return nextEntityID++;
 }
@@ -14,23 +13,16 @@ int getNextEntityID()
 //
 // Define methods in Entity class
 //
-Entity::Entity() : boundingBox(AABB(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.5f, 2.5f, 2.5f))), entityID(getNextEntityID()),
-model(std::shared_ptr<Model>(nullptr)), camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f))),
-	velocity(glm::vec3(0.0f, 0.0f, 0.0f)), acceleration(glm::vec3(0.0f, 0.0f, 0.0f)), maxMoveSpeed(0.5f), isAffectedByGravity(false),
-	isNoClipActive(false), health(100), maxHealth(100)
+Entity::Entity() 
+	: boundingBox(AABB(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(2.5f, 2.5f, 2.5f))), entityID(getNextEntityID()), model(std::shared_ptr<Model>(nullptr)), 
+	camera(Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f))), velocity(glm::vec3(0.0f, 0.0f, 0.0f)), acceleration(glm::vec3(0.0f, 0.0f, 0.0f)), 
+	maxMoveSpeed(0.5f), isAffectedByGravity(false), isNoClipActive(false), health(100), maxHealth(100)
 {
 }
 
-/**
- * Creates a new Entity and assigns it the provided entityID, model, and camera.
- * @param entityID an int which must uniquely identify this Entity. It is suggested that this
- * be a value generated from {@link #getNextEntityID()}
- * @param model a Model that will be used for this entity
- * @param camera a Camera that will be used for this entity
- */
-Entity::Entity(std::shared_ptr<Model> model, Camera camera) : boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))),
-    entityID(getEntityID()), model(model), camera(camera), velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f),
-	health(100), maxHealth(100)
+Entity::Entity(std::shared_ptr<Model> model, Camera camera) 
+	: boundingBox(AABB(camera.getPosition(), glm::vec3(2.5, 5, 2.5))), entityID(getEntityID()), model(model), camera(camera), 
+	velocity(glm::vec3(0, 0, 0)), acceleration(glm::vec3(0, 0, 0)), maxMoveSpeed(0.5f), health(100), maxHealth(100)
 {
 }
 
@@ -99,12 +91,8 @@ void Entity::setCamera(Camera camera)
     this->camera = camera;
 }
 
-/**
- * Moves the Camera the specified amount.
- * @param movement a glm::vec3 that describes the movement of the Camera
- */
- void Entity::move()
- {
+void Entity::move()
+{
     velocity += acceleration;
 
     if (abs(velocity.x) > maxMoveSpeed)

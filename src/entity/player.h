@@ -10,9 +10,6 @@
 #include "render/sphere.h"
 #include "entity/entity.h"
 
-/**
- * Entity is the base class for all things that exist in the world with some sort of model, and position.
- */
 class Player : public Entity
 {
 public:

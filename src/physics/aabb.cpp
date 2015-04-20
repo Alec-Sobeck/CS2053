@@ -10,11 +10,6 @@ AABB::AABB(float xMin, float yMin, float zMin, float xMax, float yMax, float zMa
 {
 }
 
-/**
- * Constructs a new AABB ("Axis Aligned Bounding Box").
- * @param origin a Vector3 describing the origin (x,y,z position) of the AABB. The center position
- * @param halfSizes a Vector3 describing the half-width/height/depth of the AABB
- */
 AABB::AABB(glm::vec3 origin, glm::vec3 halfSizes)
     : xMin(origin.x - halfSizes.x), xMax(origin.x + halfSizes.x), yMin(origin.y - halfSizes.y),
     yMax(origin.y + halfSizes.y), zMin(origin.z - halfSizes.z), zMax(origin.z + halfSizes.z)
@@ -49,22 +44,7 @@ bool AABB::overlaps(AABS &a)
 	
 	return distanceSquared > 0;
 }
-/*
-void AABB::moveX(float amount) {
-    xMax += amount;
-    xMin += amount;
-}
 
-void AABB::moveY(float amount) {
-    yMax += amount;
-    yMin += amount;
-}
-
-void AABB::moveZ(float amount) {
-    zMax += amount;
-    zMin += amount;
-}
-*/
 void AABB::move(glm::vec3 amounts)
 {
     xMax += amounts.x;
@@ -75,12 +55,6 @@ void AABB::move(glm::vec3 amounts)
     zMin += amounts.z;
 }
 
-std::string AABB::toString()
-{
-    std::stringstream ss;
-    ss << "x=[" << xMin << "," << xMax << "]; y=[" << yMin << "," << yMax << "]; z=[" << zMin << "," << zMax << "]";
-    return ss.str();
-}
 
 float AABB::getXMin()
 {

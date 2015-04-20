@@ -47,6 +47,4 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
         FlexArray<float> normalData,
         FlexArray<float> colourData);
 
-MeshData getDerpyDefaultData();
-
 #endif

@@ -6,7 +6,6 @@
 MaterialParser::MaterialParser(std::vector<std::string> &fileContents)
     : fileContents(fileContents)
 {
-
 }
 
 std::map<std::string, std::shared_ptr<Material>> MaterialParser::parseMaterials()

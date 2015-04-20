@@ -69,8 +69,6 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
     int colourOffset = runningOffset;
     runningOffset += colourSize * sizeof(colourType);
 
-    //if(normalData.size() == 0 || (normalData[0].x == 0 && normalData[0].y == 0 && normalData[0].z == 0) )
-    //{
     if(faceNormals.size() == 0)
     {
         normalData = FlexArray<glm::vec3>(vertexData.size());
@@ -84,7 +82,6 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
             faceNormals[i] = glm::vec3(5, 5, 5);
         }
     }
-    //}
 
     if(colourData.size() == 0)
     {
@@ -96,8 +93,8 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
     }
     int textureCoordOffset = runningOffset;
     int elementsPerRowOfCombinedData = vertexSize + normalSize + colourSize + textureCoordSize;
-    //TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
-    //Find how large the data is
+    // @TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
+    // Find how large the data is
     int stride = vertexSize * sizeof(vertexType) +
             normalSize * sizeof(normalType) +
             colourSize * sizeof(colourType) +
@@ -224,8 +221,8 @@ MeshData createModelData(gl::GLenum glRenderMode,
     //Texture stuff
     int textureCoordOffset = runningOffset;
     int elementsPerRowOfCombinedData = normalSize + vertexSize + colourSize + textureCoordSize;
-    //TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
-    //Find how large the data is
+    // @TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
+    // Find how large the data is
     int stride = vertexSize * sizeof(vertexType) +
             normalSize * sizeof(normalType) +
             colourSize * sizeof(colourType) +
@@ -303,7 +300,7 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
     runningOffset += colourSize * sizeof(colourType);
     //Texture stuff
     int elementsPerRowOfCombinedData = normalSize + vertexSize + colourSize;
-    //TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
+    // @TODO determine if something besides a float[] is required to make sure that different data types dont cause bugs
     //Find how large the data is
     int stride = vertexSize * sizeof(vertexType) +
             normalSize * sizeof(normalType) +
@@ -328,7 +325,6 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
             combinedBuffer[(i * elementsPerRowOfCombinedData) + j] = colourData[i * colourSize + k];
             j++;
         }
-
     }
 
     return MeshData(glRenderMode,
@@ -346,184 +342,4 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
             colourType,
             combinedBuffer);
 }
-
-/**
- * Test function
- */
-MeshData getDerpyDefaultData()
-{
-    using namespace gl;
-    FlexArray<float> vertexData = {
-        //   x      y      z
-        // back quad
-             0.0f, -1.0f, 2.0f,
-             2.0f, -1.0f, 2.0f,
-             2.0f, 5.0f,  2.0f,
-             0.0f, 5.0f,  2.0f,
-        // front quad
-             0.0f, -1.0f, 0.0f,
-             0.0f, 5.0f, 0.0f,
-             2.0f, 5.0f,  0.0f,
-             2.0f, -1.0f,  0.0f,
-        // left quad
-            0.0f, -1.0f, 2.0f,
-            0.0f, 5.0f, 2.0f,
-            0.0f,  5.0f, 0.0f,
-            0.0f,  -1.0f, 0.0f,
-        // right quad
-             2.0f, -1.0f, 2.0f,
-             2.0f, -1.0f, 0.0f,
-             2.0f, 5.0f,  0.0f,
-             2.0f, 5.0f,  2.0f,
-         // top quad
-             0.0f,  5.0f, 0.0f,
-             0.0f,  5.0f, 2.0f,
-             2.0f,  5.0f, 2.0f,
-             2.0f,  5.0f, 0.0f,
-         // bottom quad
-             0.0f, -1.0f, 0.0f,
-             2.0f, -1.0f, 0.0f,
-             2.0f, -1.0f, 2.0f,
-             0.0f, -1.0f, 2.0f,
-        };
-
-    FlexArray<float> normalData = {
-        //  nx     ny     nz
-        // back quad
-             0.0f,  0.0f,  1.0f,
-             0.0f,  0.0f,  1.0f,
-             0.0f,  0.0f,  1.0f,
-             0.0f,  0.0f,  1.0f,
-
-        // front quad
-             0.0f,  0.0f, -1.0f,
-             0.0f,  0.0f, -1.0f,
-             0.0f,  0.0f, -1.0f,
-             0.0f,  0.0f, -1.0f,
-
-        // left quad
-             -1.0f,  0.0f,  0.0f,
-             -1.0f,  0.0f,  0.0f,
-             -1.0f,  0.0f,  0.0f,
-             -1.0f,  0.0f,  0.0f,
-
-        // right quad
-             1.0f,  0.0f,  0.0f,
-             1.0f,  0.0f,  0.0f,
-             1.0f,  0.0f,  0.0f,
-             1.0f,  0.0f,  0.0f,
-
-        // top quad
-             0.0f,  1.0f,  0.0f,
-             0.0f,  1.0f,  0.0f,
-             0.0f,  1.0f,  0.0f,
-             0.0f,  1.0f,  0.0f,
-
-        // bottom quad
-             0.0f, -1.0f,  0.0f,
-             0.0f, -1.0f,  0.0f,
-             0.0f, -1.0f,  0.0f,
-             0.0f, -1.0f,  0.0f,
-        };
-
-    FlexArray<float> colourData = {
-        //   r      g      b      a
-        // back quad
-
-            1.0f,  0.0f,  0.0f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,
-
-        // front quad
-            0.0f,  1.0f,  0.0f,  1.0f,
-            0.0f,  1.0f,  0.0f,  1.0f,
-            0.0f,  1.0f,  0.0f,  1.0f,
-            0.0f,  1.0f,  0.0f,  1.0f,
-
-        // left quad
-            0.0f,  0.0f,  1.0f,  1.0f,
-            0.0f,  0.0f,  1.0f,  1.0f,
-            0.0f,  0.0f,  1.0f,  1.0f,
-            0.0f,  0.0f,  1.0f,  1.0f,
-
-        // right quad
-            1.0f,  0.0f,  1.0f,  1.0f,
-            1.0f,  0.0f,  1.0f,  1.0f,
-            1.0f,  0.0f,  1.0f,  1.0f,
-            1.0f,  0.0f,  1.0f,  1.0f,
-
-        // top quad
-            1.0f,  1.0f,  0.0f,  1.0f,
-            1.0f,  1.0f,  0.0f,  1.0f,
-            1.0f,  1.0f,  0.0f,  1.0f,
-            1.0f,  1.0f,  0.0f,  1.0f,
-
-        // bottom quad
-            0.0f,  1.0f,  1.0f,  1.0f,
-            0.0f,  1.0f,  1.0f,  1.0f,
-            0.0f,  1.0f,  1.0f,  1.0f,
-            0.0f,  1.0f,  1.0f,  1.0f
-        };
-
-
-
-   FlexArray<float> textureCoordData = {
-        //  u		v
-        // back quad
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-        // front quad
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-
-        // left quad
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-
-        // right quad
-            1.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f,
-            0.0f, 0.0f,
-
-        // top quad
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-
-        // bottom quad
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f
-        };
-//			return ModelDataBuilder.createModelData(GL_QUADS,
-//	 				4,
-//	 				Render.sun.getAssociatedFileName(),
-//	 				3, GL_FLOAT, GL_FLOAT, 4, GL_FLOAT, 2, GL_FLOAT,
-//	 				vertexData,
-//	 				normalData,
-//	 				colourData,
-//	 				textureCoordData
-//	 				);
-//
-    return createModelDataNoTexture(
-        GL_QUADS,
-        4,
-        3, GL_FLOAT, GL_FLOAT, 4, GL_FLOAT,
-        vertexData,
-        normalData,
-        colourData
-    );
-}
-
 
