@@ -8,7 +8,7 @@ MeshData::MeshData(
         int vertexSize, int vertexOffset, gl::GLenum vertexType,
         int normalSize, int normalOffset, gl::GLenum normalType,
         int colourSize, int colourOffset, gl::GLenum colourType,
-        FlexArray<float> combinedData
+		std::vector<float> combinedData
     ) : associatedTextureName(""), glRenderMode(glRenderMode), stride(stride),
     vertexSize(vertexSize), vertexOffset(vertexOffset), vertexType(vertexType),
     normalSize(normalSize), normalOffset(normalOffset), normalType(normalType),
@@ -30,7 +30,7 @@ MeshData::MeshData(
         int normalSize, int normalOffset, gl::GLenum normalType,
         int colourSize, int colourOffset, gl::GLenum colourType,
         int textureCoordSize, int textureCoordOffset, gl::GLenum textureCoordType,
-        FlexArray<float> combinedData
+		std::vector<float> combinedData
     ) : associatedTextureName(associatedTextureName), glRenderMode(glRenderMode), stride(stride),
     vertexSize(vertexSize), vertexOffset(vertexOffset), vertexType(vertexType),
     normalSize(normalSize), normalOffset(normalOffset), normalType(normalType),

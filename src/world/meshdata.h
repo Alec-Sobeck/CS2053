@@ -3,9 +3,9 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <glbinding/gl/gl.h>
 #include "physics/aabb.h"
-#include "utils/flexarray.h"
 #include "world/material.h"
 
 ///
@@ -35,7 +35,7 @@ public:
 	const gl::GLenum textureCoordType;
 	/// The total number of elements associated to one vertex
 	const int elementsPerRowOfCombinedData;
-	FlexArray<float> combinedData;
+	std::vector<float> combinedData;
 	const int vertexPerFace;
 	bool hasTextureData;
     std::shared_ptr<Material> material;
@@ -51,7 +51,7 @@ public:
 			int vertexSize, int vertexOffset, gl::GLenum vertexType,
 			int normalSize, int normalOffset, gl::GLenum normalType,
 			int colourSize, int colourOffset, gl::GLenum colourType,
-			FlexArray<float> combinedData
+			std::vector<float> combinedData
         );
 	///
 	/// Builds a new ModelData and enables textures
@@ -67,7 +67,7 @@ public:
 			int normalSize, int normalOffset, gl::GLenum normalType,
 			int colourSize, int colourOffset, gl::GLenum colourType,
 			int textureCoordSize, int textureCoordOffset, gl::GLenum textureCoordType,
-			FlexArray<float> combinedData
+			std::vector<float> combinedData
         );
 	///
 	/// This calculates every time.

@@ -36,7 +36,7 @@ public:
 	///
 	/// Gets the array of TerrainPolygons in this TerrainData.
 	///
-	std::shared_ptr<FlexArray<TerrainPolygon>> getPolygons();
+	std::shared_ptr<std::vector<TerrainPolygon>> getPolygons();
 	///
 	/// The total number of vertices of all the polygons in the TerrainData. It is expected that this value
 	/// should be in the interval [0, INF]

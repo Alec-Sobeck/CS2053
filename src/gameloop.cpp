@@ -3,6 +3,7 @@
 #include <stack>
 #include <list>
 #include <memory>
+#include <sstream>
 #include <stdlib.h>
 #include <iostream>
 #include <soil/SOIL.h>

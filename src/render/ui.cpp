@@ -110,13 +110,13 @@ void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	int degreeOfCircle = static_cast<int>(360 * player.getHealthPercent() / degree);
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(radius, height - radius);
-	for (int i = 0; i <= degreeOfCircle; i++)
-	{
-		float degInRad = i * rad;
-		glVertex2f(radius + cos(degInRad) * radius, height - radius + sin(degInRad) * radius);
-	}
-	glVertex2f(radius, height - radius);
+		glVertex2f(radius, height - radius);
+		for (int i = 0; i <= degreeOfCircle; i++)
+		{
+			float degInRad = i * rad;
+			glVertex2f(radius + cos(degInRad) * radius, height - radius + sin(degInRad) * radius);
+		}
+		glVertex2f(radius, height - radius);
 	glEnd();
 	// Draw the inner circle.
 	float smallerRadius = 35.0f;

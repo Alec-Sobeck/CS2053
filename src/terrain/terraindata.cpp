@@ -21,18 +21,18 @@ TerrainData::TerrainData() : vertices(std::vector<glm::vec3>()), normals(std::ve
 {
 }
 
-std::shared_ptr<FlexArray<TerrainPolygon>> TerrainData::getPolygons()
+std::shared_ptr<std::vector<TerrainPolygon>> TerrainData::getPolygons()
 {
-    std::shared_ptr<FlexArray<TerrainPolygon>> polygons(new FlexArray<TerrainPolygon>(faceVerts.size()));
+	std::shared_ptr<std::vector<TerrainPolygon>> polygons(new std::vector<TerrainPolygon>(faceVerts.size()));
 
     for (int i = 0; i < static_cast<int>(faceVerts.size()); i++)
     {
         glm::vec3 faceVertVals = faceVerts.at(i);
         glm::vec3 faceUVVals = faceTextures.at(i);
 
-        FlexArray<glm::vec3> polyVerts(3);
-        FlexArray<float> polyColours(12);
-        FlexArray<float> polyUVs(6);
+		std::vector<glm::vec3> polyVerts(3);
+		std::vector<float> polyColours(12);
+		std::vector<float> polyUVs(6);
 
         // x
         polyVerts[0] = vertices.at(static_cast<int>(faceVertVals.x - 1));

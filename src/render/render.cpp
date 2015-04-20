@@ -165,10 +165,10 @@ void drawSkybox(std::shared_ptr<Texture> skyboxTexture, Camera *cam)
 			 0.5f, 0.0f,
 			 0.5f, 0.333f
 		 };
-		 FlexArray<float> _vertexData(sizeof(vertexData) / sizeof(float));
-		 FlexArray<float> _normalData(sizeof(normalData) / sizeof(float));
-		 FlexArray<float> _colourData(sizeof(colourData) / sizeof(float));
-		 FlexArray<float> _textureCoordData(sizeof(textureCoordData) / sizeof(float));
+		 std::vector<float> _vertexData(sizeof(vertexData) / sizeof(float));
+		 std::vector<float> _normalData(sizeof(normalData) / sizeof(float));
+		 std::vector<float> _colourData(sizeof(colourData) / sizeof(float));
+		 std::vector<float> _textureCoordData(sizeof(textureCoordData) / sizeof(float));
 		 for (int i = 0; i < _vertexData.size(); i++)
 		 {
 			 _vertexData[i] = vertexData[i];

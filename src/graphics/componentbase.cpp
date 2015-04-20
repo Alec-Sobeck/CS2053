@@ -7,17 +7,11 @@
 #include "graphics/rendersettingshelper.h"
 #include "componentbase.h"
 
-
-ComponentBase::ComponentBase(std::shared_ptr<Texture> t, double x, double y, double width, double height) : renderTexture(t), x(x), y(y), width(width), height(height)
+ComponentBase::ComponentBase(std::shared_ptr<Texture> t, double x, double y, double width, double height) 
+	: renderTexture(t), x(x), y(y), width(width), height(height)
 {
 }
 
-/**
-* Gets whether or not a point is inside this LWJGLComponent, including whether or not it is inside the border.
-* @param x the x value of the point to compare
-* @param y the y value of the point to compare
-* @return a boolean indicating whether the point is in bounds of this component
-*/
 bool ComponentBase::inBounds(int mouseX, int mouseY)
 {
 	float y = this->y;
@@ -32,12 +26,6 @@ bool ComponentBase::inBounds(int mouseX, int mouseY)
 		mouseY < y + height);
 }
 
-/**
-* Draws some sort of background which is based on the background color, border color, and border style.
-* This may be overridden to do something different in each component.
-* @param parentOffsetX a double which is how far the parent component offsets this component along the x axis
-* @param parentOffsetY a double which is how far the parent component offsets this component along the y axis
-*/
 void ComponentBase::drawBackground()
 {
 	using namespace gl;

@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "terrain.h"
 #include "terrain/terraindata.h"
 
@@ -10,9 +10,9 @@ void Terrain::generateTerrain(int LoD, float size)
 	float step = width / lod;
 	int numVerts = lod * lod;
 
-	vertices = FlexArray<glm::vec3>(numVerts);
-	colours = FlexArray<Colour>(numVerts);
-	uvs = FlexArray<glm::vec2>(numVerts);
+	vertices = std::vector<glm::vec3>(numVerts);
+	colours = std::vector<Colour>(numVerts);
+	uvs = std::vector<glm::vec2>(numVerts);
 	for (int i = 0; i < lod; i++)
 	{
 		for (int j = 0; j < lod; j++)
@@ -33,10 +33,10 @@ void Terrain::generateTerrain(int LoD, float size)
 
 std::shared_ptr<TerrainData> Terrain::exportToTerrainData()
 {
-	std::vector<glm::vec3> vertices = toVector(this->vertices);
+	std::vector<glm::vec3> vertices = this->vertices;
 	std::vector<glm::vec3> normals;
-	std::vector<Colour> colours = toVector(this->colours);
-	std::vector<glm::vec2> textureCoords = toVector(this->uvs);
+	std::vector<Colour> colours = this->colours;
+	std::vector<glm::vec2> textureCoords = this->uvs;
 	std::vector<glm::vec3> faceVerts;
 	std::vector<glm::vec3> faceNormals;
 	std::vector<glm::vec3> faceTextures;

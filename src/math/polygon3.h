@@ -6,7 +6,6 @@ class Plane3;
 #include <vector>
 #include "math/plane3.h"
 #include "math/ilinevariant.h"
-#include "utils/flexarray.h"
 
 /// 
 /// Describes a generic polygon in 3-space. Contains a list of points, and a
@@ -26,7 +25,7 @@ public:
 	/// cause problems.
 	/// \param points a Vector3[] array that defines the vertices of this Polygon3
 	/// 
-	Polygon3(FlexArray<glm::vec3> points);
+	Polygon3(std::vector<glm::vec3> points);
 	/// 
 	/// Returns the normal (not a unit normal) of the polygon measured from the second point.
 	/// \return A Vector3 describing the normal. This should never be null because a Polygon3 must be coplanar.
@@ -63,13 +62,13 @@ public:
 	/// Gets the vertices of this Polygon3.
 	/// \return a vec3[] which contains all the vertices of this Polygon3
 	/// 
-	FlexArray<glm::vec3> getVertices();
+	std::vector<glm::vec3> getVertices();
 	/// 
 	/// Gets the number of vertices in this Polygon3. This is equivalent to a call to getVertices().length
 	/// \return an int which is the total number of points in this Polygon3. This value should be greater than or equal to 3
 	/// 
 	int getVertexCount();
-	FlexArray<glm::vec3> points;
+	std::vector<glm::vec3> points;
 	glm::vec3 normal;
 protected:
 	void cullNthPoint(int n);

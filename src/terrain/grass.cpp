@@ -1,9 +1,9 @@
 #include <cmath>
+#include <vector>
 #include "math/gamemath.h"
 #include "terrain/grass.h"
 #include "utils/random.h"
 #include "utils/timehelper.h"
-#include "utils/flexarray.h"
 #include "utils/fileutils.h"
 #include "graphics/gluhelper.h"
 #include "graphics/terrainpolygon.h"
@@ -85,7 +85,7 @@ void Grass::draw(Camera *camera)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-inline void putGrassCluster(FlexArray<float> &combinedData, int index, glm::vec3 o/*offset*/)
+inline void putGrassCluster(std::vector<float> &combinedData, int index, glm::vec3 o/*offset*/)
 {
 	float xHalfSize = 0.3f;
 	float yHalfSize = 0.3f;
@@ -322,7 +322,7 @@ void Grass::createVBO(glm::vec3 center, float range)
     /// use [floor(sqrt(density)) + 1] * 2 number of nodes.
     int numberPerDimension = static_cast<int>(sqrt(density)) + 1;
     int numberOfClusters = (numberPerDimension * numberPerDimension);
-    FlexArray<float> combinedData(144 * numberOfClusters);
+	std::vector<float> combinedData(144 * numberOfClusters);
     int cx = center.x;
     int cz = center.z;
     int minX = cx - range;

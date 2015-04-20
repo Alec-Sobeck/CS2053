@@ -2,12 +2,12 @@
 #include "terrainpolygon.h"
 
 TerrainPolygon::TerrainPolygon()
-    : Polygon3(FlexArray<glm::vec3>({glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)})), polygonBounds(generateBounds()), IBOIndexes(nullptr), colour(FlexArray<float>(0)),
-    textureCoords(FlexArray<float>(0))
+	: Polygon3(std::vector<glm::vec3>({ glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 0) })), polygonBounds(generateBounds()), IBOIndexes(nullptr), colour(std::vector<float>(0)),
+	textureCoords(std::vector<float>(0))
 {
 }
 
-TerrainPolygon::TerrainPolygon(FlexArray<glm::vec3> vertices, FlexArray<float> colour, FlexArray<float> textureCoords)
+TerrainPolygon::TerrainPolygon(std::vector<glm::vec3> vertices, std::vector<float> colour, std::vector<float> textureCoords)
  : Polygon3(vertices), polygonBounds(generateBounds()), IBOIndexes(nullptr), colour(colour), textureCoords(textureCoords)
 {
 }
@@ -55,22 +55,16 @@ void TerrainPolygon::setIBOIndexes(int *iBOIndexes)
     this->IBOIndexes = iBOIndexes;
 }
 
-FlexArray<float> TerrainPolygon::getTextureCoords()
+std::vector<float> TerrainPolygon::getTextureCoords()
 {
     return textureCoords;
 }
 
-FlexArray<float> TerrainPolygon::getColour()
+std::vector<float> TerrainPolygon::getColour()
 {
     return colour;
 }
 
-/**
- * Approximates the bounds of the Polygon3 associated to this TerrainPolygon.
- * This bounding box will still work even if one of the lengths of the sides
- * is exactly equal to zero.
- * @return
- */
 AABB TerrainPolygon::generateBounds()
 {
     double xMin = points[0].x;

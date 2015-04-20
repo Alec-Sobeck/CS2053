@@ -1,14 +1,10 @@
-
-#include "graphics/glincludes.h"
+#include <glbinding/gl/gl.h>
 #include "graphics/rendersettingshelper.h"
 #include "graphics/gluhelper.h"
 
 const int virtual_width = 1280;
 const int virtual_height = 720;
 
-/**
- * Initializes the default 2D openGL settings, making the resolution of the game math the approximate width and height required.
- */
 void initializeViewport()
 {
     using namespace gl;
@@ -49,22 +45,8 @@ void initializeViewport()
     glDisable(GL_LIGHTING); //Ensure lighting isnt enabled
     glEnable(GL_TEXTURE_2D); //Allow flat textures to be drawn
     glDisable(GL_FOG); //Ensure there isnt fog enabled
-//		System.out.println(x + " " + y + " " + width + " " + height);
-    // set up lighting
-//	    GL11.glEnable(GL11.GL_LIGHTING);
-//	    GL11.glEnable(GL11.GL_LIGHT0);
-//	    GL11.glMaterial(GL11.GL_FRONT, GL11.GL_SPECULAR, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
-//	    GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, 25.0f);
-//	    GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(-5.0f, 5.0f, 15.0f, 0.0f));
-//	    GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
-//	    GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
-//	    GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, floatBuffer(0.1f, 0.1f, 0.1f, 1.0f));
 }
 
-/**
- * Assuming proper 2D OpenGL rendering settings have been applied, this method will prepare for 2D rendering.
- * The screen will be cleared and GL11.glPushMatrix() is called.
- */
 void start2DRenderCycle()
 {
     using namespace gl;
@@ -80,10 +62,6 @@ void start2DRenderCycle()
     glDisable(GL_LIGHTING);
 }
 
-/**
- * Assuming a proper 2D OpenGL render cycle has nearly completed, this method will call
- * GL11.glPopMatrix() and then update the Display to finish that render cycle.
- */
 void end2DRenderCycle()
 {
     using namespace gl;
@@ -108,65 +86,43 @@ void startRenderCycle()
 void endRenderCycle()
 {
     using namespace gl;
-    // TODO -- update
-    // Display.update();
     swapBuffers();
 }
 
-/**
- * Gets the aspect ratio for the current canvas. The aspect ratio is the ratio of x (width) to y (height).
- * @return a float which is the aspect ratio of the current render canvas
- */
 float getAspectRatio()
 {
     return static_cast<float>(getWindowWidth()) / getWindowHeight();
 }
 
-/**
- * Gets the width of the current glViewport
- * @return an int which is the width of the current glViewport
- */
 int getViewportWidth()
 {
     using namespace gl;
     GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
+    glGetIntegerv(GL_VIEWPORT, viewport);
     return viewport[2];
 }
 
-/**
- * Gets the height of the current glViewport
- * @return an int which is the height of the current glViewport
- */
 int getViewportHeight()
 {
     using namespace gl;
     GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
+    glGetIntegerv(GL_VIEWPORT, viewport);
     return viewport[3];
 }
 
-/**
- * Gets the x position of the current glViewport
- * @return an int which is the x position of the current glViewport
- */
 int getViewportX()
 {
     using namespace gl;
     GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
+    glGetIntegerv(GL_VIEWPORT, viewport);
     return viewport[0];
 }
 
-/**
- * Gets the y position of the current glViewport
- * @return an int which is the y position of the current glViewport
- */
 int getViewportY()
 {
     using namespace gl;
     GLint viewport[4];
-    glGetIntegerv( GL_VIEWPORT, viewport );
+    glGetIntegerv(GL_VIEWPORT, viewport);
     return viewport[1];
 }
 
@@ -174,12 +130,9 @@ void start3DRenderCycle()
 {
     using namespace gl;
     // set up the camera
-    //TODO improve the camera and field of view settings
-
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
-
     glMatrixMode(GL_PROJECTION);
     gl::glLoadIdentity();
     setPerspective(45.0f, getAspectRatio(), 0.1f, 1000.0f);

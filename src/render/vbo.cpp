@@ -13,8 +13,7 @@ gl::GLuint createVBOID()
 VBO::VBO(MeshData &data, std::shared_ptr<Texture> associatedTexture)
 {
     using namespace gl;
-   // TODO: texture loading in VBO's is NYI
-    this->associatedTexture = associatedTexture;  //Render::getTexture(data.associatedTextureName);
+    this->associatedTexture = associatedTexture;  
     this->glRenderMode = data.glRenderMode;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
     //but because they haven't been tested it's not worth the risk.
@@ -43,30 +42,24 @@ VBO::VBO(MeshData &data, std::shared_ptr<Texture> associatedTexture)
     this->textureCoordType = data.textureCoordType;
     this->elementsPerRowOfCombinedData = data.elementsPerRowOfCombinedData;
     this->stride = data.stride;
-   /// this->combinedData = data.combinedData;
     //Generate applicable buffers
-    //Put the values in a FloatBuffer
-    //float* vertex_buffer_data = new float[combinedData.size()];
-    //vertex_buffer_data.put(combinedData);
-    //vertex_buffer_data.rewind();
-    float* rawArray = data.combinedData.getRawArray();
+	float* rawArray = new float[data.combinedData.size()];
+	for (unsigned int i = 0; i < data.combinedData.size(); i++)
+	{
+		rawArray[i] = data.combinedData[i];
+	}
     //Create the VBO
     vertexBufferID = createVBOID();
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    #include <iostream>
-    std::cout << "CDS:" << data.combinedData.size() << std::endl;
     totalNumberOfValues = data.combinedData.size();
     glBufferData(GL_ARRAY_BUFFER, data.combinedData.size() * sizeof(float), rawArray, GL_STATIC_DRAW);
-
-
-    // TODO - [LEAK] Memory leaked here - float* rawArray?
+	delete[] rawArray;
 }
 
 VBO::VBO(std::shared_ptr<MeshData> data, std::shared_ptr<Texture> texture)
 {
     using namespace gl;
-   // TODO: texture loading in VBO's is NYI
-    this->associatedTexture = texture;  //Render::getTexture(data.associatedTextureName);
+    this->associatedTexture = texture;  
     this->glRenderMode = data->glRenderMode;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
     //but because they haven't been tested it's not worth the risk.
@@ -95,19 +88,18 @@ VBO::VBO(std::shared_ptr<MeshData> data, std::shared_ptr<Texture> texture)
     this->textureCoordType = data->textureCoordType;
     this->elementsPerRowOfCombinedData = data->elementsPerRowOfCombinedData;
     this->stride = data->stride;
-   /// this->combinedData = data.combinedData;
     //Generate applicable buffers
-    //Put the values in a FloatBuffer
-    //float* vertex_buffer_data = new float[combinedData.size()];
-    //vertex_buffer_data.put(combinedData);
-    //vertex_buffer_data.rewind();
-    float* rawArray = data->combinedData.getRawArray();
+	float* rawArray = new float[data->combinedData.size()];
+	for (unsigned int i = 0; i < data->combinedData.size(); i++)
+	{
+		rawArray[i] = data->combinedData[i];
+	}
     //Create the VBO
     vertexBufferID = createVBOID();
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    #include <iostream>
     totalNumberOfValues = data->combinedData.size();
     glBufferData(GL_ARRAY_BUFFER, data->combinedData.size() * sizeof(float), rawArray, GL_STATIC_DRAW);
+	delete[] rawArray;
 }
 
 void VBO::draw(Camera *camera)
@@ -125,20 +117,15 @@ void VBO::draw(Camera *camera)
 
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    // render the cube
-  //  std::cout << vertexSize << " " << colourSize << " " << textureCoordSize << " " << stride << " " <<
-   //     vertexOffset << " " << normalOffset << " " << colourOffset << " " << textureCoordOffset << std::endl;
     glVertexPointer(vertexSize, vertexType, stride, (void*)(vertexOffset));
     glNormalPointer(normalType, stride, (void*)(normalOffset));
     glColorPointer(colourSize, colourType, stride, (void*)(colourOffset));
     glTexCoordPointer(textureCoordSize, textureCoordType, stride, (void*)(textureCoordOffset));
-
     glDrawArrays(glRenderMode, 0, totalNumberOfValues / elementsPerRowOfCombinedData);
 }
 
 VBO::~VBO()
 {
-    // TODO - fix this method
     // Deletes the VBO from VRAM
     gl::GLuint *buffers = new gl::GLuint[1];
     buffers[0] = static_cast<gl::GLuint>(vertexBufferID);

@@ -5,14 +5,11 @@
 #include "math/gamemath.h"
 
 
-Slider::Slider(std::shared_ptr<Texture> tex, double x, double y, double width, double height) : ComponentBase(tex, x, y, width, height), value(0.5f)
+Slider::Slider(std::shared_ptr<Texture> tex, double x, double y, double width, double height) 
+	: ComponentBase(tex, x, y, width, height), value(0.5f)
 {
-
 }
 
-/**
-* Draws the button, and fixes the position if the screen has been resized
-*/
 void Slider::draw()
 {
 	using namespace gl;

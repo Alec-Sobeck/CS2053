@@ -19,7 +19,7 @@ DynamicVBO::DynamicVBO() : vertexBufferID(0), indexBufferID(0),
 {
 }
 
-void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::shared_ptr<Texture> terrainTexture)
+void DynamicVBO::create(std::shared_ptr<std::vector<TerrainPolygon>> &polys, std::shared_ptr<Texture> terrainTexture)
 {
     this->texture = terrainTexture;
 
@@ -63,7 +63,7 @@ void DynamicVBO::create(std::shared_ptr<FlexArray<TerrainPolygon>> &polys, std::
     indexBufferID = createVBOID();
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
-    glBufferData(GL_ARRAY_BUFFER, totalNumberOfElements * sizeof(float)/*rawData's size*/, vertex_buffer_data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, totalNumberOfElements * sizeof(float), vertex_buffer_data, GL_DYNAMIC_DRAW);
     std::cout << "DynamicVBO[SIZE]>" << totalNumberOfElements << std::endl;
     initialized = true;
 
@@ -113,7 +113,7 @@ void DynamicVBO::draw(Camera *cam)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-void DynamicVBO::remove(FlexArray<int> iboIndexes)
+void DynamicVBO::remove(std::vector<int> iboIndexes)
 {
     if(!initialized)
     {
@@ -128,7 +128,7 @@ void DynamicVBO::remove(FlexArray<int> iboIndexes)
     }
 
     //Figure out what values are actually stored in the ibo at the specified indexes
-    FlexArray<int> valuesAtIndexes(iboIndexes.size());
+	std::vector<int> valuesAtIndexes(iboIndexes.size());
     for(int i = 0; i < iboIndexes.size(); i++)
     {
         std::cout << i << "> " << std::endl;
@@ -141,7 +141,7 @@ void DynamicVBO::remove(FlexArray<int> iboIndexes)
     // Update vertices in the VBO, first bind the VBO
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
 
-    FlexArray<float> valuesAtVBOEnd(iboIndexes.size() * TerrainPolygon::TOTAL_ROW_SIZE);
+	std::vector<float> valuesAtVBOEnd(iboIndexes.size() * TerrainPolygon::TOTAL_ROW_SIZE);
     for(int i = verts * TerrainPolygon::TOTAL_ROW_SIZE - 1,
         j = (indicesCount * TerrainPolygon::TOTAL_ROW_SIZE) - 1; i >= 0; i--, j--)
     {
@@ -164,7 +164,7 @@ void DynamicVBO::remove(FlexArray<int> iboIndexes)
 
     // Update the indexes in the IBO, first bind the IBO
     glBindBuffer(GL_ARRAY_BUFFER, indexBufferID);
-    FlexArray<int> valuesAtIboEnd(iboIndexes.size());
+	std::vector<int> valuesAtIboEnd(iboIndexes.size());
     for(int i = verts - 1, j = indicesCount - 1; i >= 0; i--, j--)
     {
         valuesAtIboEnd[i] = ibo[j];

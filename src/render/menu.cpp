@@ -6,27 +6,25 @@
 ///
 /// Define Menu class methods
 ///
-
-Menu::Menu() : shouldPopMenu(false)
+Menu::Menu() 
+	: shouldPopMenu(false)
 {
-
 }
 
 bool Menu::shouldPopThisMenu()
 {
 	return shouldPopMenu;
 }
+
 ///
 /// Define the MainMenu class
 /// 
-
 MainMenu::MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture> forestTex, std::shared_ptr<Texture> helpTex, std::shared_ptr<Texture> optionsTex, 
 	std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent,
 	std::shared_ptr<Texture> logo) 
 	: Menu(), startDesertLevel(Button(desertText, 10, -170, 256, 32)), startForestLevel(Button(forestTex, 10, -130, 256, 32)), 
 	helpButton(Button(helpTex, 10, -90, 256, 32)), optionsButton(Button(optionsTex, 10, -50, 256, 32)),
 	desertEvent(desertEvent), forestEvent(forestEvent), helpEvent(helpEvent), optionsEvent(optionsEvent), logo(logo)
-
 {
 }
 
@@ -78,13 +76,11 @@ void MainMenu::update(MouseManager *manager, float deltaTime)
 	{
 		optionsEvent();
 	}
-
 }
 
 ///
 /// Define the OptionsMenu class
 /// 
-
 OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> volumeTexture, float volume, std::function<void(float)> onVolumeChange) 
 	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), volumeSlider(Slider(volumeTexture, 10, 30, 256, 32)), onVolumeChange(onVolumeChange)
 {
@@ -111,8 +107,8 @@ void OptionsMenu::update(MouseManager *manager, float deltaTime)
 ///
 /// define the HelpMenu class
 ///
-
-HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide) : Menu(), backButton(Button(backTex, 10, -50, 256, 32)), guide(guide)
+HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide) 
+	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), guide(guide)
 {
 }
 
@@ -154,7 +150,6 @@ void HelpMenu::update(MouseManager *manager, float deltaTime)
 ///
 /// Define the GameOverMenu class
 /// 
-
 GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer) 
 	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), gameOverTexture(gameOverTexture), score(score), fontRenderer(renderer)
 {

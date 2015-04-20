@@ -45,6 +45,7 @@ void ObjParser::loadData(bool dataIsTriangles)
         {
             if(hasEncounteredMesh)
             {
+				normals.resize(vertices.size());
                 std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
                     renderMode,
                     activeMaterial,
@@ -53,13 +54,13 @@ void ObjParser::loadData(bool dataIsTriangles)
                     GL_FLOAT,
                     4,	GL_FLOAT,
                     2, GL_FLOAT,
-                    make1DFlex(vertices),
-                    make1DFlex(faceVerts),
-                    make1DFlex(normals, vertices.size()),
-                    make1DFlex(faceNormals),
-                    FlexArray<Colour>(),
-                    make1DFlex(textureCoords),
-                    make1DFlex(faceTextures)
+                    vertices,
+                    faceVerts,
+                    normals,
+                    faceNormals,
+					std::vector<Colour>(),
+                    textureCoords,
+                    faceTextures
                 );
                 meshes.push_back(data);
                 faceVerts = std::vector<glm::vec3>();
@@ -173,6 +174,7 @@ void ObjParser::loadData(bool dataIsTriangles)
         }
     }
 	
+	normals.resize(vertices.size());
     std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
         renderMode,
         activeMaterial,
@@ -181,13 +183,13 @@ void ObjParser::loadData(bool dataIsTriangles)
         GL_FLOAT,
         4,	GL_FLOAT,
         2, GL_FLOAT,
-        make1DFlex(vertices),
-        make1DFlex(faceVerts),
-        make1DFlex(normals, vertices.size()),
-        make1DFlex(faceNormals),
-        FlexArray<Colour>(),
-        make1DFlex(textureCoords),
-        make1DFlex(faceTextures)
+        vertices,
+        faceVerts,
+        normals,
+        faceNormals,
+		std::vector<Colour>(),
+        textureCoords,
+        faceTextures
     );
     meshes.push_back(data);
 

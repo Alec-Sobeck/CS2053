@@ -28,13 +28,13 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         gl::GLenum normalType,
         int colourSize, gl::GLenum colourType,
         int textureCoordSize, gl::GLenum textureCoordType,
-        FlexArray<glm::vec3> vertexData,
-        FlexArray<glm::vec3> faceVerts,
-        FlexArray<glm::vec3> normalData,
-        FlexArray<glm::vec3> faceNormals,
-        FlexArray<Colour> colourData,
-        FlexArray<glm::vec2> textureData,
-        FlexArray<glm::vec3> faceTextures)
+		std::vector<glm::vec3> vertexData,
+		std::vector<glm::vec3> faceVerts,
+		std::vector<glm::vec3> normalData,
+		std::vector<glm::vec3> faceNormals,
+		std::vector<Colour> colourData,
+		std::vector<glm::vec2> textureData,
+		std::vector<glm::vec3> faceTextures)
 {
     using namespace gl;
     const int vertsPerFace = 3;
@@ -71,12 +71,12 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
 
     if(faceNormals.size() == 0)
     {
-        normalData = FlexArray<glm::vec3>(vertexData.size());
+		normalData = std::vector<glm::vec3>(vertexData.size());
         for(int i = 0; i < normalData.size(); i++)
         {
             normalData[i] = glm::vec3(1, 0, 0);
         }
-        faceNormals = FlexArray<glm::vec3>(faceVerts.size());
+		faceNormals = std::vector<glm::vec3>(faceVerts.size());
         for(int i = 0; i < faceNormals.size(); i++)
         {
             faceNormals[i] = glm::vec3(5, 5, 5);
@@ -85,7 +85,7 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
 
     if(colourData.size() == 0)
     {
-        colourData = FlexArray<Colour>(vertexData.size());
+		colourData = std::vector<Colour>(vertexData.size());
         for(int i = 0; i < colourData.size(); i++)
         {
             colourData[i] = Colour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -100,7 +100,7 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
             colourSize * sizeof(colourType) +
             textureCoordSize * sizeof(textureCoordType);
 
-    FlexArray<float> combinedBuffer(faceVerts.size() * vertsPerFace * elementsPerRowOfCombinedData);
+	std::vector<float> combinedBuffer(faceVerts.size() * vertsPerFace * elementsPerRowOfCombinedData);
     int k = 0;
 
     for (int i = 0; i < faceVerts.size(); i++)
@@ -183,10 +183,10 @@ MeshData createModelData(gl::GLenum glRenderMode,
         gl::GLenum normalType,
         int colourSize, gl::GLenum colourType,
         int textureCoordSize, gl::GLenum textureCoordType,
-        FlexArray<float> vertexData,
-        FlexArray<float> normalData,
-        FlexArray<float> colourData,
-        FlexArray<float> textureCoordData)
+		std::vector<float> vertexData,
+		std::vector<float> normalData,
+		std::vector<float> colourData,
+		std::vector<float> textureCoordData)
 {
     using namespace gl;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
@@ -228,7 +228,7 @@ MeshData createModelData(gl::GLenum glRenderMode,
             colourSize * sizeof(colourType) +
             textureCoordSize * sizeof(textureCoordType);
 
-    FlexArray<float> combinedBuffer(vertexData.size() + normalData.size() + colourData.size() + textureCoordData.size());
+	std::vector<float> combinedBuffer(vertexData.size() + normalData.size() + colourData.size() + textureCoordData.size());
     for(int i = 0; i < combinedBuffer.size() / elementsPerRowOfCombinedData; i++)
     {
         int j = 0;
@@ -264,9 +264,9 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
         int vertexSize, gl::GLenum vertexType,
         gl::GLenum normalType,
         int colourSize, gl::GLenum colourType,
-        FlexArray<float> vertexData,
-        FlexArray<float> normalData,
-        FlexArray<float> colourData)
+		std::vector<float> vertexData,
+		std::vector<float> normalData,
+		std::vector<float> colourData)
 {
     using namespace gl;
     //This is a brutal check to prevent possible bugs. Things might work for these render modes,
@@ -306,7 +306,7 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
             normalSize * sizeof(normalType) +
             colourSize * sizeof(colourType);
 
-    FlexArray<float> combinedBuffer(vertexData.size() + normalData.size() + colourData.size());
+	std::vector<float> combinedBuffer(vertexData.size() + normalData.size() + colourData.size());
     for(int i = 0; i < combinedBuffer.size() / elementsPerRowOfCombinedData; i++)
     {
         int j = 0;

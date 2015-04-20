@@ -119,12 +119,12 @@ bool AABB::cheapOverlaps(Capsule3D &other)
 
 	// Test the difference faces
 	// the top
-	Polygon3 top(FlexArray<glm::vec3>{ top_topLeft, top_topRight, top_bottomRight, top_bottomLeft});
-	Polygon3 bottom(FlexArray<glm::vec3>{ bottom_topLeft, bottom_topRight, bottom_bottomRight, bottom_bottomLeft});
-	Polygon3 left(FlexArray<glm::vec3>{ top_topLeft, top_bottomLeft, bottom_bottomLeft, bottom_topLeft});
-	Polygon3 right(FlexArray<glm::vec3>{ top_topRight, top_bottomRight, bottom_bottomRight, bottom_topRight});
-	Polygon3 back(FlexArray<glm::vec3>{ top_topLeft, top_topRight, bottom_topRight, bottom_topLeft});
-	Polygon3 front(FlexArray<glm::vec3>{ top_bottomLeft, top_bottomRight, bottom_bottomRight, bottom_bottomLeft});
+	Polygon3 top(std::vector<glm::vec3>{ top_topLeft, top_topRight, top_bottomRight, top_bottomLeft});
+	Polygon3 bottom(std::vector<glm::vec3>{ bottom_topLeft, bottom_topRight, bottom_bottomRight, bottom_bottomLeft});
+	Polygon3 left(std::vector<glm::vec3>{ top_topLeft, top_bottomLeft, bottom_bottomLeft, bottom_topLeft});
+	Polygon3 right(std::vector<glm::vec3>{ top_topRight, top_bottomRight, bottom_bottomRight, bottom_topRight});
+	Polygon3 back(std::vector<glm::vec3>{ top_topLeft, top_topRight, bottom_topRight, bottom_topLeft});
+	Polygon3 front(std::vector<glm::vec3>{ top_bottomLeft, top_bottomRight, bottom_bottomRight, bottom_bottomLeft});
 
 	LineSegment3 seg(other.point1, other.point2);
 

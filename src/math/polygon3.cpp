@@ -8,7 +8,7 @@
 #include "math/polygon3.h"
 #include "math/gamemath.h"
 
-Polygon3::Polygon3(FlexArray<glm::vec3> points)
+Polygon3::Polygon3(std::vector<glm::vec3> points)
 {
     if(points.size() < 3)
     {
@@ -63,7 +63,7 @@ void Polygon3::cullNthPoint(int n)
     if(n == 3)
         throw std::logic_error("Culling a point from this Polygon3 would make the polygon degenerate.");
 
-    FlexArray<glm::vec3> replacement(points.size() - 1);
+	std::vector<glm::vec3> replacement(points.size() - 1);
     for (int i = 0; i < static_cast<int>(points.size()); i++)
 	{
         if (i < n)
@@ -189,7 +189,7 @@ bool Polygon3::does_intersect_poly(Polygon3 poly)
     return (getPlane().doesIntersectPoly(poly) && poly.getPlane().doesIntersectPoly(*this));
 }
 
-FlexArray<glm::vec3> Polygon3::getVertices()
+std::vector<glm::vec3> Polygon3::getVertices()
 {
     return points;
 }
