@@ -2,6 +2,7 @@
 #define ILINEVARIANT_H
 
 #include "glm/vec3.hpp"
+#include "plane3.h"
 
 /// 
 /// LineVariant3 describes some variant of a 3D line. This could be a Ray3, LineSegment3, or Line3.
@@ -19,6 +20,7 @@ public:
 	/// \return a point that's somewhere on the line
 	/// 
 	virtual glm::vec3 getPoint() const = 0;
+	virtual bool intersectsPlane(const Plane3 &p) const = 0;
 };
 
 

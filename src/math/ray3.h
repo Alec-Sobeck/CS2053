@@ -29,6 +29,7 @@ public:
 	glm::vec3 point;
 	glm::vec3 getPoint() const;
 	glm::vec3 getDirection() const;
+	bool intersectsPlane(const Plane3 &p) const;
 };
 
 

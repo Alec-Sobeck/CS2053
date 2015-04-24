@@ -6,7 +6,7 @@
 bool intersects(const Triangle3 &triangle, const LineVariant3 &line)
 {
 	auto plane = triangle.getPlane();
-	if (!intersects(plane, line))
+	if (!line.intersectsPlane(plane))
 		return false;
 	return intersects(plane, triangle.point1, triangle.point2, triangle.point3, true, line);
 }
@@ -16,7 +16,7 @@ bool intersects(const Polygon3 &polygon, const LineVariant3 &line)
 	bool coplanar = false;
 	if (polygon.isCoplanar)
 	{
-		if (!intersects(polygon.getPlane(), line))
+		if (!line.intersectsPlane(polygon.getPlane()))
 			return false;
 		coplanar = true;
 	}
@@ -37,7 +37,7 @@ bool intersects(const Plane3 &plane, const glm::vec3 &v0, const glm::vec3 &v1, c
 	if (!coplanar)
 	{
 		Plane3 plane(v0, v1, v2);
-		if (!intersects(plane, line))
+		if (!line.intersectsPlane(plane))
 			return false;
 		else
 			p2 = intersection(plane, line);
@@ -119,7 +119,7 @@ bool intersects(const Plane3 &plane, const Ray3 &line)
 
 std::unique_ptr<glm::vec3> intersection(const Plane3 &plane, const LineVariant3 &line)
 {
-	if (intersects(plane, line))
+	if (line.intersectsPlane(plane))
 	{
 		glm::vec3 pointp = line.getPoint();
 		glm::vec3 store = line.getDirection();

@@ -35,3 +35,14 @@ glm::vec3 LineSegment3::getDirection() const
 {
 	return asVec3();
 }
+
+bool LineSegment3::intersectsPlane(const Plane3 &plane) const
+{
+	if (glm::dot(getDirection(), plane.normal) == 0)
+	{
+		return false;
+	}
+	double r1 = glm::dot(plane.normal, plane.pointOnPlane - getPoint());
+	r1 = r1 / glm::dot(plane.normal, getDirection());
+	return (r1 >= 0 && r1 <= 1);
+}
