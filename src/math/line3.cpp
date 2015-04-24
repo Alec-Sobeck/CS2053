@@ -1,26 +1,16 @@
 
 #include "math/line3.h"
 
-Line3::Line3(glm::vec3 point, glm::vec3 direction) : direction(direction), point(point)
+Line3::Line3(glm::vec3 point, glm::vec3 direction) : point(point), direction(direction)
 {
 }
 
-glm::vec3 Line3::getPoint()
+glm::vec3 Line3::getPoint() const
 {
 	return point;
 }
 
-void Line3::setPoint(glm::vec3 point)
-{
-	this->point = point;
-}
-
-glm::vec3 Line3::getDirection()
+glm::vec3 Line3::getDirection() const
 {
 	return direction;
-}
-
-void Line3::setDirection(glm::vec3 direction)
-{
-	this->direction = direction;
 }

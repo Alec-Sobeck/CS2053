@@ -4,21 +4,21 @@
 #include "glm/vec3.hpp"
 
 /// 
-/// ILineVariant describes some variant of a line. This could be a Ray, LineSegment, or Line.
+/// LineVariant3 describes some variant of a 3D line. This could be a Ray3, LineSegment3, or Line3.
 ///
-class ILineVariant
+class LineVariant3
 {
 public:
 	/// 
 	/// Gets the direction of the line.
 	/// \return a vector that's the direction of the line
 	/// 
-	virtual glm::vec3 getDirection() = 0;
+	virtual glm::vec3 getDirection() const = 0;
 	/// 
 	/// Gets a point on the line.
 	/// \return a point that's somewhere on the line
 	/// 
-	virtual glm::vec3 getPoint() = 0;
+	virtual glm::vec3 getPoint() const = 0;
 };
 
 
