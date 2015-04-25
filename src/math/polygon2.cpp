@@ -11,7 +11,7 @@ Polygon2::Polygon2(std::vector<glm::vec2> points) : points(points)
 	}
 }
 	
-unsigned int Polygon2::vertexCount()
+size_t Polygon2::vertexCount()
 {
 	return points.size();
 }

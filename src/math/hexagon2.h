@@ -19,7 +19,7 @@ public:
 	/// \param points - a std::vector<glm::vec2> which is the vertices of this Hexagon2
 	///
 	Hexagon2(std::vector<glm::vec2> points);
-}
+};
 
 
 

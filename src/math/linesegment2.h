@@ -38,7 +38,7 @@ public:
 	/// Gets the length of the LineSegment, by converting the LineSegment to a glm::vec2 and calling glm::vec2's length() method.
 	/// \return a double which is the length of this LineSegment
 	/// 
-	double length();
+	float length();
 	///
 	/// Checks to see if two LineSegments are equal. Two segments will be equal if and only if they have the same values in each of the 
 	/// corresponding elements. 

@@ -19,7 +19,7 @@ void Triangle3::computeNormal()
 float Triangle3::area() const
 {  
     glm::vec3 total = glm::cross(point1, point2) + glm::cross(point2, point3) + glm::cross(point3, point1);
-	double result = glm::dot(total, normal);
+	float result = glm::dot(total, normal);
     return abs(result / 2);
 }
 

@@ -17,7 +17,7 @@ public:
 	/// Constructs a new Triangle2. A triangle must have 3 vertices.
 	/// \param points - a std::vector<glm::vec2> that will be the vertices of this Triangle2
 	///
-	Triangle2(std::vector<glm::vec2> points) : points(points);
+	Triangle2(std::vector<glm::vec2> points);
 };
 
 

@@ -5,7 +5,7 @@
 bool containsPoint(const std::vector<glm::vec2> &points, glm::vec2 point) 
 {
 	//@TODO test whether or not this actually works after being ported over.
-	int i, j;
+	size_t i, j;
 	bool c = false;
 	for (i = 0, j = points.size() - 1; i < points.size(); j = i++)
 	{
@@ -20,7 +20,7 @@ bool containsPoint(const std::vector<glm::vec2> &points, glm::vec2 point)
 
 void rotateOnVertex(std::vector<glm::vec2> &points, int vertexIndex, double angleOfRotation)
 {
-	rotateOnPoint(points[vertexIndex], angleOfRotation);
+	rotateOnPoint(points, points[vertexIndex], angleOfRotation);
 }
 
 void rotateOnPoint(std::vector<glm::vec2> &points, glm::vec2 pointRotatedOn, double angleOfRotation)

@@ -39,7 +39,7 @@ void Rectangle2::extendHeight(float changeInHeight)
 	points[2] = pointLine2;
 }
 
-void Rectangle2::extendWidth(double changeInWidth)
+void Rectangle2::extendWidth(float changeInWidth)
 {
 	LineSegment2 top(points[0], points[1]);
 	LineSegment2 bottom(points[3], points[2]);

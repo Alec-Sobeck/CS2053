@@ -35,14 +35,12 @@ namespace separatingaxistest
 	/// Prepares the coordinates to vector data
 	/// \return	array of vectors
 	/// 
-	std::vector<glm::vec2> prepareVector(Polygon2 current_box);
+	std::vector<glm::vec2> prepareVector(const Polygon2 &current_box);
 	///
 	/// Calculates the min-max projections
 	/// \return	object array of [min, min_index, max, max_index]
 	/// 
 	std::vector<double> getMinMax(std::vector<glm::vec2> vecs_box, glm::vec2 axis);
-}
-
 }
 
 #endif

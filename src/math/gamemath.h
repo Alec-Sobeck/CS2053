@@ -175,9 +175,9 @@ inline float angleOfConnectedLineSegments(glm::vec2 sharedPoint, glm::vec2 lineS
 	LineSegment2 a(sharedPoint, lineSegment1Point);
 	LineSegment2 b(sharedPoint, lineSegment2Point);
 	LineSegment2 c(lineSegment1Point, lineSegment2Point);
-	double lenA = a.length();
-	double lenB = b.length();
-	double lenC = c.length();
+	float lenA = a.length();
+	float lenB = b.length();
+	float lenC = c.length();
 	return acos((lenC*lenC - lenB*lenB - lenA*lenA) / (-2 * lenA * lenB));
 }
 

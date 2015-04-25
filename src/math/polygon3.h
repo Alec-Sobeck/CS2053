@@ -40,7 +40,7 @@ public:
 	/// Gets the number of vertices in this Polygon3. This is equivalent to a call to getVertices().length
 	/// \return an int which is the total number of points in this Polygon3. This value should be greater than or equal to 3
 	/// 
-	int vertexCount() const;
+	size_t vertexCount() const;
 	std::vector<glm::vec3> points;
 	glm::vec3 normal;
 protected:

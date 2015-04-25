@@ -22,7 +22,7 @@ public:
 	/// Constructs a new Rectangle2 with the specified vertices. It is assumed that the vertices are in clockwise ordering.
 	/// \param points a std::vector<glm::vec2> that describes the vertices of this Rectangle2
 	///
-	Rectangle2(std::vector<glm::vec2> points) : points(points);
+	Rectangle2(std::vector<glm::vec2> points);
 	///
 	/// Constructs a new Rectangle2 using the specified values to generated vertices. The
 	/// result of this calculation will be a rectangle that is axis aligned, with vertices
@@ -58,7 +58,7 @@ public:
 	/// \param changeInWidth - a float by which to change the width of this Rectangle2. A positive value will increase the width and a negative
 	/// value will decrease it.
 	/// 
-	void extendWidth(double changeInWidth);
+	void extendWidth(float changeInWidth);
 	///
 	/// Gets the MidPoint of the "left side" of the Rectangle2, which is the line segment from points[3]->points[0].
 	/// \return a vec2 which is the center of the line segment formed from points[3]->points[0]

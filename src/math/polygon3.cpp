@@ -98,7 +98,7 @@ Plane3 Polygon3::getPlane() const
     return Plane3(points.at(0), normal);
 }
 
-int Polygon3::vertexCount() const
+size_t Polygon3::vertexCount() const
 {
     return points.size();
 }

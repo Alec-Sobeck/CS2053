@@ -11,7 +11,7 @@ glm::vec2 LineSegment2::asVec2() const
 	return glm::vec2(point2.x - point1.x, point2.y - point1.y);
 }
 
-double LineSegment2::length()
+float LineSegment2::length()
 {
 	return glm::length(asVec2());
 }

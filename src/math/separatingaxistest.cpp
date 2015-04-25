@@ -109,7 +109,7 @@ bool intersects(const Rectangle2 &box, const Circle2 &circle)
 	glm::vec2 current_box_corner;
 	glm::vec2 center_box = box.getCenter();
 
-	float max = -INFINITY;
+	float max = -pow(1.0f, 30.0f);
 	glm::vec2 box2circle(c.x - center_box.x, c.y - center_box.y);
 	glm::vec2 box2circle_normalised = glm::normalize(box2circle);
 
@@ -121,7 +121,7 @@ bool intersects(const Rectangle2 &box, const Circle2 &circle)
 			current_box_corner.x - center_box.x,
 			current_box_corner.y - center_box.y
 			);
-		double current_proj = glm::dot(v, box2circle_normalised);
+		float current_proj = glm::dot(v, box2circle_normalised);
 		if (max < current_proj)
 			max = current_proj;
 	}
@@ -136,7 +136,7 @@ bool intersects(const Rectangle2 &box, const Circle2 &circle)
 	}
 }
 
-std::vector<glm::vec2> prepareVector(Polygon2 &current_box)
+std::vector<glm::vec2> prepareVector(const Polygon2 &current_box)
 {
 	std::vector<glm::vec2> vecs_box;
 	

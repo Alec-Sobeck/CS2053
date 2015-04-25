@@ -7,7 +7,7 @@ AABB2::AABB2(float xMin, float yMin, float xMax, float yMax)
 {
 }
 
-AABB2::AABB2(glm::vec3 origin, glm::vec3 halfSizes)
+AABB2::AABB2(glm::vec2 origin, glm::vec2 halfSizes)
     : xMin(origin.x - halfSizes.x), xMax(origin.x + halfSizes.x), yMin(origin.y - halfSizes.y), yMax(origin.y + halfSizes.y)
 {
 }
