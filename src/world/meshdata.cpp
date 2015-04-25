@@ -53,7 +53,7 @@ AABB MeshData::getAABB()
     float yMax = combinedData[1];
     float zMin = combinedData[2];
     float zMax = combinedData[2];
-    int polyCount = combinedData.size() / elementsPerRowOfCombinedData;
+    int polyCount = static_cast<int>(combinedData.size()) / elementsPerRowOfCombinedData;
 
     //xMin
     for(int i = 0; i < polyCount; i++)

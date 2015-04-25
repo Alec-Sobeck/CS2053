@@ -4,7 +4,7 @@
 #include <vector>
 #include "glm/vec3.hpp"
 #include "math/polygon3.h"
-#include "physics/aabb.h"
+#include "math/physics/aabb.h"
 
 struct RawPolygonData
 {

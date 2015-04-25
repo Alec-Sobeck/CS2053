@@ -106,14 +106,14 @@ void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	glDisable(GL_TEXTURE_2D);
 	float degree = 5.0f;
 	float radius = 40.0f;
-	float rad = toRad(degree);
+	float radians = rad(degree);
 	int degreeOfCircle = static_cast<int>(360 * player.getHealthPercent() / degree);
 	glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_TRIANGLE_FAN);
 		glVertex2f(radius, height - radius);
 		for (int i = 0; i <= degreeOfCircle; i++)
 		{
-			float degInRad = i * rad;
+			float degInRad = i * radians;
 			glVertex2f(radius + cos(degInRad) * radius, height - radius + sin(degInRad) * radius);
 		}
 		glVertex2f(radius, height - radius);
@@ -125,7 +125,7 @@ void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	glVertex2f(radius, height - radius);
 	for (int i = 0; i <= 360 / degree; i++)
 	{
-		float degInRad = i * rad;
+		float degInRad = i * radians;
 		glVertex2f(radius + cos(degInRad) * smallerRadius, height - radius + sin(degInRad) * smallerRadius);
 	}
 	glVertex2f(radius, height - radius);

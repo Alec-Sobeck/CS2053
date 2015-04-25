@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <glbinding/gl/gl.h>
-#include "physics/aabb.h"
+#include "math/physics/aabb.h"
 #include "world/material.h"
 
 ///

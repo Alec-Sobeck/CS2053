@@ -41,13 +41,13 @@ void Camera::rotate(glm::vec3 rotation)
 
 void Camera::reduceRotation()
 {
-    if(rotation.x > toRad(maxAngle))
+    if(rotation.x > rad(maxAngle))
     {
-        rotation = glm::vec3(toRad(85), rotation.y, rotation.z);
+        rotation = glm::vec3(rad(85.0f), rotation.y, rotation.z);
     }
-    else if (rotation.x < -toRad(maxAngle))
+    else if (rotation.x < -rad(maxAngle))
     {
-        rotation = glm::vec3(-toRad(85), rotation.y, rotation.z);
+        rotation = glm::vec3(-rad(85.0f), rotation.y, rotation.z);
     }
 
     rotation = glm::vec3(fmod(rotation.x, 2 * PI),

@@ -5,7 +5,7 @@
 #include "math/gamemath.h"
 
 
-Slider::Slider(std::shared_ptr<Texture> tex, double x, double y, double width, double height) 
+Slider::Slider(std::shared_ptr<Texture> tex, float x, float y, float width, float height)
 	: ComponentBase(tex, x, y, width, height), value(0.5f)
 {
 }
@@ -17,7 +17,7 @@ void Slider::draw()
 	
 	//The "slide bar"
 	const float BAR_WIDTH = 10;
-	double barPosition = (this->value - BAR_WIDTH < 0) ? 0 : (this->value - BAR_WIDTH > 0.95) ? 0.95 : (this->value - (BAR_WIDTH));
+	float barPosition = (this->value - BAR_WIDTH < 0) ? 0 : (this->value - BAR_WIDTH > 0.95) ? 0.95 : (this->value - (BAR_WIDTH));
 	float x1 = x + (width * value);
 	glDisable(GL_TEXTURE_2D);
 	glColor4d(1, 1, 1, 1);

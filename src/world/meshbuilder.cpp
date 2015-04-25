@@ -110,7 +110,7 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         glm::vec3 facesTextures = faceTextures[i];
         // X
         // Stuff the vert data
-        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1) , vertexData.size())].x);
+        combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].x);
         combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].y);
         combinedBuffer[k++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].z);
         // Then add associated normal

@@ -18,7 +18,8 @@
 #include <glm/glm.hpp>
 #include "math/intersection.h"
 #include "math/linesegment2.h"
-
+#include "math/intersection.h"
+#include "math/physics/collision.h"
 ///
 /// Constants
 /// 

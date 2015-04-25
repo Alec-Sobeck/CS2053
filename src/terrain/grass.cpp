@@ -97,8 +97,8 @@ inline void putGrassCluster(std::vector<float> &combinedData, int index, glm::ve
 	float zMinus = -zHalfSize;
 	float zPlus = zHalfSize;
 
-    float sin30 = sin(toRad(30));
-    float cos30 = cos(toRad(30));
+    float sin30 = sin(rad(30.0f));
+    float cos30 = cos(rad(30.0f));
     // Vert #1 -- quad1
     // Verts
     combinedData[index + 0 * 0 + 0] = o.x + 0.0f;
@@ -370,7 +370,7 @@ float Grass::getWindPower()
     }
     else if(percent >= 0.8f)
     {
-        float powerFactor = clamp((1 - percent) / 0.2);
+        float powerFactor = clamp((1.0f - percent) / 0.2f);
         return (powerFactor * maxWindPower);
     }
     else

@@ -26,12 +26,12 @@ void DynamicVBO::create(std::shared_ptr<std::vector<TerrainPolygon>> &polys, std
 	int vertexCount = 0;
     for(int i = 0; i < polys->size(); i++)
     {
-        vertexCount += polys->at(i).getVertexCount();
+        vertexCount += polys->at(i).vertexCount();
     }
     vertCount = vertexCount;
     int totalNumberOfElements = vertexCount * TerrainPolygon::TOTAL_ROW_SIZE;
     float *rawData = new float[totalNumberOfElements];
-    int IBOIndexCounter = 0;
+    unsigned int IBOIndexCounter = 0;
 
     int j = 0; //Raw Data Indexer
     for(int i = 0; i < polys->size(); i++)
@@ -42,9 +42,9 @@ void DynamicVBO::create(std::shared_ptr<std::vector<TerrainPolygon>> &polys, std
         {
             rawData[j] = f.data[i];
         }
-        int *val = constructRange(IBOIndexCounter, IBOIndexCounter + p->getVertexCount());
+        int *val = constructRange(IBOIndexCounter, IBOIndexCounter + p->vertexCount());
         p->setIBOIndexes(val);
-        IBOIndexCounter += p->getVertexCount();
+        IBOIndexCounter += p->vertexCount();
     }
     float* vertex_buffer_data = new float[totalNumberOfElements];
     for(int i = 0; i < totalNumberOfElements; i++)
@@ -203,7 +203,7 @@ void DynamicVBO::add(TerrainPolygon &poly)
         return;
      }
 
-    int verts = poly.getVertexCount();
+    int verts = poly.vertexCount();
     int* indexes = constructRange(indicesCount, indicesCount + verts);
     poly.setIBOIndexes(indexes);
 

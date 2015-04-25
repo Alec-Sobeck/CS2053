@@ -3,8 +3,8 @@
 
 #include <memory>
 #include "glm/vec3.hpp"
-#include "physics/aabb.h"
-#include "physics/aabs.h"
+#include "math/physics/aabb.h"
+#include "math/physics/aabs.h"
 #include "graphics/camera.h"
 #include "graphics/model.h"
 #include "render/sphere.h"

@@ -82,7 +82,7 @@ void Enemy::draw(Camera *cam)
 	glPushMatrix();
 	glTranslatef(getX(), getY(), getZ());
 	glScalef(0.2, 0.2, 0.2);
-	glRotatef(toDeg(getRotation().y), 0, 1, 0);
+	glRotatef(deg(getRotation().y), 0, 1, 0);
 	model->draw(cam);
 	glPopMatrix();
 }

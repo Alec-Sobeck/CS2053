@@ -7,8 +7,8 @@ using namespace gl;
 
 Sphere::Sphere(float radius, unsigned int rings, unsigned int sectors)
 {
-	float const R = 1. / (float)(rings - 1);
-	float const S = 1. / (float)(sectors - 1);
+	float const R = 1.0f / static_cast<float>(rings - 1);
+	float const S = 1.0f / static_cast<float>(sectors - 1);
 	int r, s;
 
 	vertices.resize(rings * sectors * 3);
@@ -17,26 +17,31 @@ Sphere::Sphere(float radius, unsigned int rings, unsigned int sectors)
 	std::vector<GLfloat>::iterator v = vertices.begin();
 	std::vector<GLfloat>::iterator n = normals.begin();
 	std::vector<GLfloat>::iterator t = texcoords.begin();
-	for (r = 0; r < rings; r++) for (s = 0; s < sectors; s++) {
-		float const y = sin(-PI_2 + PI * r * R);
-		float const x = cos(2 * PI * s * S) * sin(PI * r * R);
-		float const z = sin(2 * PI * s * S) * sin(PI * r * R);
+	for (r = 0; r < rings; r++) 
+	{
+		for (s = 0; s < sectors; s++)
+		{
+			float const y = sin(-PIOVER2 + PI * r * R);
+			float const x = cos(2 * PI * s * S) * sin(PI * r * R);
+			float const z = sin(2 * PI * s * S) * sin(PI * r * R);
 
-		*t++ = s*S;
-		*t++ = r*R;
+			*t++ = s*S;
+			*t++ = r*R;
 
-		*v++ = x * radius;
-		*v++ = y * radius;
-		*v++ = z * radius;
+			*v++ = x * radius;
+			*v++ = y * radius;
+			*v++ = z * radius;
 
-		*n++ = x;
-		*n++ = y;
-		*n++ = z;
+			*n++ = x;
+			*n++ = y;
+			*n++ = z;
+		}
 	}
 
 	indices.resize(rings * sectors * 4);
 	std::vector<GLushort>::iterator i = indices.begin();
-	for (r = 0; r < rings - 1; r++) for (s = 0; s < sectors - 1; s++) {
+	for (r = 0; r < rings - 1; r++) for (s = 0; s < sectors - 1; s++) 
+	{
 		*i++ = r * sectors + s;
 		*i++ = r * sectors + (s + 1);
 		*i++ = (r + 1) * sectors + (s + 1);

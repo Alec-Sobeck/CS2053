@@ -7,7 +7,7 @@
 #include "graphics/camera.h"
 #include "graphics/gluhelper.h"
 #include "utils/textureloader.h"
-#include "physics/aabb.h"
+#include "math/physics/aabb.h"
 
 void drawSkybox(std::shared_ptr<Texture> skybox, Camera *cam);
 void renderAxes(Camera *cam);

@@ -4,7 +4,7 @@
 #include <memory>
 #include <map>
 #include <glm/vec3.hpp>
-#include "physics/aabb.h"
+#include "math/physics/aabb.h"
 #include "world/meshdata.h"
 #include "graphics/camera.h"
 #include "render/vbo.h"

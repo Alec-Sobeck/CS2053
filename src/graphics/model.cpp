@@ -77,7 +77,7 @@ Model::~Model()
 
 bool Model::intersections(AABB &other)
 {
-    return aabb.overlaps(other);
+	return intersects(aabb, other);
 }
 
 glm::vec3 Model::getOrigin()

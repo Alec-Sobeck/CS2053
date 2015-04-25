@@ -8,7 +8,7 @@ class Slider : public ComponentBase
 {
 public:
 	float value;	
-	Slider(std::shared_ptr<Texture> tex, double x, double y, double width, double height);
+	Slider(std::shared_ptr<Texture> tex, float x, float y, float width, float height);
 	virtual void draw() override;	
 	virtual void update(MouseManager *manager) override;
 };

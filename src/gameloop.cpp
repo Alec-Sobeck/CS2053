@@ -402,7 +402,8 @@ void GameLoop::loadWithGLContext()
 	float *volume = &this->volume;
 	std::shared_ptr<Level> *activeLevel = &this->activeLevel;
 	mainMenu = std::shared_ptr<Menu>(new MainMenu(startDesertButtonTexture, startForestButtonTexture, helpButtonTexture, optionsButtonTexture,
-		[activeLevel](){
+		[activeLevel]()
+		{
 			// DesertEvt
 			if (!(*activeLevel))
 			{
@@ -410,7 +411,8 @@ void GameLoop::loadWithGLContext()
 				(*activeLevel)->createLevel();
 			}
 		},
-		[activeLevel](){
+		[activeLevel]()
+		{
 			// forestEvt
 			if (!(*activeLevel))
 			{
@@ -418,11 +420,13 @@ void GameLoop::loadWithGLContext()
 				(*activeLevel)->createLevel();
 			}
 		},
-		[backButtonTexture, helpTexture](){
+		[backButtonTexture, helpTexture]()
+		{
 			// helpEvn
 			gameLoopObject.menus.push(std::shared_ptr<Menu>(new HelpMenu(backButtonTexture, helpTexture)));
 		},
-		[backButtonTexture, sliderTexture, volume](){
+		[backButtonTexture, sliderTexture, volume]()
+		{
 			// optionsEvn
 			gameLoopObject.menus.push(std::shared_ptr<Menu>(new OptionsMenu(backButtonTexture, sliderTexture, *volume,
 				[volume](float value){
@@ -535,7 +539,7 @@ void GameLoop::collisionCheck()
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		std::shared_ptr<Enemy> enemy = enemies[i];
-		if (enemy->getAABB().overlaps(player.getAABB()))
+		if (intersects(enemy->getAABB(), player.getAABB()))
 		{
 			if (!player.isInvincible())
 			{
@@ -556,7 +560,7 @@ void GameLoop::collisionCheck()
 			float radius = projectiles[j]->size;
 			Capsule3D capsule(seg.point1, seg.point2, radius);
 			// Check for overlap with a lazy overlap test that misses some [in this case trivial] cases.	
-			if (enemies[i]->boundingBox.cheapOverlaps(capsule))
+			if (brokenIntersection(enemies[i]->boundingBox, capsule))
 			{
 				hits.push_back(enemies[i]);
 			}
@@ -977,7 +981,7 @@ void gameUpdateTick()
 		);
 	glm::vec3 up(0, cos(cam->rotation.x), 0);
 	glm::vec3 left = glm::cross(up, forward);
-	glRotatef(toDeg(-cam->rotation.y), 0, 1, 0);
+	glRotatef(deg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
 	gameLoopObject.gunModel->draw(cam);	
 	glDisableClientState(GL_VERTEX_ARRAY);
