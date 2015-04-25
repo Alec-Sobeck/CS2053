@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <stdexcept>
 #include <sstream>
 #include "intersection.h"
@@ -82,9 +82,6 @@ std::unique_ptr<glm::vec3> intersection(const Polygon3 &polygon, const LineVaria
 	}
 	return nullptr;
 }
-
-
-
 
 bool intersects(const Plane3 &plane, const LineSegment3 &line)
 {
@@ -190,4 +187,54 @@ bool intersects(const Plane3 &plane, const Triangle3 &poly)
 bool intersects(const Polygon3 &first, const Polygon3 &second)
 {
 	return (intersects(first.getPlane(), second) && intersects(second.getPlane(), first));
+}
+
+std::unique_ptr<glm::vec2> intersection(const LineSegment2 &first, const LineSegment2 &second)
+{
+	//Solution adapted from http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
+	//Q is the tail of the first line segment, P is the tail of the second line segment,
+	//S is the first line segment as a Vector, R is the second line segment as a Vector
+	glm::vec2 q = first.point1;  //q
+	glm::vec2 s = first.point2 - first.point1; //s
+	glm::vec2 p = second.point1; //p
+	glm::vec2 r = second.point2 - second.point1;  //r
+
+	//    	2D cross product for v×w, which would be the magnitude of the 3D cross product. This yields a double not another Vector.
+	//    	v.x * w.y − v.y * w.x
+
+	//		LineSegments intersect if the following equality holds true: 
+	//    	p + t*r = q + u*s
+	//    	where t,u are scalars and p,q,r,s are vectors:
+	//    	t = (q − p) × s / (r × s)
+	//    	u = (q − p) × r / (r × s)
+	//      
+	//Calculate a bunch of the terms in the formula
+	glm::vec2 qMinusP = q - p;
+	float qMinusPCrossedWithS = qMinusP.x * s.y - qMinusP.y * s.x;
+	float qMinusPCrossedWithR = qMinusP.x * r.y - qMinusP.y * r.x;
+	float rCrossedWithS = r.x * s.y - r.y * s.x;
+
+	//Check to make sure the there wont be a division by zero. Due to doubles, it cant be a check for equality. 
+	if (!approximatelyEqual(rCrossedWithS, 0))
+	{
+		//Solve for t and u
+		float t = qMinusPCrossedWithS / rCrossedWithS;
+		float u = qMinusPCrossedWithR / rCrossedWithS;
+		if (t >= 0 && t <= 1 && u >= 0 && u <= 1)
+		{
+			glm::vec2 v = p + (r * t);
+			glm::vec2 v1 = q + (s * u);
+			//If the vectors are equal, then the line segments have intersected at that point/.
+			if (v == v1)
+			{
+				return std::unique_ptr<glm::vec2>(new glm::vec2(v.x, v.y));
+			}
+		}
+	}
+	return nullptr;
+}
+
+bool intersects(const Rectangle2 &first, const Rectangle2 &second)
+{
+	return separatingaxistest::intersects(first, second);
 }

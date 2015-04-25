@@ -2,19 +2,6 @@
 
 #include "math/gamemath.h"
 
-bool parallel(glm::vec3 v1, glm::vec3 v2)
-{
-	glm::vec3 thisAsUnitVector = glm::normalize(v1);
-	glm::vec3 vUnitVector = glm::normalize(v2);
-	glm::vec3 vCopy(vUnitVector.x * -1, vUnitVector.y * -1, vUnitVector.z * -1);
-	return thisAsUnitVector == vCopy || thisAsUnitVector == vUnitVector;
-}
-
-bool perpendicular(glm::vec3 v1, glm::vec3 v2)
-{
-	return approximatelyEqual(glm::dot(v1, v2), 0);
-}
-
 glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
 {
 	glm::vec3 F = glm::normalize(target - eye);
@@ -33,3 +20,8 @@ glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
 	};
 	return mat;
 }
+
+
+
+
+
