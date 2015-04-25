@@ -12,10 +12,13 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/mat2x2.hpp>
+#include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/glm.hpp>
 #include "math/intersection.h"
 #include "math/linesegment2.h"
+
 ///
 /// Constants
 /// 
@@ -23,6 +26,52 @@ const float PI = 3.14159265359f;
 const double PI_D = 3.14159265359;
 const float PIOVER2 = 3.14159265359f / 2.0f;
 const double PIOVER2_D = 3.14159265359 / 2.0;
+
+/// GLM mandates that the mat2, mat3, and mat4 constructors use column major order.
+/// See: https://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf section 5.4 "Constructors"
+/// The 2x2 identity Matrix 
+const glm::mat2 MATRIX_IDENTITY_2D = glm::mat2{
+	1, 0,
+	0, 1
+};
+/// The 3x3 identity Matrix 
+const glm::mat3 MATRIX_IDENTITY_3D = glm::mat3{
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1
+};
+/// The 4x4 identity Matrix 
+const glm::mat4 MATRIX_IDENTITY_4D = glm::mat4{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1
+};
+/// A 3x3 Matrix that will reflect a 2D point on the X axis. 
+const glm::mat3 MATRIX_REFLECT_X_AXIS_2D = glm::mat3{
+	1,  0, 0,
+	0, -1, 0,
+	0,  0, 1
+};
+/// A 3x3 Matrix that will reflect a 2D point on the Y axis. 
+const glm::mat3 MATRIX_REFLECT_Y_AXIS_2D = glm::mat3{
+	-1, 0, 0,
+	 0, 1, 0,
+	 0, 0, 1
+};
+/// A 3x3 Matrix that will reflect a 2D point along the line y=x 
+const glm::mat3 MATRIX_REFLECTION_LINE_Y_EQUALS_X_2D = glm::mat3{
+	0, 1, 0,
+	1, 0, 0,
+	0, 0, 1
+};
+/// A 3x3 Matrix that will cause a reflection along the line y=-x for a 2D point
+const glm::mat3 MATRIX_REFLECT_LINE_Y_EQUALS_NEGX_2D = glm::mat3{
+	 0, -1, 0,
+	-1,  0, 0,
+	 0,  0, 1
+};
+
 
 ///
 /// Non-inline functions.
@@ -192,5 +241,159 @@ inline glm::vec2 toRectangular(float magnitude, float angle)
 	return glm::vec2(magnitude * cos(angle), magnitude * sin(angle));
 }
 
+///
+/// Constructs a rotation matrix, to rotate a point in 2D around the origin. The Matrix result will be a matrix in the form: 
+/// |cos(angle) -sin(angle) 0|
+/// |sin(angle)  cos(angle) 0|
+/// |0           0          1|
+/// \param angle a float which is the angle of rotation in radians
+/// \return a mat3, which will rotate a point around the origin the specified number of degrees
+/// 
+inline glm::mat3 construct2DRotationMatrix(float angle)
+{
+	return glm::mat3(
+		cos(angle), -sin(angle), 0,
+		sin(angle),  cos(angle), 0,
+				 0,	     	  0, 1
+	);
+}
+
+///
+/// Constructs a translation matrix, to translate a point in 2d. the Matrix result will be a matrix in the form: 
+/// |1 0 x| 
+/// |0 1 y| 
+/// |0 0 1|
+/// \param x a float which is the x-translation
+/// \param y a float which is the y-translation
+/// \return a mat3, which will translate a point the specified amounts.
+/// 
+inline glm::mat3 construct2DTranslationMatrix(float x, float y)
+{
+	return glm::mat3(
+		1, 0, x,
+		0, 1, y,
+		0, 0, 1
+	);
+}
+
+///
+/// Constructs a scaling matrix, to scale a point in 2d. The Matrix result will be a matrix in the form: 
+/// |x 0 0|
+/// |0 y 0|
+/// |0 0 1|
+/// \param x a float, which is the horizontal scaling factor
+/// \param y a float, which is the vertical scaling factor
+/// \return a mat3, which will scale a point the specified amounts.
+///
+inline glm::mat3 construct2DScalingMatrix(float x, float y)
+{
+	return glm::mat3(
+		x, 0, 0,
+		0, y, 0,
+		0, 0, 1
+	);
+}
+
+///
+/// Constructs a scaling matrix, to scale a point in 3d. The Matrix result will be a matrix in the form: 
+/// |x 0 0 0|
+/// |0 y 0 0|
+/// |0 0 z 0|
+/// |0 0 0 1|
+/// \param x a float, which is the horizontal scaling factor
+/// \param y a float, which is the vertical scaling factor
+/// \param z a float, which is the depth scaling factor
+/// \return a glm::mat4, which will scale a point the specified amounts.
+///
+inline glm::mat4 construct3DScalingMatrix(float x, float y, float z)
+{
+	return glm::mat4(
+		x, 0, 0, 0,
+		0, y, 0, 0,
+		0, 0, z, 0,
+		0, 0, 0, 1 
+	);
+}
+
+///
+/// Constructs a translation matrix, to translate a point in 3d. The Matrix result will be a matrix in the form: 
+/// |1 0 0 x|
+/// |0 1 0 y|
+/// |0 0 1 z|
+/// |0 0 0 1|
+/// \param x a float, which is the horizontal translation
+/// \param y a float, which is the vertical translation
+/// \param z a float, which is the depth translation
+/// \return a glm::mat4, which will translate a point the specified amounts.
+///
+inline glm::mat4 construct3DTranslationMatrix(float x, float y, float z)
+{
+	return glm::mat4(
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
+		0, 0, 0, 1
+	);
+}
+
+///
+/// Constructs a rotation matrix, to rotate a point in 3D around the X-axis relative to the origin.
+/// The Matrix result will be a matrix in the form: 
+/// |1 0           0          0|
+/// |0 cos(angle) -sin(angle) 0|
+/// |0 sin(angle)  cos(angle) 0|
+/// |0 0           0          1|
+/// \param angle a float which is the angle of rotation in radians
+/// \return a glm::mat4 which will rotate a point around the X-axis the given amount relative to the origin.	 
+///
+inline glm::mat4 construct3dRotationMatrixOnX(float angle)
+{
+	return glm::mat4(
+		1, 0,			0,			0,
+		0, cos(angle), -sin(angle), 0,
+		0, sin(angle),  cos(angle), 0,
+		0, 0,			0,			1
+	);
+}
+
+///
+/// Constructs a rotation matrix, to rotate a point in 3D around the Y-axis relative to the origin.
+/// The Matrix result will be a matrix in the form: 
+/// |cos(angle)  0 sin(angle) 0|
+/// |0           1 0          0|
+/// |-sin(angle) 0 cos(angle) 0|
+/// |0           0 0          1|
+/// \param angle a float which is the angle of rotation in radians
+/// \return a mat4 which will rotate a point around the Y-axis the given amount relative to the origin.	 
+///
+inline glm::mat4 construct3dRotationMatrixOnY(float angle)
+{
+	return glm::mat4(
+		cos(angle),  0, sin(angle), 0,
+		0,			 1, 0,			0,
+		-sin(angle), 0, cos(angle), 0,
+		0,			 0, 0,			1 
+	);
+}
+
+///
+/// Constructs a rotation matrix, to rotate a point in 3D around the Z-axis relative to the origin.
+/// The Matrix result will be a matrix in the form: 
+/// |cos(angle) -sin(angle) 0 0|
+/// |sin(angle)  cos(angle) 0 0|
+/// |0           0          1 0|
+/// |0           0          0 1|
+/// \param angle a float which is the angle of rotation in radians
+/// \return a Matrix which will rotate a point around the Z-axis the given amount relative to the origin.	 
+///
+inline glm::mat4 construct3dRotationMatrixOnZ(float angle)
+{
+	return glm::mat4(
+		cos(angle), -sin(angle), 0, 0,
+		sin(angle),  cos(angle), 0, 0,
+		0,			 0,			 1, 0,
+		0,			 0,			 0, 1
+	);
+}
 
 #endif
