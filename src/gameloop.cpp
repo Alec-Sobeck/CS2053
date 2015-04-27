@@ -311,7 +311,7 @@ void initializeEngine()
 void GLState::update()
 {
 	Camera *camera = gameLoopObject.player.getCamera();
-	proj = buildProjectionMatrix(53.13f, getAspectRatio(), 1.0f, 30.0f);
+	proj = buildProjectionMatrix(53.13f, getAspectRatio(), 0.1f, 1000.0f);
 	view = createLookAtMatrix(
 		camera->position,
 		//Reference point
@@ -352,7 +352,6 @@ GameLoop::~GameLoop()
 
 void GameLoop::loadModels()
 {
-	return;
 	// Load the tree model
 	ObjParser parser(
 		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
@@ -475,8 +474,8 @@ void GameLoop::loadWithGLContext()
 	menus.push(mainMenu);
 
 	// Generic texture shader.
-	std::string vertexShaderPath = buildPath("res/shaders/basic_texture_150.vert");
-	std::string fragmentShaderPath = buildPath("res/shaders/basic_texture_150.frag");
+	std::string vertexShaderPath = buildPath("res/shaders/3d_standard_shader.vert");
+	std::string fragmentShaderPath = buildPath("res/shaders/3d_standard_shader.frag");
 	genericTextureShader = createShader(&vertexShaderPath, &fragmentShaderPath);
 
 }
@@ -682,8 +681,7 @@ void ForestLevel::createLevel()
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/grass1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
-	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
-	this->terrainRenderer->create(terrainExp, tex);
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(gameLoopObject.genericTextureShader, terrainExp, tex));
 	// Create the grass
 	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
 	int grassDensity = (getRandomInt(1000) + 300) * 7;
@@ -746,8 +744,8 @@ void ForestLevel::update(float deltaTime)
 
 void ForestLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.skyboxTextureForest, cam);
-	terrainRenderer->draw(cam);
+	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureForest, cam);
+	terrainRenderer->draw();
 }
 
 void ForestLevel::draw(Camera* cam, float deltaTime)
@@ -811,8 +809,8 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.skyboxTextureDesert, cam);
-	terrainRenderer->draw(cam);
+	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
+	terrainRenderer->draw();
 }
 
 void DesertLevel::createLevel()
@@ -821,8 +819,7 @@ void DesertLevel::createLevel()
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/sand1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
-	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer());
-	this->terrainRenderer->create(terrainExp, tex);
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(gameLoopObject.genericTextureShader, terrainExp, tex));
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
 }
@@ -850,6 +847,7 @@ void DesertLevel::update(float deltaTime)
 
 void DesertLevel::draw(Camera* cam, float deltaTime)
 {
+	return;
 	using namespace gl;
 	// draw enemies
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -940,9 +938,7 @@ void gameUpdateTick()
 		start2DRenderCycle();
 
 
-		//gameLoopObject.genericTextureShader->bindShader();
-		//gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
-		//gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
+		
 
 
 
@@ -975,8 +971,15 @@ void gameUpdateTick()
     start3DRenderCycle();
 	//renderAxes(cam);
 	
-	gameLoopObject.activeLevel->drawTerrain(cam);
+	
 
+	gameLoopObject.genericTextureShader->bindShader();
+	gameLoopObject.genericTextureShader->glUniform1("texture1", 0);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
+	
+	gameLoopObject.activeLevel->drawTerrain(cam);
+	/*
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
@@ -1042,6 +1045,7 @@ void gameUpdateTick()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glPopMatrix();
 	// End gun draw
+	*/
 	end3DRenderCycle();
 
     start2DRenderCycle();

@@ -9,15 +9,16 @@
 #include "terrain/terraindata.h"
 #include "render/dynamicvbo.h"
 #include "render/texture.h"
+#include "render/vao.h"
+#include "shaders/shader.h"
 
 class TerrainRenderer
 {
 public:
-	std::vector<TerrainPolygon> terrainPolygons;
-    DynamicVBO* vbo;
-    TerrainRenderer();
-    void create(std::shared_ptr<TerrainData> terrain, std::shared_ptr<Texture> terrainTexture);
-	void draw(Camera *cam);
+    std::shared_ptr<TexturedColouredVAO> vao;
+	std::shared_ptr<Texture> texture;
+	TerrainRenderer(std::shared_ptr<Shader> terrainShader, std::shared_ptr<TerrainData> terrain, std::shared_ptr<Texture> terrainTexture);
+	void draw();
     ~TerrainRenderer();
 };
 

@@ -22,6 +22,3 @@ glm::mat4x4 createLookAtMatrix(glm::vec3 eye, glm::vec3 target, glm::vec3 up)
 }
 
 
-
-
-

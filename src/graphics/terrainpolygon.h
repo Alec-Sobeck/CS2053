@@ -11,7 +11,8 @@ struct RawPolygonData
 public:
     float *data;
     int size;
-    RawPolygonData(float *data, int size) : data(data), size(size)
+	int numVerts;
+	RawPolygonData(float *data, int size, int numVerts) : data(data), size(size), numVerts(numVerts)
     {
     }
 };

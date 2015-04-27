@@ -8,8 +8,9 @@
 #include "graphics/gluhelper.h"
 #include "utils/textureloader.h"
 #include "math/physics/aabb.h"
+#include "shaders/shader.h"
 
-void drawSkybox(std::shared_ptr<Texture> skybox, Camera *cam);
+void drawSkybox(std::shared_ptr<Shader> skyboxShader, std::shared_ptr<Texture> skybox, Camera *cam);
 void renderAxes(Camera *cam);
 void drawAABB(AABB &box);
 

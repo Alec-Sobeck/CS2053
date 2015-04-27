@@ -33,7 +33,7 @@ RawPolygonData TerrainPolygon::getRawData()
         combinedData[(i * TOTAL_ROW_SIZE) + 10] = textureCoords[i * 2];
         combinedData[(i * TOTAL_ROW_SIZE) + 11] = textureCoords[i * 2 + 1];
     }
-    return RawPolygonData(combinedData, points.size() * TOTAL_ROW_SIZE);
+    return RawPolygonData(combinedData, points.size() * TOTAL_ROW_SIZE, points.size());
 }
 
 AABB TerrainPolygon::getAABB()
