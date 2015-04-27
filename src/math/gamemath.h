@@ -114,6 +114,19 @@ inline float cube(T val)
 	return val * val * val;
 }
 
+template <class T>
+inline bool between(T first, T second, T val)
+{
+	if (first < second)
+	{
+		return val >= first && val <= second;
+	}
+	else // second <= first
+	{
+		return val <= first && val >= second;
+	}
+}
+
 ///
 /// Checks if two floats are approximately equal. This is done by seeing if the floats are within 1E-6 of each other.
 /// \param a the first float to check for approximate equality
@@ -396,5 +409,19 @@ inline glm::mat4 construct3dRotationMatrixOnZ(float angle)
 		0,			 0,			 0, 1
 	);
 }
+
+inline glm::mat4 buildProjectionMatrix(float fov, float ratio, float nearP, float farP)
+{
+	float f = 1.0f / tan(fov * (PI / 360.0f));
+	return glm::mat4(
+		f / ratio, 0, 0, 0,
+		0, f, 0, 0,
+		0, 0, (farP + nearP) / (nearP - farP), -1.0f,
+		0, 0, (2.0f * farP * nearP) / (nearP - farP), 0
+		);
+}
+
+
+
 
 #endif

@@ -34,7 +34,7 @@ void MainMenu::draw(float deltaTime)
 	startForestLevel.draw();
 	helpButton.draw();
 	optionsButton.draw();
-
+	/*
 	using namespace gl;
 	float x = getWindowWidth() / 2 - 256;
 	float y = 0;
@@ -56,25 +56,33 @@ void MainMenu::draw(float deltaTime)
 		glVertex3d(x, y, 0);
 		glTexCoord2f(0, 0);
 	glEnd();
+	*/
 }
 
 void MainMenu::update(MouseManager *manager, float deltaTime)
 {
 	if (startDesertLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
-		desertEvent();
+	//	desertEvent();
+		std::cout << "D" << std::endl;
 	}
 	if (startForestLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
-		forestEvent();
+	//	forestEvent();
+		std::cout << "F" << std::endl;
+
 	}
 	if (helpButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		helpEvent();
+		std::cout << "H" << std::endl;
+
 	}
 	if (optionsButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		optionsEvent();
+		std::cout << "O" << std::endl;
+
 	}
 }
 

@@ -1,4 +1,6 @@
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <stdexcept>
 #include "utils/fileutils.h"
@@ -93,25 +95,24 @@ void Shader::glUniform4(std::string attributeName, gl::GLint v0, gl::GLint v1, g
     gl::glUseProgram(programID);
     gl::glUniform4i(gl::glGetUniformLocation(programID, attributeName.c_str()), v0, v1, v2, v3);
 }
-/*
-void Shader::glUniformMatrix2(std::string attributeName, boolean transpose, java.nio.FloatBuffer matrices)
+
+void Shader::glUniformMatrix2(std::string attributeName, gl::GLboolean transpose, glm::mat2 matrix)
 {
-    glUseProgram(programID);
-    glUniformMatrix2(glGetUniformLocation(programID, attributeName), transpose, matrices);
+	gl::glUseProgram(programID);
+	gl::glUniformMatrix2fv(gl::glGetUniformLocation(programID, attributeName.c_str()), 1, transpose, glm::value_ptr(matrix));
 }
 
-void Shader::glUniformMatrix3(std::string attributeName, boolean transpose, java.nio.FloatBuffer matrices)
+void Shader::glUniformMatrix3(std::string attributeName, gl::GLboolean transpose, glm::mat3 matrix)
 {
-    glUseProgram(programID);
-    glUniformMatrix3(glGetUniformLocation(programID, attributeName), transpose, matrices);
+	gl::glUseProgram(programID);
+	glUniformMatrix3fv(gl::glGetUniformLocation(programID, attributeName.c_str()), 1, transpose, glm::value_ptr(matrix));
 }
 
-void Shader::glUniformMatrix4(std::string attributeName, boolean transpose, java.nio.FloatBuffer matrices)
+void Shader::glUniformMatrix4(std::string attributeName, gl::GLboolean transpose, glm::mat4 matrix)
 {
-    glUseProgram(programID);
-    glUniformMatrix4(glGetUniformLocation(programID, attributeName), transpose, matrices);
+	gl::glUseProgram(programID);
+	gl::glUniformMatrix4fv(gl::glGetUniformLocation(programID, attributeName.c_str()), 1, transpose, glm::value_ptr(matrix));
 }
-*/
 
 void Shader::printShaderInfoLog()
 {
@@ -250,6 +251,7 @@ std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std:
         glAttachObjectARB(program, fragShader);
     }
 
+	glBindFragDataLocation(program, 0, "outputF");
     glLinkProgramARB(program);
     GLint ret = 0;
     glGetObjectParameterivARB(program, GL_OBJECT_LINK_STATUS_ARB, &ret);

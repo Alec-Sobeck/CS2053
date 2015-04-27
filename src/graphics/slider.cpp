@@ -3,16 +3,18 @@
 #include <glbinding/gl/gl.h>
 #include "slider.h"
 #include "math/gamemath.h"
+#include "graphics/rendersettingshelper.h"
 
 
 Slider::Slider(std::shared_ptr<Texture> tex, float x, float y, float width, float height)
-	: ComponentBase(tex, x, y, width, height), value(0.5f)
+	: ComponentBase(tex, (getViewportWidth() / 2) - (width / 2.0f), y, width, height), value(0.5f)
 {
 }
 
 void Slider::draw()
 {
 	using namespace gl;
+	x = (getViewportWidth() / 2) - (width / 2.0f); 
 	drawBackground();
 	
 	//The "slide bar"

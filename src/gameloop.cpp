@@ -161,6 +161,7 @@ public:
 	std::shared_ptr<Texture> terrainTextureSand;	
 	std::shared_ptr<Level> activeLevel;
 	float volume;
+	std::shared_ptr<Shader> genericTextureShader;
 
     GameLoop();
 	~GameLoop();
@@ -181,6 +182,15 @@ public:
     bool drawString(std::string val, float x, float y, float z, Colour colour);
 };
 
+class GLState
+{
+public:
+	glm::mat4 proj;
+	glm::mat4 view;
+
+	void update();
+};
+
 ///***********************************************************************
 ///***********************************************************************
 /// End internal API declaration
@@ -193,6 +203,7 @@ public:
 ///***********************************************************************
 ///***********************************************************************
 GameLoop gameLoopObject;
+GLState glState;
 ///***********************************************************************
 ///***********************************************************************
 /// Define initialization functions
@@ -294,6 +305,30 @@ void initializeEngine()
 	gameLoopObject.loadWithGLContext();
 }
 
+///
+/// GLState declarations
+///
+void GLState::update()
+{
+	Camera *camera = gameLoopObject.player.getCamera();
+	proj = buildProjectionMatrix(53.13f, getAspectRatio(), 1.0f, 30.0f);
+	view = createLookAtMatrix(
+		camera->position,
+		//Reference point
+		glm::vec3(
+			camera->position.x + sin(camera->rotation.y),
+			camera->position.y - sin(camera->rotation.x),
+			camera->position.z - cos(camera->rotation.y)
+		),
+		//Up Vector
+		glm::vec3(
+			0,
+			cos(camera->rotation.x),
+			0
+		)
+	);
+}
+
 ///***********************************************************************
 ///***********************************************************************
 /// Define the GameLoop class methods.
@@ -317,6 +352,7 @@ GameLoop::~GameLoop()
 
 void GameLoop::loadModels()
 {
+	return;
 	// Load the tree model
 	ObjParser parser(
 		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
@@ -437,6 +473,12 @@ void GameLoop::loadWithGLContext()
 		logo
 	));
 	menus.push(mainMenu);
+
+	// Generic texture shader.
+	std::string vertexShaderPath = buildPath("res/shaders/basic_texture_150.vert");
+	std::string fragmentShaderPath = buildPath("res/shaders/basic_texture_150.frag");
+	genericTextureShader = createShader(&vertexShaderPath, &fragmentShaderPath);
+
 }
 
 bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
@@ -889,11 +931,20 @@ void gameUpdateTick()
     using namespace gl;	
 	float deltaTime = gameLoopObject.getDeltaTime();
 	gameLoopObject.update();
+	glState.update();
     if (gameLoopObject.menus.size() > 0)
 	{
+
 		// Draw the menu
 		startRenderCycle();
 		start2DRenderCycle();
+
+
+		//gameLoopObject.genericTextureShader->bindShader();
+		//gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
+		//gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
+
+
 
 		std::shared_ptr<Menu> m = gameLoopObject.menus.top();
 		m->update(&gameLoopObject.mouseManager, deltaTime);
@@ -902,7 +953,8 @@ void gameUpdateTick()
 		{
 			gameLoopObject.menus.pop();
 		}
-		
+
+		gameLoopObject.genericTextureShader->releaseShader();
 		end2DRenderCycle();
 		endRenderCycle();
 		gameLoopObject.endOfTick();
@@ -1200,15 +1252,18 @@ void entryCall(int argc, char **argv)
 {
     // init GLUT and create window
 	glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+	//glutInitContextVersion(3, 3);
+	//glutInitContextProfile(GLUT_CORE_PROFILE);
+
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
-	glutInitWindowSize(800,640);
+	glutInitWindowSize(1280,720);
 	glutCreateWindow("Monster Hunter");
 	// register callbacks
 	glutDisplayFunc(gameUpdateTick);
 	glutReshapeFunc(changeSize);
 	glutIdleFunc(gameUpdateTick);
-
+	
 	glutKeyboardFunc(keyManagerKeyPressed);
 	glutKeyboardUpFunc(keyManagerKeyUp);
 	glutSpecialFunc(keyManagerKeySpecial);
@@ -1426,6 +1481,7 @@ The second argument relates to the state of the button when the callback was gen
 // active mouse movement: active motion occurs when the mouse is moved and a button is pressed.
 void mouseManagerHandleMouseMovementWhileClicked(int x, int y)
 {
+	std::cout << "M:" << x << " " << y << std::endl;
     // Do stuff with the mouse clicked then dragged
     static bool warped = false;
     if(warped)

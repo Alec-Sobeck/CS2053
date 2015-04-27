@@ -4,6 +4,8 @@
 ///
 /// RenderSettingsHelper defines functions that set OpenGL settings to some sort of default for a particular operation. For example, 2D or 3D rendering.
 ///
+const int virtual_width = 1280;
+const int virtual_height = 720;
 
 ///
 /// Initializes the default 2D openGL settings, making the resolution of the game math the approximate width and height required.
