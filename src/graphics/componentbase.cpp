@@ -73,12 +73,12 @@ void ComponentBase::rebuildVAO()
 	float height = getAdjustedHeight(this->height);
 
 	float colours[] = {
-		1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f, 1.0f, 
-		1.0f, 1.0f, 1.0f, 
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
 	};
 	float textures[] = {
 		0.0f, 0.0f,
@@ -142,6 +142,9 @@ void ComponentBase::drawBackground()
 	//Draw the background texture if there is one. 
 	glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+	glAlphaFunc(GL_GREATER, 0.1f);
+	glEnable(GL_ALPHA_TEST);
 	auto shader = getDefault2DTextureShader();
 	shader->bindShader();
 	renderTexture->bind();

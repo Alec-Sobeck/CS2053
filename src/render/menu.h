@@ -6,6 +6,7 @@
 #include "gameloop.h"
 #include "graphics/slider.h"
 #include "glfont.h"
+#include "graphics/logo.h"
 
 class Menu
 {
@@ -25,7 +26,7 @@ private:
 	Button startForestLevel;
 	Button helpButton;
 	Button optionsButton;
-	std::shared_ptr<Texture> logo;
+	Logo mainMenuLogo;
 	std::function<void()> desertEvent;
 	std::function<void()> forestEvent;
 	std::function<void()> helpEvent;
@@ -55,7 +56,8 @@ class HelpMenu : public Menu
 {
 private:
 	Button backButton;
-	std::shared_ptr<Texture> guide;
+	Logo helpLogo;
+
 public:
 	HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide);
 	void draw(float deltaTime);
@@ -65,10 +67,11 @@ public:
 class GameOverMenu : public Menu
 {
 private:
-	std::shared_ptr<Texture> gameOverTexture;
 	Button backButton;
+	Logo gameOverLogo;
 	int score;
 	std::shared_ptr<GLFont> fontRenderer;
+
 public:
 	GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer);
 	void draw(float deltaTime);

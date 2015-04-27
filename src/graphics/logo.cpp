@@ -16,4 +16,5 @@ void Logo::draw()
 
 void Logo::update(MouseManager *manager)
 {
+
 }

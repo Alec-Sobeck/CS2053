@@ -24,7 +24,8 @@ MainMenu::MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture>
 	std::shared_ptr<Texture> logo) 
 	: Menu(), startDesertLevel(Button(desertText, 10, -170, 256, 32)), startForestLevel(Button(forestTex, 10, -130, 256, 32)), 
 	helpButton(Button(helpTex, 10, -90, 256, 32)), optionsButton(Button(optionsTex, 10, -50, 256, 32)),
-	desertEvent(desertEvent), forestEvent(forestEvent), helpEvent(helpEvent), optionsEvent(optionsEvent), logo(logo)
+	desertEvent(desertEvent), forestEvent(forestEvent), helpEvent(helpEvent), optionsEvent(optionsEvent), 
+	mainMenuLogo(Logo(logo, getWindowWidth() / 2 - 256, 0, 512, 512))
 {
 }
 
@@ -34,29 +35,13 @@ void MainMenu::draw(float deltaTime)
 	startForestLevel.draw();
 	helpButton.draw();
 	optionsButton.draw();
-	/*
-	using namespace gl;
-	float x = getWindowWidth() / 2 - 256;
-	float y = 0;
-	float width = 512;
-	float height = 512;
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_TEXTURE_2D);
-	logo->bind();
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-		glVertex3d(x, y + height, 0);
-		glTexCoord2f(1, 0);
-		glVertex3d(x + width, y + height, 0);
-		glTexCoord2f(1, 1);
-		glVertex3d(x + width, y, 0);
-		glTexCoord2f(0, 1);
-		glVertex3d(x, y, 0);
-		glTexCoord2f(0, 0);
-	glEnd();
-	*/
+	// Force the logo to be centered, then draw it. This won't change the state of the VAO unless the window size changes, which will invalidate 
+	// it anyway.
+	mainMenuLogo.x = getWindowWidth() / 2 - 256;
+	mainMenuLogo.y = 0;
+	mainMenuLogo.width = 512;
+	mainMenuLogo.height = 512;
+	mainMenuLogo.draw();
 }
 
 void MainMenu::update(MouseManager *manager, float deltaTime)
@@ -116,35 +101,14 @@ void OptionsMenu::update(MouseManager *manager, float deltaTime)
 /// define the HelpMenu class
 ///
 HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide) 
-	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), guide(guide)
+	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), helpLogo(Logo(guide, 30, 50, 512, 512))
 {
 }
 
 void HelpMenu::draw(float deltaTime)
 {
 	backButton.draw();
-	
-	using namespace gl;
-	float x = 30;
-	float y = 50;
-	float width = 512;
-	float height = 512;
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_TEXTURE_2D);
-	guide->bind();
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-		glVertex3d(x, y + height, 0);
-		glTexCoord2f(1, 0);
-		glVertex3d(x + width, y + height, 0);
-		glTexCoord2f(1, 1);
-		glVertex3d(x + width, y, 0);
-		glTexCoord2f(0, 1);
-		glVertex3d(x, y, 0);
-		glTexCoord2f(0, 0);
-	glEnd();
+	helpLogo.draw();
 }
 
 void HelpMenu::update(MouseManager *manager, float deltaTime)
@@ -159,7 +123,8 @@ void HelpMenu::update(MouseManager *manager, float deltaTime)
 /// Define the GameOverMenu class
 /// 
 GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer) 
-	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), gameOverTexture(gameOverTexture), score(score), fontRenderer(renderer)
+	: Menu(), backButton(Button(backTex, 10, -50, 256, 32)), score(score), fontRenderer(renderer),
+	gameOverLogo(Logo(gameOverTexture, getWindowWidth() / 2 - 256, 50, 512, 512))
 {
 }
 
@@ -168,26 +133,13 @@ void GameOverMenu::draw(float deltaTime)
 	using namespace gl;
 	backButton.draw();
 
-	float x = getWindowWidth() / 2 - 256;
-	float y = 50;
-	float width = 512;
-	float height = 512;
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	glEnable(GL_TEXTURE_2D);
-	gameOverTexture->bind();
-	glColor4f(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-		glVertex3d(x, y + height, 0);
-		glTexCoord2f(1, 0);
-		glVertex3d(x + width, y + height, 0);
-		glTexCoord2f(1, 1);
-		glVertex3d(x + width, y, 0);
-		glTexCoord2f(0, 1);
-		glVertex3d(x, y, 0);
-		glTexCoord2f(0, 0);
-	glEnd();
+	// Force the logo to be centered, then draw it. This won't change the state of the VAO unless the window size changes, which will invalidate 
+	// it anyway.
+	gameOverLogo.x = getWindowWidth() / 2 - 256;
+	gameOverLogo.y = 50;
+	gameOverLogo.width = 512;
+	gameOverLogo.height = 512;
+	gameOverLogo.draw();
 }
 
 void GameOverMenu::update(MouseManager *manager, float deltaTime)

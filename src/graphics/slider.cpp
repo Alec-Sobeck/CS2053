@@ -16,10 +16,8 @@ void Slider::draw()
 	using namespace gl;
 	x = (getViewportWidth() / 2) - (width / 2.0f); 
 	drawBackground();
-
+	//draw the slider. Let's be super lazy and just rebuild the VAO every frame.
 	rebuildVAO();
-
-	//Draw the background texture if there is one. 
 	glLoadIdentity();
 	glDisable(GL_TEXTURE_2D);
 	auto shader = getDefault2DColourShader();
