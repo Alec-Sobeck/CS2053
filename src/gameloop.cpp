@@ -1252,8 +1252,8 @@ void entryCall(int argc, char **argv)
 {
     // init GLUT and create window
 	glutInit(&argc, argv);
-	//glutInitContextVersion(3, 3);
-	//glutInitContextProfile(GLUT_CORE_PROFILE);
+	glutInitContextVersion(3, 3);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
 
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);

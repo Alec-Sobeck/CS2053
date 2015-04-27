@@ -48,26 +48,19 @@ void MainMenu::update(MouseManager *manager, float deltaTime)
 {
 	if (startDesertLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
-	//	desertEvent();
-		std::cout << "D" << std::endl;
+		desertEvent();
 	}
 	if (startForestLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
-	//	forestEvent();
-		std::cout << "F" << std::endl;
-
+		forestEvent();
 	}
 	if (helpButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		helpEvent();
-		std::cout << "H" << std::endl;
-
 	}
 	if (optionsButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		optionsEvent();
-		std::cout << "O" << std::endl;
-
 	}
 }
 
