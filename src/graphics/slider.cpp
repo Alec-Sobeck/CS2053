@@ -16,24 +16,49 @@ void Slider::draw()
 	using namespace gl;
 	x = (getViewportWidth() / 2) - (width / 2.0f); 
 	drawBackground();
-	
+
+	rebuildVAO();
+
+	//Draw the background texture if there is one. 
+	glLoadIdentity();
+	glDisable(GL_TEXTURE_2D);
+	auto shader = getDefault2DColourShader();
+	shader->bindShader();
+	vao->draw();
+}
+
+void Slider::rebuildVAO()
+{
 	//The "slide bar"
 	const float BAR_WIDTH = 10;
-	float barPosition = (this->value - BAR_WIDTH < 0) ? 0 : (this->value - BAR_WIDTH > 0.95) ? 0.95 : (this->value - (BAR_WIDTH));
-	float x1 = x + (width * value);
-	glDisable(GL_TEXTURE_2D);
-	glColor4d(1, 1, 1, 1);
-	glBegin(GL_QUADS);
-		glVertex3d(x1, y + height, 0);
-		glTexCoord2f(0, 1);
-		glVertex3d(x1 + BAR_WIDTH, y + height, 0);
-		glTexCoord2f(1, 1);
-		glVertex3d(x1 + BAR_WIDTH, y, 0);
-		glTexCoord2f(1, 0);
-		glVertex3d(x1, y, 0);
-		glTexCoord2f(0, 0);
-	glEnd();
-	glEnable(GL_TEXTURE_2D);
+	float barX = x + (width * value);
+
+	float x = getAdjustedX(barX);
+	float y = getAdjustedY(this->y);
+	float width = getAdjustedWidth(BAR_WIDTH);
+	float height = getAdjustedHeight(this->height);
+
+	float colours[] = {
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f, 
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f, 
+		1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	float vertices[] = {
+		x, y + height, 0.0f,
+		x + width, y + height, 0.0f,
+		x + width, y, 0.0f,
+		x, y + height, 0.0f,
+		x + width, y, 0.0f,
+		x, y, 0.0f
+	};
+
+	auto defaultShader = getDefault2DColourShader();
+	vao = std::shared_ptr<ColouredVAO>(new ColouredVAO(
+		defaultShader->programID, 6, vertices, sizeof(vertices), colours, sizeof(colours)
+	));
 }
 
 void Slider::update(MouseManager *manager)
