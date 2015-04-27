@@ -40,7 +40,7 @@ bool ComponentBase::inBounds(int mouseX, int mouseY)
 
 	// Scale mouseX, mouseY to floats on [-1, 1]
 	float f_mouseX = (static_cast<float>(mouseX - getViewportX()) / getViewportWidth()) * 2.0f - 1.0f;
-	float f_mouseY = -1.0f * (static_cast<float>(mouseY - getViewportY()) / getViewportHeight());
+	float f_mouseY = -1.0f * ((static_cast<float>(mouseY - getViewportY()) / getViewportHeight()) * 2.0f - 1.0f);
 
 	// Scale bounding values to [-1, 1]
 	int vwidth = getViewportWidth();
