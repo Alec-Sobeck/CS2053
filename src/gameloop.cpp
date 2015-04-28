@@ -187,7 +187,12 @@ class GLState
 public:
 	glm::mat4 proj;
 	glm::mat4 view;
+	glm::mat4 model; 
 
+	/// Loads the identity matrix into the model matrix
+	void loadIdentity();
+	void translate(float x, float y, float z);
+	void rotate(float angle, float x, float y, float z);
 	void update();
 };
 
@@ -327,6 +332,37 @@ void GLState::update()
 			0
 		)
 	);
+	model = MATRIX_IDENTITY_4D;
+}
+
+void GLState::translate(float x, float y, float z)
+{
+	model = construct3DTranslationMatrix(x, y, z) * model;
+}
+
+void GLState::loadIdentity()
+{
+	model = MATRIX_IDENTITY_4D;
+}
+
+void GLState::rotate(float angle, float x, float y, float z)
+{
+	if (approximatelyEqual(x, 1.0f))
+	{
+		model = construct3dRotationMatrixOnX(rad(angle)) * model;
+	}
+	else if (approximatelyEqual(y, 1.0f))
+	{
+		model = model * construct3dRotationMatrixOnY(rad(angle));
+	}
+	else if (approximatelyEqual(z, 1.0f))
+	{
+		model = construct3dRotationMatrixOnZ(rad(angle)) * model;
+	}
+	else
+	{
+		throw std::invalid_argument("Rotation not supported");
+	}
 }
 
 ///***********************************************************************
@@ -849,32 +885,14 @@ void DesertLevel::update(float deltaTime)
 
 void DesertLevel::draw(Camera* cam, float deltaTime)
 {
-	return;
 	using namespace gl;
 	// draw enemies
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
 		enemy->draw(cam);
 	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	// End draw enemies
 }
 
 ///***********************************************************************
@@ -960,8 +978,8 @@ void gameUpdateTick()
     //Draw here
     startRenderCycle();
 	gl::glClearDepth(1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+//	glEnable(GL_DEPTH_TEST);
+//	glDepthFunc(GL_LEQUAL);
 
     Camera *cam = gameLoopObject.player.getCamera();
     startRenderCycle();
@@ -969,9 +987,10 @@ void gameUpdateTick()
 	//renderAxes(cam);
 	
 	
-
+	glState.loadIdentity();
 	gameLoopObject.genericTextureShader->bindShader();
 	gameLoopObject.genericTextureShader->glUniform1("texture1", 0);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
 	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
 	
@@ -997,35 +1016,28 @@ void gameUpdateTick()
 		}
 	}
 
-	glPopMatrix();
+	//glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
 
-	gameLoopObject.activeLevel->draw(cam, deltaTime);
-	    
-	drawLaserSight();
+	//gameLoopObject.activeLevel->draw(cam, deltaTime);
+
 
 	// Draw the player's gun
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);	
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+
+	//glMatrixMode(GL_MODELVIEW);
+	//glPushMatrix();
+	glState.loadIdentity();
+	//setLookAt(cam);
+	
 	glm::vec3 lookAt = glm::normalize(glm::vec3(
 		+ sin(cam->rotation.y),
 		- sin(cam->rotation.x),
 		- cos(cam->rotation.y)
 	));
 	glm::vec3 offset = lookAt;
-	glTranslatef(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
+//	glState.translate(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
+	glState.translate(1.0f * (cam->position.x + offset.x), 1.0f * (cam->position.y + offset.y), 1.0f * (cam->position.z + offset.z));
 	glm::vec3 forward(
 		cam->position.x + sin(cam->rotation.y),
 		cam->position.y - sin(cam->rotation.x),
@@ -1033,14 +1045,11 @@ void gameUpdateTick()
 		);
 	glm::vec3 up(0, cos(cam->rotation.x), 0);
 	glm::vec3 left = glm::cross(up, forward);
-	glRotatef(deg(-cam->rotation.y), 0, 1, 0);
+	//glState.rotate(deg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	gameLoopObject.gunModel->draw(cam);	
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glPopMatrix();
+	//glPopMatrix();
 	// End gun draw
 	
 	end3DRenderCycle();
@@ -1083,7 +1092,7 @@ void processKeyboardInput()
 				sin(gameLoopObject.player.getCamera()->rotation.y),
 				0,
 				-cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 3.8f
+			) * deltaTime * 3.8f * -1.0f
 		);
     }
     if(manager->getKeyState('s') == KeyManager::PRESSED)
@@ -1093,7 +1102,7 @@ void processKeyboardInput()
 				-sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 2.6f
+			) * deltaTime * 2.6f * -1.0f
 		);
     }
     if(manager->getKeyState('a') == KeyManager::PRESSED)
@@ -1102,7 +1111,7 @@ void processKeyboardInput()
 			glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 -sin(gameLoopObject.player.getCamera()->rotation.y)
-				) * deltaTime * 3.8f
+				) * deltaTime * 3.8f * -1.0f
 		);
     }
     if(manager->getKeyState('d') == KeyManager::PRESSED)
@@ -1111,7 +1120,7 @@ void processKeyboardInput()
 			glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 sin(gameLoopObject.player.getCamera()->rotation.y)
-				) * deltaTime * 3.8f
+				) * deltaTime * 3.8f * -1.0f
 		);
     }
 	/*
@@ -1203,11 +1212,11 @@ void processMouseInput()
         }
         if (grabDir->y < -2)
         {
-			cam->rotate(glm::vec3(-1.2, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(1.2, 0, 0) * deltaTime);
         }
         else if (grabDir->y > 2)
         {
-			cam->rotate(glm::vec3(1.2, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(-1.2, 0, 0) * deltaTime);
         }
     }
 
