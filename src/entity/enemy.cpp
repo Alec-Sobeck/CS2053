@@ -40,7 +40,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 		}
 		// Otherwise, idle and do nothing.
 	}
-	else if (1==2&&state == AIState::ATTACK)
+	else if (state == AIState::ATTACK)
 	{
 		if (distanceSquared > 13 * 13 && distanceSquared < 25 * 25)
 		{
@@ -50,7 +50,7 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 		this->accel(toPlayer * deltaTime * speedModifier);
 		camera.setRotation(glm::vec3(0, atan2(velocity.x, velocity.z), 0));
 	}
-	else if (1==2&&state == AIState::LOSING_SIGHT)
+	else if (state == AIState::LOSING_SIGHT)
 	{
 		if (distanceSquared > 25 * 25)
 		{
@@ -77,16 +77,12 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 
 void Enemy::draw(std::shared_ptr<Shader> shader, GLState &glState, Camera *cam)
 {
-//	using namespace gl;
-	//glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();
 	glState.loadIdentity();
+	glState.scale(0.2f, 0.2f, 0.2f);
 	glState.translate(getX(), getY(), getZ());
-	//glScalef(0.2, 0.2, 0.2);
-	//glRotatef(deg(getRotation().y), 0, 1, 0);
+	glState.rotate(deg(getRotation().y), 0, 1, 0);
 	shader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	model->draw(cam);
-	//glPopMatrix();
 }
 
 

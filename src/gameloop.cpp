@@ -724,54 +724,24 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 {
 	using namespace gl;
 	/// tree
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
+	glState.loadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
 	for (Tree &tree : trees)
 	{
 		tree.draw(cam);
 	}
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	/// end tree
 		
 	grass->draw(cam);
 
 	// draw enemies
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glDisable(GL_BLEND);
-	glAlphaFunc(GL_GREATER, 0.1f);
-	glEnable(GL_ALPHA_TEST);
-	gl::glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
 		enemy->draw(gameLoopObject.genericTextureShader, glState, cam);
 	}
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	// End draw enemies
 }
 
@@ -781,7 +751,7 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
-	//drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
+	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
 	terrainRenderer->draw();
 }
 
@@ -835,50 +805,6 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 ///***********************************************************************
 ///***********************************************************************
 
-void drawLaserSight()
-{
-	/*
-	Camera *cam = gameLoopObject.player.getCamera();
-	glm::vec3 forward(
-		cam->position.x + sin(cam->rotation.y),
-		cam->position.y - sin(cam->rotation.x),
-		cam->position.z - cos(cam->rotation.y)
-		);
-	forward = glm::normalize(forward);
-	glm::vec3 up = glm::vec3(0, 1, 0);
-	glm::vec3 left = glm::normalize(glm::cross(forward, up));
-
-	glm::vec3 lookAt = glm::normalize(glm::vec3(
-		sin(cam->rotation.y * -1.0f),
-		0,
-		cos(cam->rotation.y * -1.0f)
-		)) * -1.0f;
-	AABB gunbox = gameLoopObject.gunModel->getAABB();
-	float yDelta = gunbox.yMax - gunbox.yMin;
-	lookAt = lookAt + lookAt * yDelta;
-	
-	glm::vec3 start = (gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.05f, 0.0f));
-	glm::vec3 end = start + (lookAt * 200.0f);
-
-
-
-
-	using namespace gl;
-	gl::glPushMatrix();
-	gl::glLoadIdentity();
-	setLookAt(cam);
-	glDisable(GL_TEXTURE_2D);
-
-	glColor3f(1, 0, 0);
-	glBegin(GL_LINES);
-	gl::glVertex3f(start.x, start.y, start.z);
-	gl::glVertex3f(end.x, end.y, end.z);
-	glEnd();
-
-	glPopMatrix();
-	*/
-}
-
 void gameUpdateTick()
 {
     using namespace gl;	
@@ -890,7 +816,6 @@ void gameUpdateTick()
 		// Draw the menu
 		startRenderCycle();
 		start2DRenderCycle();
-
 		std::shared_ptr<Menu> m = gameLoopObject.menus.top();
 		m->update(&gameLoopObject.mouseManager, deltaTime);
 		m->draw(deltaTime);
@@ -898,28 +823,23 @@ void gameUpdateTick()
 		{
 			gameLoopObject.menus.pop();
 		}
-
 		gameLoopObject.genericTextureShader->releaseShader();
 		end2DRenderCycle();
 		endRenderCycle();
 		gameLoopObject.endOfTick();
 		return;
 	}
-
 	processKeyboardInput();
 	processMouseInput();
 
     //Draw here
     startRenderCycle();
 	gl::glClearDepth(1.0f);
-//	glEnable(GL_DEPTH_TEST);
-//	glDepthFunc(GL_LEQUAL);
 
     Camera *cam = gameLoopObject.player.getCamera();
     startRenderCycle();
     start3DRenderCycle();
-	//renderAxes(cam);
-	
+	//renderAxes(cam);	
 	
 	glState.loadIdentity();
 	gameLoopObject.genericTextureShader->bindShader();
@@ -950,30 +870,19 @@ void gameUpdateTick()
 		}
 	}
 
-	//glPopMatrix();
 	glEnable(GL_TEXTURE_2D);
-
-	//gameLoopObject.activeLevel->draw(cam, deltaTime);
-
-
+	gameLoopObject.activeLevel->draw(cam, deltaTime);
+	
 	// Draw the player's gun
 	glDisable(GL_CULL_FACE);
-
-	//glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();
-	glState.loadIdentity();
-	//setLookAt(cam);
-	
+	glState.loadIdentity();	
 	glm::vec3 lookAt = glm::normalize(glm::vec3(
 		+ sin(cam->rotation.y),
 		- sin(cam->rotation.x),
 		- cos(cam->rotation.y)
 	));
 	glm::vec3 offset = lookAt;
-//	glState.translate(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
 	glState.translate(1.0f * (cam->position.x + offset.x), 1.0f * (cam->position.y + offset.y), 1.0f * (cam->position.z + offset.z));
-//	glState.translate(cam->position.x, cam->position.y, cam->position.z);
-
 	glm::vec3 forward(
 		cam->position.x + lookAt.x,
 		cam->position.y - lookAt.y,
@@ -985,7 +894,6 @@ void gameUpdateTick()
 	glEnable(GL_TEXTURE_2D);
 	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	gameLoopObject.gunModel->draw(cam);	
-	//glPopMatrix();
 	// End gun draw
 	
 	end3DRenderCycle();

@@ -14,6 +14,7 @@ public:
 	/// Loads the identity matrix into the model matrix
 	void loadIdentity();
 	void translate(float x, float y, float z);
+	void scale(float x, float y, float z);
 	void rotate(float angle, float x, float y, float z);
 	void update(Camera* camera);
 };

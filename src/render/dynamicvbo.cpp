@@ -84,7 +84,7 @@ void DynamicVBO::draw(Camera *cam)
     glLoadIdentity();
    
     // Translate to model co-ordinates, based on the origin of the shape
-    setLookAt(cam);
+//    setLookAt(cam);
     if(texture)
     {
 		glEnable(GL_TEXTURE_2D);

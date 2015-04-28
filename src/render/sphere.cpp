@@ -14,6 +14,7 @@ Sphere::Sphere(float radius, unsigned int rings, unsigned int sectors)
 	vertices.resize(rings * sectors * 3);
 	normals.resize(rings * sectors * 3);
 	texcoords.resize(rings * sectors * 2);
+	colours.resize(rings * sectors * 4);
 	std::vector<GLfloat>::iterator v = vertices.begin();
 	std::vector<GLfloat>::iterator n = normals.begin();
 	std::vector<GLfloat>::iterator t = texcoords.begin();

@@ -57,8 +57,6 @@ void Grass::draw(Camera *camera)
     glEnable(GL_TEXTURE_2D);
     glScalef(1.0f,1.0f,1.0f);
     glColor3f(1.0f, 1.0f, 1.0f);
-    // Translate to model co-ordinates, based on the origin of the shape
-    setLookAt(camera);
 
     if(grassShader)
     {

@@ -11,6 +11,7 @@ protected:
 	std::vector<gl::GLfloat> normals;
 	std::vector<gl::GLfloat> texcoords;
 	std::vector<gl::GLushort> indices;
+	std::vector<gl::GLfloat> colours;
 
 public:
 	Sphere(float radius, unsigned int rings, unsigned int sectors);

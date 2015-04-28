@@ -233,7 +233,7 @@ void drawSkybox(std::shared_ptr<Shader> skyboxShader, std::shared_ptr<Texture> s
 {
     using namespace gl;
     glLoadIdentity();
-    setLookAt(cam);
+//    setLookAt(cam);
     glDisable(GL_TEXTURE_2D);
 
     glColor3f(1, 0, 0);
