@@ -356,33 +356,33 @@ void GameLoop::loadModels()
 	ObjParser parser(
 		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
 		"Branches0018_1_S.png", false);
-	gameLoopObject.treeModel = parser.exportModel();
+	treeModel = parser.exportModel();
 	auto treeTexture = getTexture(buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
 	auto branchTexture = getTexture(buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
 	std::map<std::string, std::shared_ptr<Texture>> textures;
 	textures["tree"] = treeTexture;
 	textures["leaves"] = branchTexture;
-	gameLoopObject.treeModel->createVBOs(textures);
+	treeModel->createVBOs(genericTextureShader, textures);
 
 	// Load the gun model
 	parser = ObjParser(
 		buildPath("res/models/gun/"), buildPath("res/models/gun/M9.obj"),
 		"", true);
-	gameLoopObject.gunModel = parser.exportModel();
+	gunModel = parser.exportModel();
 	auto Handgun_D = getTexture(buildPath("res/models/gun/Tex_0009_1.jpg"));
-	gameLoopObject.gunTexture = Handgun_D;
+	gunTexture = Handgun_D;
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Tex_0009_1"] = Handgun_D;
-	gameLoopObject.gunModel->createVBOs(textures);
-	for (std::shared_ptr<VBO> vbo : gameLoopObject.gunModel->vbos)
+	gunModel->createVBOs(genericTextureShader, textures);
+	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : gunModel->vaos)
 	{
-		vbo->associatedTexture = Handgun_D;
+		vao->tex = Handgun_D;
 	}
-	gameLoopObject.gunModel->generateAABB();
+	gunModel->generateAABB();
 
 	// Load the zombie
 	parser = ObjParser(buildPath("res/models/zombie/"), buildPath("res/models/zombie/Lambent_Male.obj"), "", true);
-	gameLoopObject.zombieModel = parser.exportModel();
+	zombieModel = parser.exportModel();
 	auto _D = getTexture(buildPath("res/models/zombie/Lambent_Male_D.png"));
 	auto _E = getTexture(buildPath("res/models/zombie/Lambent_Male_E.tga"));
 	auto _N = getTexture(buildPath("res/models/zombie/Lambent_Male_N.tga"));
@@ -392,29 +392,34 @@ void GameLoop::loadModels()
 	textures["Lambent_Male_E.tga"] = _E;
 	textures["Lambent_Male_N.tga"] = _N;
 	textures["Lambent_Male_S.tga"] = _S;
-	gameLoopObject.zombieModel->createVBOs(textures);
-	for (std::shared_ptr<VBO> vbo : gameLoopObject.zombieModel->vbos)
+	zombieModel->createVBOs(genericTextureShader, textures);
+	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : zombieModel->vaos)
 	{
-		vbo->associatedTexture = _D;
+		vao->tex = _D;
 	}
-	gameLoopObject.zombieModel->generateAABB();
+	zombieModel->generateAABB();
 
 	// Load the second zombie
 	parser = ObjParser(buildPath("res/models/zombie2/"), buildPath("res/models/zombie2/Lambent_Female.obj"), "", true);
-	gameLoopObject.zombieModel2 = parser.exportModel();
+	zombieModel2 = parser.exportModel();
 	auto __D = getTexture(buildPath("res/models/zombie2/Lambent_Female_D.png"));
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Lambent_Female_D.tga"] = __D;
-	gameLoopObject.zombieModel2->createVBOs(textures);
-	for (std::shared_ptr<VBO> vbo : gameLoopObject.zombieModel2->vbos)
+	zombieModel2->createVBOs(genericTextureShader, textures);
+	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : zombieModel2->vaos)
 	{
-		vbo->associatedTexture = __D;
+		vao->tex = __D;
 	}
-	gameLoopObject.zombieModel2->generateAABB();
+	zombieModel2->generateAABB();
 }
 
 void GameLoop::loadWithGLContext()
 {
+	// Generic texture shader.
+	std::string vertexShaderPath = buildPath("res/shaders/3d_standard_shader.vert");
+	std::string fragmentShaderPath = buildPath("res/shaders/3d_standard_shader.frag");
+	genericTextureShader = createShader(&vertexShaderPath, &fragmentShaderPath);
+
 	loadModels();
 	int i = 0;
 	skyboxTextureDesert = getTexture(buildPath("res/skybox_desert.png"));
@@ -473,10 +478,7 @@ void GameLoop::loadWithGLContext()
 	));
 	menus.push(mainMenu);
 
-	// Generic texture shader.
-	std::string vertexShaderPath = buildPath("res/shaders/3d_standard_shader.vert");
-	std::string fragmentShaderPath = buildPath("res/shaders/3d_standard_shader.frag");
-	genericTextureShader = createShader(&vertexShaderPath, &fragmentShaderPath);
+	
 
 }
 
@@ -786,7 +788,7 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	glDisable(GL_BLEND);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_ALPHA_TEST);
-	glLoadIdentity();
+	gl::glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
 	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
@@ -858,7 +860,7 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 	glDisable(GL_BLEND);
 	glAlphaFunc(GL_GREATER, 0.1f);
 	glEnable(GL_ALPHA_TEST);
-	glLoadIdentity();
+	gl::glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
 	setLookAt(cam);
 	glDisable(GL_CULL_FACE);
@@ -883,7 +885,7 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 
 void drawLaserSight()
 {
-	return;
+	/*
 	Camera *cam = gameLoopObject.player.getCamera();
 	glm::vec3 forward(
 		cam->position.x + sin(cam->rotation.y),
@@ -910,18 +912,19 @@ void drawLaserSight()
 
 
 	using namespace gl;
-	glPushMatrix();
-	glLoadIdentity();
+	gl::glPushMatrix();
+	gl::glLoadIdentity();
 	setLookAt(cam);
 	glDisable(GL_TEXTURE_2D);
 
 	glColor3f(1, 0, 0);
 	glBegin(GL_LINES);
-	glVertex3f(start.x, start.y, start.z);
-	glVertex3f(end.x, end.y, end.z);
+	gl::glVertex3f(start.x, start.y, start.z);
+	gl::glVertex3f(end.x, end.y, end.z);
 	glEnd();
 
 	glPopMatrix();
+	*/
 }
 
 void gameUpdateTick()
@@ -932,15 +935,9 @@ void gameUpdateTick()
 	glState.update();
     if (gameLoopObject.menus.size() > 0)
 	{
-
 		// Draw the menu
 		startRenderCycle();
 		start2DRenderCycle();
-
-
-		
-
-
 
 		std::shared_ptr<Menu> m = gameLoopObject.menus.top();
 		m->update(&gameLoopObject.mouseManager, deltaTime);
@@ -962,7 +959,7 @@ void gameUpdateTick()
 
     //Draw here
     startRenderCycle();
-	glClearDepth(1.0f);
+	gl::glClearDepth(1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
@@ -979,7 +976,7 @@ void gameUpdateTick()
 	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
 	
 	gameLoopObject.activeLevel->drawTerrain(cam);
-	/*
+	
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
@@ -1045,7 +1042,7 @@ void gameUpdateTick()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glPopMatrix();
 	// End gun draw
-	*/
+	
 	end3DRenderCycle();
 
     start2DRenderCycle();

@@ -30,35 +30,35 @@ AABB Model::generateAABB()
 
 	for (auto mesh : data)
 	{
-		auto cs = mesh->combinedData.size();
-		for (int i = 0; i < cs; i += mesh->elementsPerRowOfCombinedData)
+		auto cs = mesh->numVerts;
+		for (int i = 0; i < cs; i++)
 		{
 			// X
-			if (mesh->combinedData[i] > maxX)
+			if (mesh->vertices[i * 3 + 0] > maxX)
 			{
-				maxX = mesh->combinedData[i];
+				maxX = mesh->vertices[i * 3 + 0];
 			}
-			if (mesh->combinedData[i] < minX)
+			if (mesh->vertices[i * 3 + 0] < minX)
 			{
-				minX = mesh->combinedData[i];
+				minX = mesh->vertices[i * 3 + 0];
 			}
 			// Y
-			if (mesh->combinedData[i] > maxY)
+			if (mesh->vertices[i * 3 + 1] > maxY)
 			{
-				maxY = mesh->combinedData[i];
+				maxY = mesh->vertices[i * 3 + 1];
 			}
-			if (mesh->combinedData[i] < minY)
+			if (mesh->vertices[i * 3 + 1] < minY)
 			{
-				minY = mesh->combinedData[i];
+				minY = mesh->vertices[i * 3 + 1];
 			}
 			// Z
-			if (mesh->combinedData[i] > maxZ)
+			if (mesh->vertices[i * 3 + 2] > maxZ)
 			{
-				maxZ = mesh->combinedData[i];
+				maxZ = mesh->vertices[i * 3 + 2];
 			}
-			if (mesh->combinedData[i] < minZ)
+			if (mesh->vertices[i * 3 + 2] < minZ)
 			{
-				minZ = mesh->combinedData[i];
+				minZ = mesh->vertices[i * 3 + 2];
 			}
 		}
 	}
@@ -66,7 +66,7 @@ AABB Model::generateAABB()
 	return this->aabb;
 }
 
-Model::Model(std::vector<std::shared_ptr<MeshData>> data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
+Model::Model(std::vector<std::shared_ptr<VAOMeshData>> data) : modelID(getNextModelID()), origin(glm::vec3(0, 0, 0)), rotationOnAxes(glm::vec3(0, 0, 0)),
         data(data), aabb(generateAABB()), scale(glm::vec3(1.0f, 1.0f, 1.0f))
 {
 }
@@ -139,27 +139,47 @@ int Model::getID()
     return modelID;
 }
 
-void Model::createVBOs(std::map<std::string, std::shared_ptr<Texture>> textureMap)
+void Model::createVBOs(std::shared_ptr<Shader> associatedShader, std::map<std::string, std::shared_ptr<Texture>> textureMap)
 {
-    for(unsigned int i = 0; i < data.size(); i++)
+	this->associatedShader = associatedShader;
+	for(unsigned int i = 0; i < data.size(); i++)
     {
-        std::cout << ">" << data[i]->associatedTextureName << "<"<< std::endl;
-        if(overrideTexture)
+		auto d = data[i];
+		std::cout << "Texture: " << data[i]->associatedTextureName << std::endl;
+		if (overrideTexture)
         {
-            vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], overrideTexture)));
-        }
+			auto vao = std::shared_ptr<TexturedNormalColouredVAO>(new TexturedNormalColouredVAO(
+				associatedShader->programID, d->numVerts, d->vertices, d->verticesSize, d->normals, d->normalsSize,
+				d->colours, d->coloursSize, d->textures, d->texturesSize
+			));
+			vao->tex = overrideTexture;
+			vaos.push_back(vao);
+		}
         else
-        {
-            vbos.push_back(std::shared_ptr<VBO>(new VBO(data[i], textureMap[data[i]->associatedTextureName])));
+		{
+			auto vao = std::shared_ptr<TexturedNormalColouredVAO>(new TexturedNormalColouredVAO(
+				associatedShader->programID, 
+				d->numVerts, 
+				d->vertices, 
+				d->verticesSize, 
+				d->normals, 
+				d->normalsSize,
+				d->colours, 
+				d->coloursSize,
+				d->textures, 
+				d->texturesSize
+			));
+			vao->tex = textureMap[data[i]->associatedTextureName];
+			vaos.push_back(vao);
         }
     }
 }
 
 void Model::draw(Camera *camera)
 {
-    for(unsigned int i = 0; i < vbos.size(); i++)
+    for(unsigned int i = 0; i < vaos.size(); i++)
     {
-        vbos[i]->draw(camera);
+        vaos[i]->draw();
     }
 }
 

@@ -46,7 +46,7 @@ void ObjParser::loadData(bool dataIsTriangles)
             if(hasEncounteredMesh)
             {
 				normals.resize(vertices.size());
-                std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
+                std::shared_ptr<VAOMeshData> data = createVAOMeshFromParsedOBJ(
                     renderMode,
                     activeMaterial,
                     meshName,
@@ -175,7 +175,7 @@ void ObjParser::loadData(bool dataIsTriangles)
     }
 	
 	normals.resize(vertices.size());
-    std::shared_ptr<MeshData> data = createModelDataFromParsedOBJ(
+    std::shared_ptr<VAOMeshData> data = createVAOMeshFromParsedOBJ(
         renderMode,
         activeMaterial,
         meshName,

@@ -127,6 +127,10 @@ TexturedNormalColouredVAO::TexturedNormalColouredVAO(gl::GLuint associatedShader
 
 void TexturedNormalColouredVAO::draw(gl::GLenum renderMode)
 {
+	if (tex)
+	{
+		tex->bind();
+	}
 	gl::glBindVertexArray(id);
 	gl::glDrawArrays(renderMode, 0, numberOfVertices);
 }

@@ -15,7 +15,7 @@
 class ObjParser
 {
 public:
-    std::vector<std::shared_ptr<MeshData>> meshes;
+    std::vector<std::shared_ptr<VAOMeshData>> meshes;
     std::map<std::string, std::shared_ptr<Material>> materials;
     std::string filePath;
 	std::string fileName;

@@ -5,10 +5,11 @@
 #include <map>
 #include <glm/vec3.hpp>
 #include "math/physics/aabb.h"
-#include "world/meshdata.h"
+#include "world/vaomeshdata.h"
 #include "graphics/camera.h"
-#include "render/vbo.h"
+#include "render/vao.h"
 #include "render/texture.h"
+#include "shaders/shader.h"
 
 int getNextModelID();
 
@@ -25,9 +26,11 @@ protected:
 	glm::vec3 rotationOnAxes;
 	AABB aabb;
 	glm::vec3 scale;
+	std::shared_ptr<Shader> associatedShader;
+
 public:
-	std::vector<std::shared_ptr<MeshData>> data;
-	std::vector<std::shared_ptr<VBO>> vbos;
+	std::vector<std::shared_ptr<VAOMeshData>> data;
+	std::vector<std::shared_ptr<TexturedNormalColouredVAO>> vaos;
 	std::shared_ptr<Texture> overrideTexture;
 	AABB getAABB();
 	AABB generateAABB();
@@ -36,7 +39,7 @@ public:
 	/// Constructs a new Model with the specified ModelData object.
 	/// \param data a ModelData object that can be used to construct this Model
 	///
-	Model(std::vector<std::shared_ptr<MeshData>> data);
+	Model(std::vector<std::shared_ptr<VAOMeshData>> data);
 	///
 	/// Tests this Model's AABB against another AABB for overlap
 	/// \param other another AABB to check for intersection
@@ -96,7 +99,7 @@ public:
 	/// \return a ModelData object which describes this Model
 	///
 	int getID();
-    void createVBOs(std::map<std::string, std::shared_ptr<Texture>> textureMap);
+	void createVBOs(std::shared_ptr<Shader> associatedShader, std::map<std::string, std::shared_ptr<Texture>> textureMap);
     void draw(Camera *camera);
 };
 

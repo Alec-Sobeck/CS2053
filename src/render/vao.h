@@ -38,9 +38,10 @@ private:
 	gl::GLuint colourLoc;
 	gl::GLuint textureLoc;
 	gl::GLuint normalLoc;
-	int numberOfVertices;
+	int numberOfVertices;	
 
 public:
+	std::shared_ptr<Texture> tex;
 	///
 	/// Sizes are in bytes, not length of the array. for a float array, size should be the number of elements * 4 
 	///

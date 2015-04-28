@@ -21,6 +21,136 @@ inline int fmodp(int num, int mod)
     return (num >= 0) ? num : (num + mod == -1) ? 0 : mod + num;
 }
 
+std::shared_ptr<VAOMeshData> createVAOMeshFromParsedOBJ(
+	gl::GLenum glRenderMode,
+	std::shared_ptr<Material> material,
+	std::string associatedTextureName,
+	int vertexSize, gl::GLenum vertexType,
+	gl::GLenum normalType,
+	int colourSize, gl::GLenum colourType,
+	int textureCoordSize, gl::GLenum textureCoordType,
+	std::vector<glm::vec3> vertexData,
+	std::vector<glm::vec3> faceVerts,
+	std::vector<glm::vec3> normalData,
+	std::vector<glm::vec3> faceNormals,
+	std::vector<Colour> colourData,
+	std::vector<glm::vec2> textureData,
+	std::vector<glm::vec3> faceTextures
+	)
+{
+	using namespace gl;
+	int numVerts = faceVerts.size() * 3;
+	float* vertices = new float[numVerts * 3];
+	float* colours = new float[numVerts * 4];
+	float* normals = new float[numVerts * 3];
+	float* textures = new float[numVerts * 2];
+	
+	// Fill in a bunch of default data if none is provided.
+	if (faceNormals.size() == 0)
+	{
+		normalData = std::vector<glm::vec3>(vertexData.size());
+		for (int i = 0; i < normalData.size(); i++)
+		{
+			normalData[i] = glm::vec3(1, 0, 0);
+		}
+		faceNormals = std::vector<glm::vec3>(faceVerts.size());
+		for (int i = 0; i < faceNormals.size(); i++)
+		{
+			faceNormals[i] = glm::vec3(5, 5, 5);
+		}
+	}
+	if (colourData.size() == 0)
+	{
+		colourData = std::vector<Colour>(vertexData.size());
+		for (int i = 0; i < colourData.size(); i++)
+		{
+			colourData[i] = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+		}
+	}
+
+	int v = 0;
+	int c = 0;
+	int n = 0;
+	int t = 0;
+
+	for (int i = 0; i < faceVerts.size(); i++)
+	{
+		glm::vec3 facesVerts = faceVerts[i];
+		glm::vec3 facesNormals = faceNormals[i];
+		glm::vec3 facesTextures = faceTextures[i];
+		// X
+		// Stuff the vert data
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].x);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].y);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.x - 1), vertexData.size())].z);
+		// Then add associated normal
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].x);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].y);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.x - 1), normalData.size())].z);
+		//Then add associated vert colour
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1), colourData.size())].r);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1), colourData.size())].g);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1), colourData.size())].b);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.x - 1), colourData.size())].a);
+		// Add in UV textureData
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.x - 1), textureData.size())].x);
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.x - 1), textureData.size())].y);
+
+		//Y
+		// Stuff the vert data
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].x);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].y);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.y - 1), vertexData.size())].z);
+		// Then add associated normal
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].x);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].y);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.y - 1), normalData.size())].z);
+		//Then add associated vert colour
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y - 1), colourData.size())].r);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y - 1), colourData.size())].g);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y - 1), colourData.size())].b);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.y - 1), colourData.size())].a);
+		// Add in UV textureData
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.y - 1), textureData.size())].x);
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.y - 1), textureData.size())].y);
+
+		//Z
+		// Stuff the vert data
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].x);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].y);
+		vertices[v++] = static_cast<float>(vertexData[fmodp(static_cast<int>(facesVerts.z - 1), vertexData.size())].z);
+		// Then add associated normal
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].x);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].y);
+		normals[n++] = static_cast<float>(normalData[fmodp(static_cast<int>(facesNormals.z - 1), normalData.size())].z);
+		//Then add associated vert colour
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z - 1), colourData.size())].r);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z - 1), colourData.size())].g);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z - 1), colourData.size())].b);
+		colours[c++] = static_cast<float>(colourData[fmodp(static_cast<int>(facesVerts.z - 1), colourData.size())].a);
+		// Add in UV textureData
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.z - 1), textureData.size())].x);
+		textures[t++] = static_cast<float>(textureData[fmodp(static_cast<int>(facesTextures.z - 1), textureData.size())].y);
+	}
+
+
+	return std::shared_ptr<VAOMeshData>(new VAOMeshData(
+		numVerts,
+		vertices,
+		numVerts * 3 * sizeof(float),
+		
+		normals,
+		numVerts * 3 * sizeof(float),
+		colours,
+		numVerts * 4 * sizeof(float),
+		textures, 
+		numVerts * 2 * sizeof(float),
+		glRenderMode,
+		material
+	));
+}
+
+
 std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
         std::shared_ptr<Material> material,
         std::string associatedTextureName,
