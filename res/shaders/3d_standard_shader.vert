@@ -1,6 +1,6 @@
 #version 150
  
-uniform mat4 viewMatrix, projMatrix;
+uniform mat4 modelMatrix, viewMatrix, projMatrix;
 uniform sampler2D texture1;
  
 in vec3 position;
@@ -14,7 +14,7 @@ void main()
 {
 	textureCoord = textureIn;
     fragColor = color;
-    gl_Position = projMatrix * viewMatrix * vec4(position, 1.0f);
+    gl_Position = projMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);
 }
 
 

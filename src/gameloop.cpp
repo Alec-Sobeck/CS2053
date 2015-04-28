@@ -35,6 +35,7 @@
 #include "entity/enemy.h"
 #include "entity/player.h"
 #include "render/menu.h"
+#include "graphics/glstate.h"
 
 ///***********************************************************************
 ///***********************************************************************
@@ -182,19 +183,7 @@ public:
     bool drawString(std::string val, float x, float y, float z, Colour colour);
 };
 
-class GLState
-{
-public:
-	glm::mat4 proj;
-	glm::mat4 view;
-	glm::mat4 model; 
 
-	/// Loads the identity matrix into the model matrix
-	void loadIdentity();
-	void translate(float x, float y, float z);
-	void rotate(float angle, float x, float y, float z);
-	void update();
-};
 
 ///***********************************************************************
 ///***********************************************************************
@@ -308,61 +297,6 @@ void initializeEngine()
 
 	// Build the terrain
 	gameLoopObject.loadWithGLContext();
-}
-
-///
-/// GLState declarations
-///
-void GLState::update()
-{
-	Camera *camera = gameLoopObject.player.getCamera();
-	proj = buildProjectionMatrix(53.13f, getAspectRatio(), 0.1f, 1000.0f);
-	view = createLookAtMatrix(
-		camera->position,
-		//Reference point
-		glm::vec3(
-			camera->position.x + sin(camera->rotation.y),
-			camera->position.y - sin(camera->rotation.x),
-			camera->position.z - cos(camera->rotation.y)
-		),
-		//Up Vector
-		glm::vec3(
-			0,
-			cos(camera->rotation.x),
-			0
-		)
-	);
-	model = MATRIX_IDENTITY_4D;
-}
-
-void GLState::translate(float x, float y, float z)
-{
-	model = construct3DTranslationMatrix(x, y, z) * model;
-}
-
-void GLState::loadIdentity()
-{
-	model = MATRIX_IDENTITY_4D;
-}
-
-void GLState::rotate(float angle, float x, float y, float z)
-{
-	if (approximatelyEqual(x, 1.0f))
-	{
-		model = construct3dRotationMatrixOnX(rad(angle)) * model;
-	}
-	else if (approximatelyEqual(y, 1.0f))
-	{
-		model = model * construct3dRotationMatrixOnY(rad(angle));
-	}
-	else if (approximatelyEqual(z, 1.0f))
-	{
-		model = construct3dRotationMatrixOnZ(rad(angle)) * model;
-	}
-	else
-	{
-		throw std::invalid_argument("Rotation not supported");
-	}
 }
 
 ///***********************************************************************
@@ -831,7 +765,7 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	glEnable(GL_DEPTH_TEST);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->draw(cam);
+		enemy->draw(gameLoopObject.genericTextureShader, glState, cam);
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -847,7 +781,7 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
+	//drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
 	terrainRenderer->draw();
 }
 
@@ -891,7 +825,7 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 	glDisable(GL_CULL_FACE);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->draw(cam);
+		enemy->draw(gameLoopObject.genericTextureShader, glState, cam);
 	}
 }
 
@@ -950,7 +884,7 @@ void gameUpdateTick()
     using namespace gl;	
 	float deltaTime = gameLoopObject.getDeltaTime();
 	gameLoopObject.update();
-	glState.update();
+	glState.update(gameLoopObject.player.getCamera());
     if (gameLoopObject.menus.size() > 0)
 	{
 		// Draw the menu
@@ -1038,14 +972,16 @@ void gameUpdateTick()
 	glm::vec3 offset = lookAt;
 //	glState.translate(cam->position.x + offset.x, cam->position.y + offset.y - 0.2f, cam->position.z + offset.z);
 	glState.translate(1.0f * (cam->position.x + offset.x), 1.0f * (cam->position.y + offset.y), 1.0f * (cam->position.z + offset.z));
+//	glState.translate(cam->position.x, cam->position.y, cam->position.z);
+
 	glm::vec3 forward(
-		cam->position.x + sin(cam->rotation.y),
-		cam->position.y - sin(cam->rotation.x),
-		cam->position.z - cos(cam->rotation.y)
+		cam->position.x + lookAt.x,
+		cam->position.y - lookAt.y,
+		cam->position.z - lookAt.z
 		);
 	glm::vec3 up(0, cos(cam->rotation.x), 0);
 	glm::vec3 left = glm::cross(up, forward);
-	//glState.rotate(deg(-cam->rotation.y), 0, 1, 0);
+	glState.rotate(deg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
 	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	gameLoopObject.gunModel->draw(cam);	
@@ -1092,7 +1028,7 @@ void processKeyboardInput()
 				sin(gameLoopObject.player.getCamera()->rotation.y),
 				0,
 				-cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 3.8f * -1.0f
+			) * deltaTime * 3.8f 
 		);
     }
     if(manager->getKeyState('s') == KeyManager::PRESSED)
@@ -1102,7 +1038,7 @@ void processKeyboardInput()
 				-sin(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 cos(gameLoopObject.player.getCamera()->rotation.y)
-			) * deltaTime * 2.6f * -1.0f
+			) * deltaTime * 2.6f 
 		);
     }
     if(manager->getKeyState('a') == KeyManager::PRESSED)
@@ -1111,7 +1047,7 @@ void processKeyboardInput()
 			glm::vec3(-cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 -sin(gameLoopObject.player.getCamera()->rotation.y)
-				) * deltaTime * 3.8f * -1.0f
+				) * deltaTime * 3.8f 
 		);
     }
     if(manager->getKeyState('d') == KeyManager::PRESSED)
@@ -1120,7 +1056,7 @@ void processKeyboardInput()
 			glm::vec3(cos(gameLoopObject.player.getCamera()->rotation.y),
                 0,
                 sin(gameLoopObject.player.getCamera()->rotation.y)
-				) * deltaTime * 3.8f * -1.0f
+				) * deltaTime * 3.8f 
 		);
     }
 	/*
@@ -1212,11 +1148,11 @@ void processMouseInput()
         }
         if (grabDir->y < -2)
         {
-			cam->rotate(glm::vec3(1.2, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(-1.2, 0, 0) * deltaTime);
         }
         else if (grabDir->y > 2)
         {
-			cam->rotate(glm::vec3(-1.2, 0, 0) * deltaTime);
+			cam->rotate(glm::vec3(1.2, 0, 0) * deltaTime);
         }
     }
 

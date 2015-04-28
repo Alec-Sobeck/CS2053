@@ -9,6 +9,7 @@
 #include "graphics/camera.h"
 #include "graphics/model.h"
 #include "entity/player.h"
+#include "graphics/glstate.h"
 
 enum class AIState
 {
@@ -25,6 +26,6 @@ public:
 	Enemy(std::shared_ptr<Model> model, Camera camera);
 	~Enemy();
 	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);
-	void draw(Camera* cam);
+	void draw(std::shared_ptr<Shader> shader, GLState &state, Camera* cam);
 };
 #endif
