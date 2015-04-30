@@ -75,13 +75,13 @@ void Enemy::onGameTick(Player &player, float deltaTime, AABB &worldBounds)
 	boundingBox = AABB(pos.x - xHalfsize, pos.y - yHalfsize, pos.z - zHalfsize, pos.x + xHalfsize, pos.y + yHalfsize, pos.z + zHalfsize);
 }
 
-void Enemy::draw(std::shared_ptr<Shader> shader, GLState &glState, Camera *cam)
+void Enemy::draw(GLState &glState, Camera *cam)
 {
 	glState.loadIdentity();
 	glState.scale(0.2f, 0.2f, 0.2f);
 	glState.translate(getX(), getY(), getZ());
 	glState.rotate(deg(getRotation().y), 0, 1, 0);
-	shader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
+	glState.default3DShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	model->draw(cam);
 }
 

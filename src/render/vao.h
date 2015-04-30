@@ -7,8 +7,33 @@
 #include "world/meshdata.h"
 
 ///
-/// Complements a shader - 
+/// VAOs complement a shader. They require a valid programID for a shader passed into the constructor in order to function properly
 ///
+
+
+class TexturedNormalColouredIndexedVAO
+{
+private:
+	gl::GLuint id;
+	gl::GLuint vertexLoc;
+	gl::GLuint colourLoc;
+	gl::GLuint textureLoc;
+	gl::GLuint normalLoc;
+	gl::GLushort *indexes;
+	int numberOfVertices;
+	gl::GLuint elementIndex;
+
+public:
+	std::shared_ptr<Texture> tex;
+	///
+	/// Sizes are in bytes, not length of the array. for a float array, size should be the number of elements * 4 
+	///
+	TexturedNormalColouredIndexedVAO(gl::GLuint associatedShaderID, int numberOfVerts, float *vertices, int verticesSize,
+		float *normals, int normalSize, float *colours, int coloursSize, float *textures, int texturesSize, gl::GLushort *indexes);
+	~TexturedNormalColouredIndexedVAO();
+	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
+};
+
 class TexturedColouredVAO
 {
 private:
@@ -26,9 +51,6 @@ public:
 	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
 };
 
-///
-/// Complements a shader - 
-///
 class TexturedNormalColouredVAO
 {
 private:
@@ -49,9 +71,6 @@ public:
 	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
 };
 
-///
-/// Complements a shader - 
-///
 class ColouredVAO
 {
 private:

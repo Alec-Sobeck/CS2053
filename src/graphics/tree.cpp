@@ -11,6 +11,7 @@ void Tree::draw(GLState &glState, Camera *camera)
 {
 	glState.loadIdentity();
 	glState.translate(x, y, z);
+	glState.default3DShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	treeModel->draw(camera);
 }
 

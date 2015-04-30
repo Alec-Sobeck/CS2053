@@ -1,8 +1,8 @@
 
 #include "projectile.h"
 
-Projectile::Projectile(Camera camera, float size) 
-	: Entity(std::shared_ptr<Model>(nullptr), camera), size(size), boundingSphere(AABS(camera.getPosition(), size)), sphere(Sphere(size, 12, 24))
+Projectile::Projectile(Camera camera, float size, GLState &glState) 
+	: Entity(std::shared_ptr<Model>(nullptr), camera), size(size), boundingSphere(AABS(camera.getPosition(), size)), sphere(Sphere(glState, size, 12, 24))
 {
 	maxMoveSpeed = 10000.0f;
 }
@@ -19,10 +19,10 @@ void Projectile::onGameTick(float deltaTime)
 	this->boundingSphere.moveTo(pos.x, pos.y, pos.z);
 }
 
-void Projectile::draw()
+void Projectile::draw(GLState &glState, std::shared_ptr<Texture> texture)
 {
 	auto pos = getPosition();
-	sphere.draw(pos.x, pos.y, pos.z);
+	sphere.draw(glState, texture, pos.x, pos.y, pos.z);
 }
 
 void Projectile::move(float deltaTime)

@@ -2,10 +2,13 @@
 
 #include "math/gamemath.h"
 #include "camera.h"
+#include "shaders/shader.h"
 
 class GLState
 {
 public:
+	std::shared_ptr<Shader> default3DShader;
+
 	glm::mat4 proj;
 	glm::mat4 view;
 	glm::mat4 model;

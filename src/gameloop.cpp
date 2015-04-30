@@ -160,9 +160,9 @@ public:
 	std::shared_ptr<Menu> mainMenu;
 	std::shared_ptr<Texture> terrainTextureGrass;
 	std::shared_ptr<Texture> terrainTextureSand;	
+	std::shared_ptr<Texture> whiteTexture;
 	std::shared_ptr<Level> activeLevel;
 	float volume;
-	std::shared_ptr<Shader> genericTextureShader;
 
     GameLoop();
 	~GameLoop();
@@ -182,8 +182,6 @@ public:
     ///
     bool drawString(std::string val, float x, float y, float z, Colour colour);
 };
-
-
 
 ///***********************************************************************
 ///***********************************************************************
@@ -332,7 +330,7 @@ void GameLoop::loadModels()
 	std::map<std::string, std::shared_ptr<Texture>> textures;
 	textures["tree"] = treeTexture;
 	textures["leaves"] = branchTexture;
-	treeModel->createVBOs(genericTextureShader, textures);
+	treeModel->createVBOs(glState.default3DShader, textures);
 
 	// Load the gun model
 	parser = ObjParser(
@@ -343,7 +341,7 @@ void GameLoop::loadModels()
 	gunTexture = Handgun_D;
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Tex_0009_1"] = Handgun_D;
-	gunModel->createVBOs(genericTextureShader, textures);
+	gunModel->createVBOs(glState.default3DShader, textures);
 	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : gunModel->vaos)
 	{
 		vao->tex = Handgun_D;
@@ -362,7 +360,7 @@ void GameLoop::loadModels()
 	textures["Lambent_Male_E.tga"] = _E;
 	textures["Lambent_Male_N.tga"] = _N;
 	textures["Lambent_Male_S.tga"] = _S;
-	zombieModel->createVBOs(genericTextureShader, textures);
+	zombieModel->createVBOs(glState.default3DShader, textures);
 	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : zombieModel->vaos)
 	{
 		vao->tex = _D;
@@ -375,7 +373,7 @@ void GameLoop::loadModels()
 	auto __D = getTexture(buildPath("res/models/zombie2/Lambent_Female_D.png"));
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Lambent_Female_D.tga"] = __D;
-	zombieModel2->createVBOs(genericTextureShader, textures);
+	zombieModel2->createVBOs(glState.default3DShader, textures);
 	for (std::shared_ptr<TexturedNormalColouredVAO> &vao : zombieModel2->vaos)
 	{
 		vao->tex = __D;
@@ -388,7 +386,7 @@ void GameLoop::loadWithGLContext()
 	// Generic texture shader.
 	std::string vertexShaderPath = buildPath("res/shaders/3d_standard_shader.vert");
 	std::string fragmentShaderPath = buildPath("res/shaders/3d_standard_shader.frag");
-	genericTextureShader = createShader(&vertexShaderPath, &fragmentShaderPath);
+	glState.default3DShader = createShader(&vertexShaderPath, &fragmentShaderPath);
 
 	loadModels();
 	int i = 0;
@@ -406,6 +404,7 @@ void GameLoop::loadWithGLContext()
 	optionsButtonTexture = getTexture(buildPath("res/button_options.png"));
 	backButtonTexture = getTexture(buildPath("res/button_back.png"));
 	helpTexture = getTexture(buildPath("res/help.png"));
+	whiteTexture = getTexture(buildPath("res/white.png"));
 	auto backButtonTexture = this->backButtonTexture;
 	auto helpTexture = this->helpTexture;	
 	auto sliderTexture = this->sliderTexture;
@@ -653,7 +652,7 @@ void ForestLevel::createLevel()
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/grass1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
-	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(gameLoopObject.genericTextureShader, terrainExp, tex));
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(glState.default3DShader, terrainExp, tex));
 	// Create the grass
 	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
 	int grassDensity = (getRandomInt(1000) + 300) * 7;
@@ -716,7 +715,7 @@ void ForestLevel::update(float deltaTime)
 
 void ForestLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureForest, cam);
+	drawSkybox(glState.default3DShader, gameLoopObject.skyboxTextureForest, cam);
 	terrainRenderer->draw();
 }
 
@@ -735,17 +734,17 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	grass->draw(glState, cam);
 
 	// Rebind the default shader
-	gameLoopObject.genericTextureShader->bindShader();
-	gameLoopObject.genericTextureShader->glUniform1("texture1", 0);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
+	glState.default3DShader->bindShader();
+	glState.default3DShader->glUniform1("texture1", 0);
+	glState.default3DShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
+	glState.default3DShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
 
 	// draw enemies
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->draw(gameLoopObject.genericTextureShader, glState, cam);
+		enemy->draw(glState, cam);
 	}
 	// End draw enemies
 }
@@ -756,7 +755,7 @@ DesertLevel::DesertLevel() : Level()
 
 void DesertLevel::drawTerrain(Camera *cam)
 {
-	drawSkybox(gameLoopObject.genericTextureShader, gameLoopObject.skyboxTextureDesert, cam);
+	drawSkybox(glState.default3DShader, gameLoopObject.skyboxTextureDesert, cam);
 	terrainRenderer->draw();
 }
 
@@ -766,7 +765,7 @@ void DesertLevel::createLevel()
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
 	auto tex = getTexture(buildPath("res/sand1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
-	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(gameLoopObject.genericTextureShader, terrainExp, tex));
+	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(glState.default3DShader, terrainExp, tex));
 	gameLoopObject.projectiles.clear();
 	gameLoopObject.player.reset();
 }
@@ -800,7 +799,7 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 	glDisable(GL_CULL_FACE);
 	for (std::shared_ptr<Enemy> enemy : enemies)
 	{
-		enemy->draw(gameLoopObject.genericTextureShader, glState, cam);
+		enemy->draw(glState, cam);
 	}
 }
 
@@ -828,7 +827,6 @@ void gameUpdateTick()
 		{
 			gameLoopObject.menus.pop();
 		}
-		gameLoopObject.genericTextureShader->releaseShader();
 		end2DRenderCycle();
 		endRenderCycle();
 		gameLoopObject.endOfTick();
@@ -847,18 +845,18 @@ void gameUpdateTick()
 	//renderAxes(cam);	
 	
 	glState.loadIdentity();
-	gameLoopObject.genericTextureShader->bindShader();
-	gameLoopObject.genericTextureShader->glUniform1("texture1", 0);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
+	glState.default3DShader->bindShader();
+	glState.default3DShader->glUniform1("texture1", 0);
+	glState.default3DShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
+	glState.default3DShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
+	glState.default3DShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
 	
 	gameLoopObject.activeLevel->drawTerrain(cam);
 	
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glCullFace(GL_BACK);
-	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_TEXTURE_2D);
 	for (int i = 0; i < gameLoopObject.projectiles.size(); )
 	{
 		std::shared_ptr<Projectile> p = gameLoopObject.projectiles.at(i);
@@ -870,7 +868,7 @@ void gameUpdateTick()
 		}
 		else
 		{
-			p->draw();
+			p->draw(glState, gameLoopObject.whiteTexture);
 			i++;
 		}
 	}
@@ -897,13 +895,16 @@ void gameUpdateTick()
 	glm::vec3 left = glm::cross(up, forward);
 	glState.rotate(deg(-cam->rotation.y), 0, 1, 0);
 	glEnable(GL_TEXTURE_2D);
-	gameLoopObject.genericTextureShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
+	glState.default3DShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, glState.model);
 	gameLoopObject.gunModel->draw(cam);	
 	// End gun draw
 	
 	end3DRenderCycle();
 
     start2DRenderCycle();
+	
+	
+	
 	drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
     end2DRenderCycle();
     endRenderCycle();
@@ -1090,7 +1091,7 @@ void processMouseInput()
 			//lookAt.y -= 0.1f; // 0.1f is a magic number. we'll eventually have to solve for this based on where the barrel in the gun model is.
 			// Create the projectile.
 			Camera camera((gameLoopObject.player.getPosition() + lookAt + glm::vec3(0.025f, -0.1f, 0.0f)), glm::vec3(0, 0, 0));
-			std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f));
+			std::shared_ptr<Projectile> projectile(new Projectile(camera, .029f, glState));
 
 			glm::vec3 acceleration = (lookAt)* 40.0f;
 			acceleration.y -= 1.8f;

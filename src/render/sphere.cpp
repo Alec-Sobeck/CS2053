@@ -3,71 +3,88 @@
 #include <cmath>
 #include "sphere.h"
 #include "math/gamemath.h"
-using namespace gl;
 
-Sphere::Sphere(float radius, unsigned int rings, unsigned int sectors)
+Sphere::Sphere(GLState &glState, float radius, unsigned int rings, unsigned int sectors)
 {
+	using namespace gl;
+	float *vertices = new float[rings * sectors * 3];
+	float *normals = new float[rings * sectors * 3];
+	float *textures = new float[rings * sectors * 2];
+	GLushort *indices = new GLushort[rings * sectors * 4];
+	float *colours = new float[rings * sectors * 4];
+	
 	float const R = 1.0f / static_cast<float>(rings - 1);
 	float const S = 1.0f / static_cast<float>(sectors - 1);
-	int r, s;
 
-	vertices.resize(rings * sectors * 3);
-	normals.resize(rings * sectors * 3);
-	texcoords.resize(rings * sectors * 2);
-	colours.resize(rings * sectors * 4);
-	std::vector<GLfloat>::iterator v = vertices.begin();
-	std::vector<GLfloat>::iterator n = normals.begin();
-	std::vector<GLfloat>::iterator t = texcoords.begin();
-	for (r = 0; r < rings; r++) 
+	int v = 0;
+	int n = 0;
+	int t = 0;
+	int c = 0;
+
+	for (int r = 0; r < rings; r++) 
 	{
-		for (s = 0; s < sectors; s++)
+		for (int s = 0; s < sectors; s++)
 		{
 			float const y = sin(-PIOVER2 + PI * r * R);
 			float const x = cos(2 * PI * s * S) * sin(PI * r * R);
 			float const z = sin(2 * PI * s * S) * sin(PI * r * R);
 
-			*t++ = s*S;
-			*t++ = r*R;
+			textures[t + 0] = s*S;
+			textures[t + 1] = r*R;
+			t += 2;
 
-			*v++ = x * radius;
-			*v++ = y * radius;
-			*v++ = z * radius;
+			vertices[v + 0] = x * radius;
+			vertices[v + 1] = y * radius;
+			vertices[v + 2] = z * radius;
+			v += 3; 
 
-			*n++ = x;
-			*n++ = y;
-			*n++ = z;
+			normals[n + 0] = x;
+			normals[n + 1] = y;
+			normals[n + 2] = z;
+			n += 3;
+
+			colours[c + 0] = 1.0f;
+ 			colours[c + 1] = 1.0f;
+			colours[c + 2] = 1.0f;
+			colours[c + 3] = 1.0f;
+			c += 4;
 		}
 	}
 
-	indices.resize(rings * sectors * 4);
-	std::vector<GLushort>::iterator i = indices.begin();
-	for (r = 0; r < rings - 1; r++) for (s = 0; s < sectors - 1; s++) 
+	int i = 0;
+	for (int r = 0; r < rings - 1; r++)
 	{
-		*i++ = r * sectors + s;
-		*i++ = r * sectors + (s + 1);
-		*i++ = (r + 1) * sectors + (s + 1);
-		*i++ = (r + 1) * sectors + s;
+		for (int s = 0; s < sectors - 1; s++)
+		{
+			indices[i + 0] = r * sectors + s;
+			indices[i + 1] = r * sectors + (s + 1);
+			indices[i + 2] = (r + 1) * sectors + (s + 1);
+			indices[i + 3] = (r + 1) * sectors + s;
+			i += 4;
+		}
 	}
+
+	vao = std::shared_ptr<TexturedNormalColouredIndexedVAO>(new TexturedNormalColouredIndexedVAO(
+		glState.default3DShader->programID, 
+		rings * sectors * 4, 
+		vertices, rings * sectors * 3 * sizeof(float),
+		normals, rings * sectors * 3 * sizeof(float),
+		colours, rings * sectors * 4 * sizeof(float),
+		textures, rings * sectors * 2 * sizeof(float), 
+		indices
+	));
+
+	delete[] vertices;
+	delete[] normals;
+	delete[] textures;
+	delete[] colours;
 }
 
-void Sphere::draw(GLfloat x, GLfloat y, GLfloat z)
+void Sphere::draw(GLState &state, std::shared_ptr<Texture> tex, gl::GLfloat x, gl::GLfloat y, gl::GLfloat z)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glTranslatef(x, y, z);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(3, GL_FLOAT, 0, &vertices[0]);
-	glNormalPointer(GL_FLOAT, 0, &normals[0]);
-	glTexCoordPointer(2, GL_FLOAT, 0, &texcoords[0]);
-	glDrawElements(GL_QUADS, indices.size(), GL_UNSIGNED_SHORT, &indices[0]);
-
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glPopMatrix();
+	state.loadIdentity();
+	state.translate(x, y, z);
+	state.default3DShader->glUniformMatrix4("modelMatrix", gl::GL_FALSE, state.model);
+	tex->bind();
+	vao->draw();
 }

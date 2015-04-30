@@ -25,5 +25,5 @@ public:
 	Enemy(std::shared_ptr<Model> model, Camera camera);
 	~Enemy();
 	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);
-	void draw(std::shared_ptr<Shader> shader, GLState &state, Camera* cam);
+	void draw(GLState &state, Camera* cam);
 };

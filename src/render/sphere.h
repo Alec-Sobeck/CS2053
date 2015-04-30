@@ -1,20 +1,20 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <glbinding/gl/gl.h>
+#include "vao.h"
+#include "texture.h"
+#include "graphics/glstate.h"
 
 class Sphere
 {
 protected:
-	std::vector<gl::GLfloat> vertices;
-	std::vector<gl::GLfloat> normals;
-	std::vector<gl::GLfloat> texcoords;
-	std::vector<gl::GLushort> indices;
-	std::vector<gl::GLfloat> colours;
+	std::shared_ptr<TexturedNormalColouredIndexedVAO> vao;
 
 public:
-	Sphere(float radius, unsigned int rings, unsigned int sectors);
-	void draw(gl::GLfloat x, gl::GLfloat y, gl::GLfloat z);
+	Sphere(GLState &glState, float radius, unsigned int rings, unsigned int sectors);
+	void draw(GLState &state, std::shared_ptr<Texture> tex, gl::GLfloat x, gl::GLfloat y, gl::GLfloat z);
 };
 
 
