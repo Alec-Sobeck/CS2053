@@ -7,13 +7,11 @@ Tree::Tree(std::shared_ptr<Model> treeModel, float x, float y, float z)
 {
 }
 
-void Tree::draw(Camera *camera)
+void Tree::draw(GLState &glState, Camera *camera)
 {
-	using namespace gl;
-
-	glTranslatef(x, y, z);
+	glState.loadIdentity();
+	glState.translate(x, y, z);
 	treeModel->draw(camera);
-	glPopMatrix();
 }
 
 

@@ -724,12 +724,11 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 {
 	using namespace gl;
 	/// tree
-	glState.loadIdentity();
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 	for (Tree &tree : trees)
 	{
-		tree.draw(cam);
+		tree.draw(glState, cam);
 	}
 	/// end tree
 		

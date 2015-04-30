@@ -135,6 +135,7 @@ std::shared_ptr<VAOMeshData> createVAOMeshFromParsedOBJ(
 
 
 	return std::shared_ptr<VAOMeshData>(new VAOMeshData(
+		associatedTextureName, 
 		numVerts,
 		vertices,
 		numVerts * 3 * sizeof(float),

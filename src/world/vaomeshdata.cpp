@@ -1,6 +1,7 @@
 #include "world/vaomeshdata.h"
 
 VAOMeshData::VAOMeshData(
+		std::string associatedTextureName,
 		int numVerts,
 		float *vertices,
 		int verticesSize,
@@ -13,7 +14,7 @@ VAOMeshData::VAOMeshData(
 		gl::GLenum glRenderMode,
 		std::shared_ptr<Material> material
 	) 
-	: glRenderMode(glRenderMode), numVerts(numVerts), vertices(vertices), verticesSize(verticesSize), normals(normals), normalsSize(normalsSize),
+	: associatedTextureName(associatedTextureName), glRenderMode(glRenderMode), numVerts(numVerts), vertices(vertices), verticesSize(verticesSize), normals(normals), normalsSize(normalsSize),
 	colours(colours), coloursSize(coloursSize), textures(textures), texturesSize(texturesSize), material(material)
 {
 }

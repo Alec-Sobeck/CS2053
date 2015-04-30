@@ -7,5 +7,16 @@ out vec4 outputF;
 
 void main() 
 {
-    outputF = texture(texture1, textureCoord);
+    vec4 val = texture(texture1, textureCoord);
+    if(val.w >= 0.05f)
+    {
+        outputF = val;
+    }
+    else
+    {
+        // Simulate this legacy gl code:    
+        // glAlphaFunc(GL_GREATER, 0.05f);
+        // glEnable(GL_ALPHA_TEST);
+        discard;
+    }
 }

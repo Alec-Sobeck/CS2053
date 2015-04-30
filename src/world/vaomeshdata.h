@@ -24,6 +24,7 @@ public:
 	std::shared_ptr<Material> material;
 
 	VAOMeshData(
+		std::string associatedTextureName,
 		int numVerts,
 		float *vertices,
 		int verticesSize,
