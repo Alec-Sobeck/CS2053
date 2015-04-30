@@ -4,20 +4,21 @@
 #include <memory>
 #include <glm/vec3.hpp>
 #include "graphics/camera.h"
-#include "render/vbo.h"
+#include "render/vao.h"
 #include "render/texture.h"
 #include "shaders/shader.h"
+#include "graphics/glstate.h"
 
 class Grass
 {
 public:
     Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, float range, std::shared_ptr<Texture> texture);
     void update();
-    void draw(Camera *camera);
+	void draw(GLState &glState, Camera *camera);
 private:
     std::shared_ptr<Texture> texture;
     int density;
-    std::shared_ptr<VBO> vbo;
+    std::shared_ptr<TexturedNormalColouredVAO> vao;
     glm::vec3 windDirection;
     float maxTimeOfCurrentBurst;
     float remainingTime;

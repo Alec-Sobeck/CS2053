@@ -33,17 +33,10 @@ void initializeViewport()
     glViewport(vpX, screenHeight - (vpY + height), width, height); //Setup the second element for 2D projection
 
     glEnable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity(); //Reset to the origin
     glOrtho(0, getWindowWidth(), getWindowHeight(), 0, -1, 1); //initialize the 2D drawing area
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity(); //Reset position to the origin
-    glTranslatef(0.0F, 0.0F, 1); //Move out on the screen so stuff is actually visible
-
+ 
     glClearColor(0.0F, 0.0F, 0.0F, 0.0F); //Clear the colour
-    glDisable(GL_LIGHTING); //Ensure lighting isnt enabled
     glEnable(GL_TEXTURE_2D); //Allow flat textures to be drawn
-    glDisable(GL_FOG); //Ensure there isnt fog enabled
 }
 
 void start2DRenderCycle()
@@ -77,14 +70,11 @@ void startRenderCycle()
 {
     using namespace gl;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
     glClearColor(0.0f, 0, 0, 0);
-    glColor4f(1, 1, 1, 1);
 }
 
 void endRenderCycle()
 {
-    using namespace gl;
     swapBuffers();
 }
 
@@ -128,14 +118,7 @@ int getViewportY()
 void start3DRenderCycle()
 {
     using namespace gl;
-    // set up the camera
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
-    glMatrixMode(GL_PROJECTION);
-    gl::glLoadIdentity();
-//    setPerspective(45.0f, getAspectRatio(), 0.1f, 1000.0f);
-    glMatrixMode(GL_MODELVIEW);
-    gl::glLoadIdentity();
-    gl::glPushMatrix();
 }

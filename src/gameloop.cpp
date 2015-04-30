@@ -733,7 +733,13 @@ void ForestLevel::draw(Camera* cam, float deltaTime)
 	}
 	/// end tree
 		
-	grass->draw(cam);
+	grass->draw(glState, cam);
+
+	// Rebind the default shader
+	gameLoopObject.genericTextureShader->bindShader();
+	gameLoopObject.genericTextureShader->glUniform1("texture1", 0);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("projMatrix", gl::GL_FALSE, glState.proj);
+	gameLoopObject.genericTextureShader->glUniformMatrix4("viewMatrix", gl::GL_FALSE, glState.view);
 
 	// draw enemies
 	glEnable(GL_TEXTURE_2D);
