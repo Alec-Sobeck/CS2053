@@ -1,5 +1,4 @@
-#ifndef BEZIER_QUADRATIC_2D
-#define BEZIER_QUADRATIC_2D
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -21,10 +20,3 @@ public:
 	glm::vec2 getPoint(float t);
 	std::vector<glm::vec2> getControlPoints();
 };
-
-
-
-
-
-
-#endif

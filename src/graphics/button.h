@@ -1,5 +1,4 @@
-#ifndef GUI_BUTTON_H
-#define GUI_BUTTON_H
+#pragma once
 
 #include <string>
 #include "componentbase.h"
@@ -12,5 +11,3 @@ public:
 	virtual void update(MouseManager *manager) override;
 };
 
-
-#endif

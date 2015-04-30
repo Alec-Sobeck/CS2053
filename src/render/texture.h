@@ -1,5 +1,4 @@
-#ifndef ENGINE_TEXTURE_H
-#define ENGINE_TEXTURE_H
+#pragma once
 
 #include <string>
 #include <glbinding/gl/gl.h>
@@ -27,5 +26,3 @@ public:
 	void bind();
 };
 
-
-#endif

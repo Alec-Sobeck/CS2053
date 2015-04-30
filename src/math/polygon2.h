@@ -1,5 +1,4 @@
-#ifndef POLYGON_2_H
-#define POLYGON_2_H
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -28,5 +27,3 @@ public:
 	///
 	size_t vertexCount();
 };
-
-#endif

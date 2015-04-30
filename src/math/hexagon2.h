@@ -1,5 +1,4 @@
-#ifndef HEXAGON_2_H
-#define HEXAGON_2_H
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -21,7 +20,3 @@ public:
 	Hexagon2(std::vector<glm::vec2> points);
 };
 
-
-
-
-#endif

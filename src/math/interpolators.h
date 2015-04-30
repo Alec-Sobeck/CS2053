@@ -1,8 +1,8 @@
-/**
- * A collection of interpolation methods. Undefined if given a progress < 0 or > 1
- */
-#ifndef INTERPOLATORS_H
-#define INTERPOLATORS_H
+#pragma once
+
+///
+/// A collection of interpolation methods. Undefined if given a progress < 0 or > 1
+/// 
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
@@ -90,5 +90,3 @@ glm::vec2 CubicInterpolate(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, d
 /// \param t a double, between 0 and 1, representing percentage traveled from a to b
 /// 
 glm::vec3 CubicInterpolate(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d, double t);
-
-#endif

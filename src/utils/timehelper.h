@@ -1,5 +1,4 @@
-#ifndef ENGINE_TIME_HELPER_H
-#define ENGINE_TIME_HELPER_H
+#pragma once
 
 ///
 /// Gets the current time since the linux epoch, in milliseconds. Return type is an
@@ -7,5 +6,3 @@
 ///
 unsigned long long getCurrentTimeMillis();
 
-
-#endif

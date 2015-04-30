@@ -1,5 +1,4 @@
-#ifndef INTERSECTION_H
-#define INTERSECTION_H
+#pragma once
 
 class Rectangle2;
 
@@ -57,5 +56,3 @@ std::unique_ptr<glm::vec2> intersection(const LineSegment2 &first, const LineSeg
 ///
 bool intersects(const Rectangle2 &first, const Rectangle2 &second);
 
-
-#endif

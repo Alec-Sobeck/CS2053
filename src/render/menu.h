@@ -1,5 +1,5 @@
-#ifndef ENGINE_MENU_H
-#define ENGINE_MENU_H
+#pragma once
+
 #include <stack>
 #include <functional>
 #include "graphics/button.h"
@@ -78,5 +78,3 @@ public:
 	void update(MouseManager* manager, float deltaTime);
 };
 
-
-#endif

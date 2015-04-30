@@ -1,5 +1,4 @@
-#ifndef RENDER_SETTINGS_HELPER_H
-#define RENDER_SETTINGS_HELPER_H
+#pragma once
 
 ///
 /// RenderSettingsHelper defines functions that set OpenGL settings to some sort of default for a particular operation. For example, 2D or 3D rendering.
@@ -60,7 +59,3 @@ int getWindowWidth();
 int getWindowHeight();
 
 
-
-
-
-#endif

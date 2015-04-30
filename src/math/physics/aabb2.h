@@ -1,5 +1,4 @@
-#ifndef AABB2_H
-#define AABB2_H
+#pragma once
 
 #include "glm/vec2.hpp"
 
@@ -50,4 +49,3 @@ public:
 };
 
 
-#endif

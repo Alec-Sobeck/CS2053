@@ -1,5 +1,4 @@
-#ifndef VAO_MESH_DATA_H
-#define VAO_MESH_DATA_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -43,5 +42,3 @@ public:
 	///
 	AABB getAABB();
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef GUI_LOGO_H
-#define GUI_LOGO_H
+#pragma once
 
 #include <string>
 #include "componentbase.h"
@@ -13,4 +12,3 @@ public:
 };
 
 
-#endif

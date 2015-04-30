@@ -1,5 +1,4 @@
-#ifndef ENG_GRASS_GEN_H
-#define ENG_GRASS_GEN_H
+#pragma once
 
 #include <memory>
 #include <glm/vec3.hpp>
@@ -34,6 +33,3 @@ private:
 };
 
 
-
-
-#endif

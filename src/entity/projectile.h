@@ -1,5 +1,4 @@
-#ifndef PROJECTILE_H
-#define PROJECTILE_H
+#pragma once
 
 #include <memory>
 #include "glm/vec3.hpp"
@@ -32,4 +31,3 @@ inline bool operator==(const Projectile& one, const Projectile& two)
 	return false;
 }
 
-#endif

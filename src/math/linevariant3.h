@@ -1,5 +1,4 @@
-#ifndef ILINEVARIANT_H
-#define ILINEVARIANT_H
+#pragma once
 
 #include "glm/vec3.hpp"
 #include "plane3.h"
@@ -23,5 +22,3 @@ public:
 	virtual bool intersectsPlane(const Plane3 &p) const = 0;
 };
 
-
-#endif

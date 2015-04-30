@@ -1,5 +1,4 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#pragma once
 
 #include <memory>
 #include "glm/vec3.hpp"
@@ -74,5 +73,3 @@ protected:
 };
 
 
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef ENGINE_VAO_H
-#define ENGINE_VAO_H
+#pragma once
 
 #include <memory>
 #include <glbinding/gl/gl.h>
@@ -72,6 +71,3 @@ public:
 
 
 
-
-
-#endif

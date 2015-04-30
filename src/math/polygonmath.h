@@ -1,5 +1,4 @@
-#ifndef POLYGON_MATH_H
-#define POLYGON_MATH_H
+#pragma once
 
 #include "gamemath.h"
 
@@ -42,5 +41,3 @@ void rotateOnPoint(std::vector<glm::vec2> &points, glm::vec2 pointRotatedOn, dou
 ///
 std::vector<glm::vec2> getNormals(const std::vector<glm::vec2> &points);
 
-
-#endif

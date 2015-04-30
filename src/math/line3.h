@@ -1,5 +1,4 @@
-#ifndef LINE3_H
-#define LINE3_H
+#pragma once
 
 #include "glm/vec3.hpp"
 #include "linevariant3.h"
@@ -31,4 +30,3 @@ public:
 };
 
 
-#endif

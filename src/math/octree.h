@@ -1,6 +1,4 @@
-#ifndef MATH_OCTREE_H
-#define MATH_OCTREE_H
-
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -164,6 +162,3 @@ public:
 };
 
 
-
-
-#endif

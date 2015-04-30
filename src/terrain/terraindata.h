@@ -1,5 +1,4 @@
-#ifndef TERRAIN_DATA_H
-#define TERRAIN_DATA_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -44,5 +43,3 @@ public:
     int getTotalNumberOfVertices();
 	void exportToOBJ(std::string filePath);
 };
-
-#endif

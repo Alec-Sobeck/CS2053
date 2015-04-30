@@ -1,5 +1,4 @@
-#ifndef IOCTREE_ELEMENT_H
-#define IOCTREE_ELEMENT_H
+#pragma once
 
 #include "physics/aabb.h"
 
@@ -28,5 +27,3 @@ public:
 };
 
 
-
-#endif // IOCTREE_ELEMENT_H

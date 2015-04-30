@@ -1,5 +1,4 @@
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include <memory>
 #include <map>
@@ -108,7 +107,5 @@ inline bool operator<(const Model &first, const Model &other)
     return false;
 }
 
-
-#endif
 
 

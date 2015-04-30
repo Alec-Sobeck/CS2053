@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 #include <memory>
 #include "glm/vec3.hpp"
@@ -25,5 +24,3 @@ public:
 	bool isInvincible();
 	void update(AABB &worldBounds, float deltaTime);
 };
-
-#endif

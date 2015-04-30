@@ -1,5 +1,4 @@
-#ifndef LINESEGMENT3_H
-#define LINESEGMENT3_H
+#pragma once
 
 #include "glm/vec3.hpp"
 #include "linevariant3.h"
@@ -49,5 +48,3 @@ public:
 	glm::vec3 getDirection() const;
 	bool intersectsPlane(const Plane3 &p) const;
 };
-
-#endif

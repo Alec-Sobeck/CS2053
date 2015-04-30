@@ -1,5 +1,4 @@
-#ifndef BEZIER_CUBIC_2D_H
-#define BEZIER_CUBIC_2D_H
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -25,6 +24,3 @@ public:
 };
 
 
-
-
-#endif

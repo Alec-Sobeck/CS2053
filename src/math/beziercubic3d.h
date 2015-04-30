@@ -1,5 +1,4 @@
-#ifndef BEZIER_CUBIC_3D
-#define BEZIER_CUBIC_3D
+#pragma once
 
 #include <vector>
 #include <glm/vec3.hpp>
@@ -17,5 +16,3 @@ public:
 	std::vector<glm::vec3> getControlPoints();
 };
 
-
-#endif

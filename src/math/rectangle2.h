@@ -1,6 +1,4 @@
-#ifndef RECTANGLE_2_H
-#define RECTANGLE_2_H
-
+#pragma once
 
 #include <stdexcept>
 #include "math/gamemath.h"
@@ -104,7 +102,3 @@ public:
 	void rotateOnLeftCenter(float angle);
 };
 
-
-
-
-#endif

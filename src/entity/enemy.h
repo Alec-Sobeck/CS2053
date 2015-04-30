@@ -1,5 +1,4 @@
-#ifndef ENGINE_ENEMY_H
-#define ENGINE_ENEMY_H
+#pragma once
 
 #include <memory>
 #include <glm/vec3.hpp>
@@ -28,4 +27,3 @@ public:
 	void onGameTick(Player &player, float deltaTime, AABB &worldBounds);
 	void draw(std::shared_ptr<Shader> shader, GLState &state, Camera* cam);
 };
-#endif

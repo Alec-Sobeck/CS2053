@@ -1,5 +1,4 @@
-#ifndef CIRCLE_2_H
-#define CIRCLE_2_H
+#pragma once
 
 #include <glm/vec2.hpp>
 
@@ -23,6 +22,3 @@ public:
 	Circle2(glm::vec2 center, float radius);
 };
 
-
-
-#endif

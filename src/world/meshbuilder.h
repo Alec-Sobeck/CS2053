@@ -1,5 +1,4 @@
-#ifndef MODEL_DATA_BUILDER_H
-#define MODEL_DATA_BUILDER_H
+#pragma once
 
 #include <memory>
 #include <stdexcept>
@@ -66,4 +65,3 @@ MeshData createModelDataNoTexture(gl::GLenum glRenderMode,
 		std::vector<float> normalData,
 		std::vector<float> colourData);
 
-#endif

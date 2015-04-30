@@ -1,5 +1,4 @@
-#ifndef POLYGON_3
-#define POLYGON_3
+#pragma once
 
 class Plane3;
 
@@ -55,5 +54,3 @@ private:
 	/// 
 	void computeNormal();
 };
-
-#endif

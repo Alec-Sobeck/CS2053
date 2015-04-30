@@ -1,5 +1,4 @@
-#ifndef MODEL_DATA_H
-#define MODEL_DATA_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -75,5 +74,3 @@ public:
 	///
 	AABB getAABB();
 };
-
-#endif

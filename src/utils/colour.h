@@ -1,5 +1,4 @@
-#ifndef COLOUR_H
-#define COLOUR_H
+#pragma once
 
 #include <string>
 
@@ -48,6 +47,4 @@ const Colour MARINER(51.0 / 255.0, 102.0 / 255.0, 204.0 / 255.0, 1);
 // A somewhat dark shade of blue.
 const Colour AZURE(51.0 / 255.0, 102.0 / 255.0, 153.0 / 255.0, 1);
 
-
-
-#endif
+#pragma once

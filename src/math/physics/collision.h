@@ -1,5 +1,4 @@
-#ifndef ENGINE_COLLISION_H
-#define ENGINE_COLLISION_H
+#pragma once
 
 #include "glm/vec3.hpp"
 #include "aabb.h"
@@ -29,5 +28,3 @@ bool intersects(const AABB &first, const AABB &second);
 bool brokenIntersection(const AABB &first, const Capsule3D &second);
 
 
-
-#endif

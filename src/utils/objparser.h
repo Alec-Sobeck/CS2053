@@ -1,5 +1,4 @@
-#ifndef ENG_OBJECT_PARSER_H
-#define ENG_OBJECT_PARSER_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -29,5 +28,3 @@ private:
 };
 
 
-
-#endif

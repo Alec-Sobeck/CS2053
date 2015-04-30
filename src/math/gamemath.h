@@ -1,5 +1,4 @@
-#ifndef GAMEMATH_H
-#define GAMEMATH_H
+#pragma once
 
 ///
 /// Usage note: <cmath> and <glm/glm.hpp> define a lot of operations already. For example, glm defines the following vector operations: 
@@ -423,5 +422,3 @@ inline glm::mat4 buildProjectionMatrix(float fov, float ratio, float nearP, floa
 
 
 
-
-#endif

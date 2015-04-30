@@ -1,19 +1,12 @@
-#ifndef AABS_H
-#define AABS_H
-
-class AABB;
-class AABS;
+#pragma once
 
 #include "glm/vec3.hpp"
-#include "math/polygon3.h"
-#include "aabb.h"
 
-/**
- * AABS - "Axis Aligned Bounding Sphere" is a sphere that is used to bound a model or object for the purposes
- * of collision test.
- * <br>
- * <u>http://www.euclideanspace.com/threed/animation/collisiondetect/index.htm?utm_source=[deliciuos]&utm_medium=twitter</u>
- */
+///
+/// AABS - "Axis Aligned Bounding Sphere" is a sphere that is used to bound a model or object for the purposes of collision test.
+/// 
+/// See: http://www.euclideanspace.com/threed/animation/collisiondetect/index.htm?utm_source=[deliciuos]&utm_medium=twitter
+///
 class AABS
 {
 public:
@@ -50,5 +43,3 @@ public:
 	/// Radius of the sphere
 	float radius;
 };
-
-#endif

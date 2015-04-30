@@ -1,5 +1,4 @@
-#ifndef ENGINE_GLU_HELPER_H
-#define ENGINE_GLU_HELPER_H
+#pragma once
 
 ///
 /// gluhelper.h defines functions which do the same thing as functions from the glu library, but instead make
@@ -8,4 +7,3 @@
 
 void swapBuffers();
 
-#endif

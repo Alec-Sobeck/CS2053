@@ -1,5 +1,4 @@
-#ifndef ENGINE_RENDER_H
-#define ENGINE_RENDER_H
+#pragma once
 
 #include <map>
 #include <glbinding/gl/gl.h>
@@ -14,4 +13,3 @@ void drawSkybox(std::shared_ptr<Shader> skyboxShader, std::shared_ptr<Texture> s
 void renderAxes(Camera *cam);
 void drawAABB(AABB &box);
 
-#endif

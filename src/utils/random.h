@@ -1,6 +1,4 @@
-#ifndef UTILS_RANDOM_H
-#define UTILS_RANDOM_H
-
+#pragma once
 
 ///
 /// Seeds the random number generator with the system time. This will only seed the random number generator the first time it's called; doing nothing on
@@ -17,5 +15,3 @@ int getRandomInt(int maxValue);
 ///
 float getRandomFloat();
 
-
-#endif

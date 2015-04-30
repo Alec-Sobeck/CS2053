@@ -1,5 +1,4 @@
-#ifndef ENG_DYNAMIC_VBO_H
-#define ENG_DYNAMIC_VBO_H
+#pragma once
 
 #include <vector>
 #include "graphics/gluhelper.h"
@@ -55,4 +54,3 @@ public:
 
 
 
-#endif

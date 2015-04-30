@@ -1,5 +1,4 @@
-#ifndef GL_STATE_H
-#define GL_STATE_H
+#pragma once
 
 #include "math/gamemath.h"
 #include "camera.h"
@@ -18,5 +17,3 @@ public:
 	void rotate(float angle, float x, float y, float z);
 	void update(Camera* camera);
 };
-
-#endif

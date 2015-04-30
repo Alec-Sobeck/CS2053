@@ -1,5 +1,4 @@
-#ifndef PLANE3_H
-#define PLANE3_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -79,5 +78,3 @@ public:
 	glm::vec3 pointOnPlane;
 };
 
-
-#endif

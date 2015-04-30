@@ -1,5 +1,4 @@
-#ifndef GUI_SLIDER_H
-#define GUI_SLIDER_H
+#pragma once
 
 #include <string>
 #include "componentbase.h"
@@ -18,5 +17,3 @@ public:
 	void rebuildVAO();
 };
 
-
-#endif

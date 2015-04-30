@@ -1,5 +1,4 @@
-#ifndef MAP_DATA_H
-#define MAP_DATA_H
+#pragma once
 
 #include <vector>
 #include "world/meshdata.h"
@@ -18,8 +17,3 @@ public:
 	///
 	MapData(std::vector<MeshData> initialModels, TerrainData data);
 };
-
-
-
-
-#endif

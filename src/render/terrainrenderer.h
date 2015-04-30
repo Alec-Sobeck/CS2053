@@ -1,5 +1,4 @@
-#ifndef TERRAIN_RENDERER_H
-#define TERRAIN_RENDERER_H
+#pragma once
 
 #include <memory>
 #include <glm/vec3.hpp>
@@ -24,7 +23,3 @@ public:
 
 
 
-
-
-
-#endif

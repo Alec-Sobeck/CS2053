@@ -1,5 +1,4 @@
-#ifndef FILEUTILS_H
-#define FILEUTILS_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -22,4 +21,3 @@ std::vector<std::string> readTextFileAsLines(std::string filepath);
 ///
 std::string buildPath(std::string path);
 
-#endif // FILEUTILS_H

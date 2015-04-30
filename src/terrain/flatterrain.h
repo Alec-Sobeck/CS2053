@@ -1,5 +1,4 @@
-#ifndef ENG_FLAT_TERRAIN_H
-#define ENG_FLAT_TERRAIN_H
+#pragma once
 
 #include "utils/colour.h"
 #include "terrain/terrain.h"
@@ -14,5 +13,3 @@ public:
     void generateTerrain(int LoD, float size);
     std::shared_ptr<TerrainData> exportToTerrainData();
 };
-
-#endif

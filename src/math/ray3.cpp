@@ -1,3 +1,4 @@
+#pragma once
 
 #include <sstream>
 #include "math/ray3.h"

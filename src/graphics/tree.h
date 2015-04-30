@@ -1,5 +1,4 @@
-#ifndef ENGINE_TREE_H
-#define ENGINE_TREE_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -16,4 +15,3 @@ public:
 	void draw(Camera *camera);
 };
 
-#endif

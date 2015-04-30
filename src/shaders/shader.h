@@ -1,5 +1,4 @@
-#ifndef GAME_SHADER_H
-#define GAME_SHADER_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -73,5 +72,3 @@ public:
 };
 
 std::shared_ptr<Shader> createShader(const std::string *vertFilepath, const std::string *fragFilepath);
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef AABB_H
-#define AABB_H
+#pragma once
 
 #include "glm/vec3.hpp"
 
@@ -60,5 +59,3 @@ public:
 	float zMax;
 };
 
-
-#endif

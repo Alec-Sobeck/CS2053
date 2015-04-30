@@ -1,5 +1,4 @@
-#ifndef CAPSULE3D_H
-#define CAPSULE3D_H
+#pragma once
 
 #include "glm/vec3.hpp"
 
@@ -11,5 +10,3 @@ public:
 	glm::vec3 point2;
 	float radius;
 };
-
-#endif

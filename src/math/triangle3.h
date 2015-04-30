@@ -1,5 +1,4 @@
-#ifndef TRIANGLE_3
-#define TRIANGLE_3
+#pragma once
 
 #include <vector>
 #include "math/plane3.h"
@@ -29,5 +28,3 @@ private:
 	///
 	void computeNormal();
 };
-
-#endif

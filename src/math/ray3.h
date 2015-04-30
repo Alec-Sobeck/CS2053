@@ -1,5 +1,4 @@
-#ifndef RAY3_H
-#define RAY3_H
+#pragma once
 
 #include <string>
 #include "glm/vec3.hpp"
@@ -32,5 +31,3 @@ public:
 	bool intersectsPlane(const Plane3 &p) const;
 };
 
-
-#endif

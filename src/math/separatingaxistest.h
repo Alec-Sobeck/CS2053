@@ -1,5 +1,4 @@
-#ifndef SEPARATING_AXIS_TEST_H
-#define SEPARATING_AXIS_TEST_H
+#pragma once
 
 #include <vector>
 #include "rectangle2.h"
@@ -42,5 +41,3 @@ namespace separatingaxistest
 	/// 
 	std::vector<double> getMinMax(std::vector<glm::vec2> vecs_box, glm::vec2 axis);
 }
-
-#endif

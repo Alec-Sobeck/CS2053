@@ -1,5 +1,4 @@
-#ifndef TERRAIN_POLYGON_H
-#define TERRAIN_POLYGON_H
+#pragma once
 
 #include <vector>
 #include "glm/vec3.hpp"
@@ -80,4 +79,3 @@ inline bool operator<(const TerrainPolygon &first, const TerrainPolygon &other)
     return false;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _glfonth_
-#define _glfonth_
+#pragma once
 
 #include <string>
 #include <map>
@@ -34,8 +33,3 @@ public:
 	void Create(std::shared_ptr<Texture> tex);
 	void TextOut(std::string String, float x, float y, float z);
 };
-
-#endif
-//End of file
-
-

@@ -1,5 +1,4 @@
-#ifndef ENGINE_UI_H
-#define ENGINE_UI_H
+#pragma once
 
 #include <memory>
 #include "entity/player.h"
@@ -10,5 +9,3 @@
 
 void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font, 
 	std::shared_ptr<Texture> ammoTexture, std::shared_ptr<Texture> medkitTexture);
-
-#endif

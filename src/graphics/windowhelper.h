@@ -1,5 +1,4 @@
-#ifndef WINDOW_HELPER_H
-#define WINDOW_HELPER_H
+#pragma once
 
 #include <string>
 
@@ -9,5 +8,3 @@ void changeSize(int w, int h);
 int getWindowWidth();
 int getWindowHeight();
 
-
-#endif

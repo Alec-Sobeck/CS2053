@@ -1,5 +1,4 @@
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -23,5 +22,3 @@ public:
 	virtual Colour getColour(double x, double y) = 0;
 };
 
-
-#endif

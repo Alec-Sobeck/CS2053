@@ -1,5 +1,4 @@
-#ifndef ENGINE_SPHERE_H
-#define ENGINE_SPHERE_H
+#pragma once
 
 #include <vector>
 #include <glbinding/gl/gl.h>
@@ -21,5 +20,3 @@ public:
 
 
 
-
-#endif

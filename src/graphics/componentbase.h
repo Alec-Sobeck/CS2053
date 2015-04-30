@@ -1,5 +1,4 @@
-#ifndef COMPONENT_BASE_H
-#define COMPONENT_BASE_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -69,5 +68,3 @@ public:
 
 };
 
-
-#endif

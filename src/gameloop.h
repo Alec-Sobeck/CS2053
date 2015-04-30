@@ -1,8 +1,4 @@
-///
-/// Only include this header file at the entry point of the application
-///
-#ifndef ENGINE_GAMELOOP_H
-#define ENGINE_GAMELOOP_H
+#pragma once
 
 #include <glm/vec3.hpp>
 
@@ -69,4 +65,3 @@ public:
 	void updateModifierState();
 };
 
-#endif

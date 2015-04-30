@@ -1,5 +1,4 @@
-#ifndef ENGINE_MATERIAL_H
-#define ENGINE_MATERIAL_H
+#pragma once
 
 #include <string>
 #include <glm/vec3.hpp>
@@ -44,4 +43,3 @@ public:
     void applyGLSettings();
 };
 
-#endif

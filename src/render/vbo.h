@@ -1,5 +1,4 @@
-#ifndef ENGINE_VBO_H
-#define ENGINE_VBO_H
+#pragma once
 
 #include <memory>
 #include <glbinding/gl/gl.h>
@@ -59,7 +58,3 @@ public:
 
 
 
-
-
-
-#endif

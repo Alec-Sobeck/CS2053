@@ -1,5 +1,4 @@
-﻿#ifndef LINESEGMENT2_H
-#define LINESEGMENT2_H
+﻿#pragma once
 
 #include "glm/vec2.hpp"
 
@@ -75,5 +74,3 @@ public:
 	/// 
 	glm::vec2 pointAlongLine(float length);
 };
-
-#endif

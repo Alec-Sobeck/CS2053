@@ -1,5 +1,4 @@
-#ifndef TRIANGLE_2_H
-#define TRIANGLE_2_H
+#pragma once
 
 #include <vector>
 #include <glm/vec2.hpp>
@@ -21,5 +20,3 @@ public:
 };
 
 
-
-#endif
