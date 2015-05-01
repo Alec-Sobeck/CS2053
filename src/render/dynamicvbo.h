@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include "graphics/gluhelper.h"
 #include "graphics/camera.h"
 #include "graphics/terrainpolygon.h"
 #include "render/vbo.h"

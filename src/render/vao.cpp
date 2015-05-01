@@ -137,7 +137,6 @@ TexturedNormalColouredIndexedVAO::TexturedNormalColouredIndexedVAO(gl::GLuint as
 	float *normals, int normalSize, float *colours, int coloursSize, float *textures, int texturesSize, gl::GLushort *indexes)
 	: numberOfVertices(numberOfVerts)
 {
-	this->indexes = indexes;
 	using namespace gl;
 	GLuint vao[1];
 	gl::glGenVertexArrays(1, vao);
@@ -177,7 +176,6 @@ TexturedNormalColouredIndexedVAO::TexturedNormalColouredIndexedVAO(gl::GLuint as
 	gl::glVertexAttribPointer(normalLoc, 3, gl::GL_FLOAT, GL_FALSE, 0, 0);
 
 	// Populate the indexes
-	elementIndex = buffers[4];
 	gl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[4]);
 	gl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, numberOfVertices * sizeof(GL_UNSIGNED_SHORT), indexes, GL_STATIC_DRAW);
 }
@@ -189,11 +187,9 @@ void TexturedNormalColouredIndexedVAO::draw(gl::GLenum renderMode)
 		tex->bind();
 	}
 	gl::glBindVertexArray(id);
-	//gl::glBindBuffer(gl::GL_ELEMENT_ARRAY_BUFFER, elementIndex);
 	gl::glDrawElements(renderMode, numberOfVertices, gl::GL_UNSIGNED_SHORT, (void*)0);
 }
 
 TexturedNormalColouredIndexedVAO::~TexturedNormalColouredIndexedVAO()
 {
-	delete[] indexes;
 }

@@ -1,7 +1,7 @@
 
 #include "utils/materialparser.h"
 #include "world/material.h"
-#include "utils/misc.h"
+#include "utils/utilities.h"
 
 MaterialParser::MaterialParser(std::vector<std::string> &fileContents)
     : fileContents(fileContents)
@@ -26,7 +26,7 @@ std::map<std::string, std::shared_ptr<Material>> MaterialParser::parseMaterials(
     for(unsigned int i = 0; i < fileContents.size(); i++)
     {
         line = fileContents[i];
-        std::vector<std::string> splitLine = split(line, ' ');
+        std::vector<std::string> splitLine = utils::split(line, ' ');
         if(line.find("#") == 0)
         {
             continue;
@@ -44,31 +44,31 @@ std::map<std::string, std::shared_ptr<Material>> MaterialParser::parseMaterials(
         }
         else if (line.find("Ka ") == 0)
         {
-            ambientColour = glm::vec3(parseDouble(splitLine.at(1)), parseDouble(splitLine.at(2)), parseDouble(splitLine.at(3)));
+            ambientColour = glm::vec3(utils::parseDouble(splitLine.at(1)), utils::parseDouble(splitLine.at(2)), utils::parseDouble(splitLine.at(3)));
         }
         else if (line.find("Kd ") == 0)
         {
-            diffuseColour = glm::vec3(parseDouble(splitLine.at(1)), parseDouble(splitLine.at(2)), parseDouble(splitLine.at(3)));
+            diffuseColour = glm::vec3(utils::parseDouble(splitLine.at(1)), utils::parseDouble(splitLine.at(2)), utils::parseDouble(splitLine.at(3)));
         }
         else if (line.find("Ks ") == 0)
         {
-            specularColour = glm::vec3(parseDouble(splitLine.at(1)), parseDouble(splitLine.at(2)), parseDouble(splitLine.at(3)));
+            specularColour = glm::vec3(utils::parseDouble(splitLine.at(1)), utils::parseDouble(splitLine.at(2)), utils::parseDouble(splitLine.at(3)));
         }
         else if (line.find("Ns ") == 0)
         {
-            specularPower = parseDouble(splitLine.at(1));
+            specularPower = utils::parseDouble(splitLine.at(1));
         }
         else if (line.find("d ") == 0)
         {
-            d = parseDouble(splitLine.at(1));
+            d = utils::parseDouble(splitLine.at(1));
         }
         else if (line.find("Tr ") == 0)
         {
-            Tr = parseDouble(splitLine.at(1));
+            Tr = utils::parseDouble(splitLine.at(1));
         }
         else if (line.find("illum ") == 0)
         {
-            illum = parseDouble(splitLine.at(1));
+            illum = utils::parseDouble(splitLine.at(1));
         }
     }
     if(hasEncounteredNewMaterial)

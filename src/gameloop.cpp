@@ -12,17 +12,13 @@
 #include <fmod/fmod.hpp>
 #include <fmod/fmod_errors.h>
 #include "gameloop.h"
-#include "utils/textureloader.h"
 #include "entity/entity.h"
 #include "terrain/terraindata.h"
 #include "render/terrainrenderer.h"
 #include "graphics/rendersettingshelper.h"
-#include "utils/timehelper.h"
 #include "terrain/flatterrain.h"
-#include "graphics/gluhelper.h"
 #include "render/render.h"
 #include "terrain/grass.h"
-#include "graphics/gluhelper.h"
 #include "utils/objparser.h"
 #include "render/glfont.h"
 #include "render/ui.h"
@@ -30,8 +26,7 @@
 #include "render/sphere.h"
 #include "graphics/tree.h"
 #include "math/gamemath.h"
-#include "utils/fileutils.h"
-#include "utils/random.h"
+#include "utils/utilities.h"
 #include "entity/enemy.h"
 #include "entity/player.h"
 #include "render/menu.h"
@@ -180,7 +175,7 @@ public:
     /// \param z - the z coordinate of the text. Leave 0 when rendering in 2D.
     /// \param colour - the colour the text will be rendered.
     ///
-    bool drawString(std::string val, float x, float y, float z, Colour colour);
+	bool drawString(std::string val, float x, float y, float z, utils::Colour colour);
 };
 
 ///***********************************************************************
@@ -226,9 +221,9 @@ void initializeEngine()
 	gameLoopObject.fontRenderer = std::shared_ptr<GLFont>(new GLFont());
 	try
 	{
-		gameLoopObject.fontRenderer->Create(getTexture(buildPath("res/font.png")));
-		gameLoopObject.ammoTexture = getTexture(buildPath("res/ammo_icon.png"));
-		gameLoopObject.medkitTexture = getTexture(buildPath("res/medkit.png"));
+		gameLoopObject.fontRenderer->Create(utils::getTexture(utils::buildPath("res/font.png")));
+		gameLoopObject.ammoTexture = utils::getTexture(utils::buildPath("res/ammo_icon.png"));
+		gameLoopObject.medkitTexture = utils::getTexture(utils::buildPath("res/medkit.png"));
 	}
 	catch(GLFontError::InvalidFile)
 	{
@@ -248,9 +243,9 @@ void initializeEngine()
 	ERRCHECK(system->initialize(32, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, NULL));
 
 	FMOD::Studio::Bank* masterBank = NULL;
-	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
+	ERRCHECK(system->loadBankFile(utils::buildPath("res/audio/Master Bank.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &masterBank));
 	FMOD::Studio::Bank* stringsBank = NULL;
-	ERRCHECK(system->loadBankFile(buildPath("res/audio/Master Bank.strings.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
+	ERRCHECK(system->loadBankFile(utils::buildPath("res/audio/Master Bank.strings.bank").c_str(), FMOD_STUDIO_LOAD_BANK_NORMAL, &stringsBank));
 	masterBank->loadSampleData();
 	stringsBank->loadSampleData();
 
@@ -302,8 +297,8 @@ void initializeEngine()
 /// Define the GameLoop class methods.
 ///***********************************************************************
 ///***********************************************************************
-GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), startTime(getCurrentTimeMillis()),
-	previousFrameTime(getCurrentTimeMillis()), volume(0.5f)
+GameLoop::GameLoop() : gameIsRunning(true), player(Player(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)))), startTime(utils::getCurrentTimeMillis()),
+	previousFrameTime(utils::getCurrentTimeMillis()), volume(0.5f)
 {
 	// Important usage note: a GL Context is not bound when this constructor is called. Using any gl functions with cause a segfault or crash.
 	player.setCamera(Camera(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)));
@@ -322,11 +317,11 @@ void GameLoop::loadModels()
 {
 	// Load the tree model
 	ObjParser parser(
-		buildPath("res/models/pine_tree1/"), buildPath("res/models/pine_tree1/Tree.obj"),
+		utils::buildPath("res/models/pine_tree1/"), utils::buildPath("res/models/pine_tree1/Tree.obj"),
 		"Branches0018_1_S.png", false);
 	treeModel = parser.exportModel();
-	auto treeTexture = getTexture(buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
-	auto branchTexture = getTexture(buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
+	auto treeTexture = utils::getTexture(utils::buildPath("res/models/pine_tree1/BarkDecidious0107_M.jpg"));
+	auto branchTexture = utils::getTexture(utils::buildPath("res/models/pine_tree1/Branches0018_1_S.png"));
 	std::map<std::string, std::shared_ptr<Texture>> textures;
 	textures["tree"] = treeTexture;
 	textures["leaves"] = branchTexture;
@@ -334,10 +329,10 @@ void GameLoop::loadModels()
 
 	// Load the gun model
 	parser = ObjParser(
-		buildPath("res/models/gun/"), buildPath("res/models/gun/M9.obj"),
+		utils::buildPath("res/models/gun/"), utils::buildPath("res/models/gun/M9.obj"),
 		"", true);
 	gunModel = parser.exportModel();
-	auto Handgun_D = getTexture(buildPath("res/models/gun/Tex_0009_1.jpg"));
+	auto Handgun_D = utils::getTexture(utils::buildPath("res/models/gun/Tex_0009_1.jpg"));
 	gunTexture = Handgun_D;
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Tex_0009_1"] = Handgun_D;
@@ -349,12 +344,12 @@ void GameLoop::loadModels()
 	gunModel->generateAABB();
 
 	// Load the zombie
-	parser = ObjParser(buildPath("res/models/zombie/"), buildPath("res/models/zombie/Lambent_Male.obj"), "", true);
+	parser = ObjParser(utils::buildPath("res/models/zombie/"), utils::buildPath("res/models/zombie/Lambent_Male.obj"), "", true);
 	zombieModel = parser.exportModel();
-	auto _D = getTexture(buildPath("res/models/zombie/Lambent_Male_D.png"));
-	auto _E = getTexture(buildPath("res/models/zombie/Lambent_Male_E.tga"));
-	auto _N = getTexture(buildPath("res/models/zombie/Lambent_Male_N.tga"));
-	auto _S = getTexture(buildPath("res/models/zombie/Lambent_Male_S.tga"));
+	auto _D = utils::getTexture(utils::buildPath("res/models/zombie/Lambent_Male_D.png"));
+	auto _E = utils::getTexture(utils::buildPath("res/models/zombie/Lambent_Male_E.tga"));
+	auto _N = utils::getTexture(utils::buildPath("res/models/zombie/Lambent_Male_N.tga"));
+	auto _S = utils::getTexture(utils::buildPath("res/models/zombie/Lambent_Male_S.tga"));
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Lambent_Male_D.tga"] = _D;
 	textures["Lambent_Male_E.tga"] = _E;
@@ -368,9 +363,9 @@ void GameLoop::loadModels()
 	zombieModel->generateAABB();
 
 	// Load the second zombie
-	parser = ObjParser(buildPath("res/models/zombie2/"), buildPath("res/models/zombie2/Lambent_Female.obj"), "", true);
+	parser = ObjParser(utils::buildPath("res/models/zombie2/"), utils::buildPath("res/models/zombie2/Lambent_Female.obj"), "", true);
 	zombieModel2 = parser.exportModel();
-	auto __D = getTexture(buildPath("res/models/zombie2/Lambent_Female_D.png"));
+	auto __D = utils::getTexture(utils::buildPath("res/models/zombie2/Lambent_Female_D.png"));
 	textures = std::map<std::string, std::shared_ptr<Texture>>();
 	textures["Lambent_Female_D.tga"] = __D;
 	zombieModel2->createVBOs(glState.default3DShader, textures);
@@ -384,27 +379,27 @@ void GameLoop::loadModels()
 void GameLoop::loadWithGLContext()
 {
 	// Generic texture shader.
-	std::string vertexShaderPath = buildPath("res/shaders/3d_standard_shader.vert");
-	std::string fragmentShaderPath = buildPath("res/shaders/3d_standard_shader.frag");
+	std::string vertexShaderPath = utils::buildPath("res/shaders/3d_standard_shader.vert");
+	std::string fragmentShaderPath = utils::buildPath("res/shaders/3d_standard_shader.frag");
 	glState.default3DShader = createShader(&vertexShaderPath, &fragmentShaderPath);
 
 	loadModels();
 	int i = 0;
-	skyboxTextureDesert = getTexture(buildPath("res/skybox_desert.png"));
-	skyboxTextureForest = getTexture(buildPath("res/skybox_texture.jpg"));
-	terrainTextureGrass = getTexture(buildPath("res/grass1.png"));
-	terrainTextureSand = getTexture(buildPath("res/sand1.png"));	
-	logo = getTexture(buildPath("res/logo.png"));
-	gameOverTexture = getTexture(buildPath("res/game_over.png"));
-	sliderTexture = getTexture(buildPath("res/volume.png"));
+	skyboxTextureDesert = utils::getTexture(utils::buildPath("res/skybox_desert.png"));
+	skyboxTextureForest = utils::getTexture(utils::buildPath("res/skybox_texture.jpg"));
+	terrainTextureGrass = utils::getTexture(utils::buildPath("res/grass1.png"));
+	terrainTextureSand = utils::getTexture(utils::buildPath("res/sand1.png"));
+	logo = utils::getTexture(utils::buildPath("res/logo.png"));
+	gameOverTexture = utils::getTexture(utils::buildPath("res/game_over.png"));
+	sliderTexture = utils::getTexture(utils::buildPath("res/volume.png"));
 	// Create the menu(s)
-	startDesertButtonTexture = getTexture(buildPath("res/button_start.png"));
-	startForestButtonTexture = getTexture(buildPath("res/button_start2.png"));
-	helpButtonTexture = getTexture(buildPath("res/button_help.png"));
-	optionsButtonTexture = getTexture(buildPath("res/button_options.png"));
-	backButtonTexture = getTexture(buildPath("res/button_back.png"));
-	helpTexture = getTexture(buildPath("res/help.png"));
-	whiteTexture = getTexture(buildPath("res/white.png"));
+	startDesertButtonTexture = utils::getTexture(utils::buildPath("res/button_start.png"));
+	startForestButtonTexture = utils::getTexture(utils::buildPath("res/button_start2.png"));
+	helpButtonTexture = utils::getTexture(utils::buildPath("res/button_help.png"));
+	optionsButtonTexture = utils::getTexture(utils::buildPath("res/button_options.png"));
+	backButtonTexture = utils::getTexture(utils::buildPath("res/button_back.png"));
+	helpTexture = utils::getTexture(utils::buildPath("res/help.png"));
+	whiteTexture = utils::getTexture(utils::buildPath("res/white.png"));
 	auto backButtonTexture = this->backButtonTexture;
 	auto helpTexture = this->helpTexture;	
 	auto sliderTexture = this->sliderTexture;
@@ -451,7 +446,7 @@ void GameLoop::loadWithGLContext()
 
 }
 
-bool GameLoop::drawString(std::string val, float x, float y, float z, Colour colour)
+bool GameLoop::drawString(std::string val, float x, float y, float z, utils::Colour colour)
 {
     using namespace gl;
     try
@@ -481,7 +476,7 @@ float GameLoop::getDeltaTime()
 void GameLoop::update()
 {
 	system->update();
-	unsigned long long currentTime = getCurrentTimeMillis();
+	unsigned long long currentTime = utils::getCurrentTimeMillis();
 	unsigned long long deltaTimeMillis = currentTime - previousFrameTime;
 	this->deltaTime = static_cast<float>(deltaTimeMillis) / 1000.0f;
 	previousFrameTime = currentTime;
@@ -615,7 +610,7 @@ void GameLoop::collisionCheck()
 			player.ammoCount += 5;
 			// 5% chance to get a healing item
 			float chance = 0.05f;
-			float f = getRandomFloat();
+			float f = utils::getRandomFloat();
 			if (f < chance)
 			{
 				player.healingItemCount += 1;
@@ -650,19 +645,19 @@ void ForestLevel::createLevel()
 	// Create the terrain	
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
-	auto tex = getTexture(buildPath("res/grass1.png"));
+	auto tex = utils::getTexture(utils::buildPath("res/grass1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
 	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(glState.default3DShader, terrainExp, tex));
 	// Create the grass
-	auto grassTexture = getTexture(buildPath("res/grass_1.png"));
-	int grassDensity = (getRandomInt(1000) + 300) * 7;
+	auto grassTexture = utils::getTexture(utils::buildPath("res/grass_1.png"));
+	int grassDensity = (utils::getRandomInt(1000) + 300) * 7;
 	this->grass = std::shared_ptr<Grass>(new Grass(grassDensity, glm::vec3(-20, 0, -20), glm::vec3(2.0f, 0, 2.0f), 80, grassTexture));
 	//Generate some trees.
 	for (int i = 0; i < 15; i++)
 	{
-		int x = getRandomInt(70) - 35;
+		int x = utils::getRandomInt(70) - 35;
 		int y = 0;
-		int z = getRandomInt(70) - 35;
+		int z = utils::getRandomInt(70) - 35;
 
 		int retryCounter = 0;
 		while (retryCounter < 20)
@@ -698,13 +693,13 @@ void ForestLevel::update(float deltaTime)
 	grass->update();
 
 	double chance = 0.30 * static_cast<double>(deltaTime);
-	double f = static_cast<double>(getRandomFloat());
+	double f = static_cast<double>(utils::getRandomFloat());
 	if (f < chance)
 	{
 		// Try to spawn an enemy
 		std::shared_ptr<Enemy> enemy(new Enemy(
 			gameLoopObject.zombieModel,
-			Camera(glm::vec3(static_cast<float>(getRandomInt(80) - 60), 0, static_cast<float>(getRandomInt(80) - 60)),
+			Camera(glm::vec3(static_cast<float>(utils::getRandomInt(80) - 60), 0, static_cast<float>(utils::getRandomInt(80) - 60)),
 			glm::vec3(0, 0, 0)))
 			);
 		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);
@@ -763,7 +758,7 @@ void DesertLevel::createLevel()
 {
 	std::shared_ptr<Terrain> terrain(new FlatTerrain(200));
 	worldBounds = AABB(-100, 0, -100, 60, 50, 60);
-	auto tex = getTexture(buildPath("res/sand1.png"));
+	auto tex = utils::getTexture(utils::buildPath("res/sand1.png"));
 	auto terrainExp = terrain->exportToTerrainData();
 	this->terrainRenderer = std::shared_ptr<TerrainRenderer>(new TerrainRenderer(glState.default3DShader, terrainExp, tex));
 	gameLoopObject.projectiles.clear();
@@ -777,13 +772,13 @@ void DesertLevel::update(float deltaTime)
 		enemy->onGameTick(gameLoopObject.player, deltaTime, worldBounds);
 	}
 	double chance = 0.225 * static_cast<double>(deltaTime);
-	double f = static_cast<double>(getRandomFloat());
+	double f = static_cast<double>(utils::getRandomFloat());
 	if (f < chance)
 	{
 		// Try to spawn an enemy
 		std::shared_ptr<Enemy> enemy(new Enemy(
 			gameLoopObject.zombieModel2,
-			Camera(glm::vec3(static_cast<float>(getRandomInt(80) - 60), 0, static_cast<float>(getRandomInt(80) - 60)),
+			Camera(glm::vec3(static_cast<float>(utils::getRandomInt(80) - 60), 0, static_cast<float>(utils::getRandomInt(80) - 60)),
 			glm::vec3(0, 0, 0)))
 			);
 		enemy->boundingBox = AABB(0, 0, 0, 1, 1, 1);

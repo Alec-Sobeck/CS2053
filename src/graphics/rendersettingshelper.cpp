@@ -1,8 +1,5 @@
 #include <glbinding/gl/gl.h>
 #include "graphics/rendersettingshelper.h"
-#include "graphics/gluhelper.h"
-
-
 
 void initializeViewport()
 {
@@ -73,11 +70,6 @@ void startRenderCycle()
     glClearColor(0.0f, 0, 0, 0);
 }
 
-void endRenderCycle()
-{
-    swapBuffers();
-}
-
 float getAspectRatio()
 {
     return static_cast<float>(getWindowWidth()) / getWindowHeight();
@@ -121,4 +113,10 @@ void start3DRenderCycle()
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
     glCullFace(GL_BACK);
+}
+
+#include <GL/freeglut.h>
+void endRenderCycle()
+{
+	glutSwapBuffers();
 }

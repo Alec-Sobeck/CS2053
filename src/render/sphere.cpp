@@ -78,6 +78,7 @@ Sphere::Sphere(GLState &glState, float radius, unsigned int rings, unsigned int 
 	delete[] normals;
 	delete[] textures;
 	delete[] colours;
+	delete[] indices;
 }
 
 void Sphere::draw(GLState &state, std::shared_ptr<Texture> tex, gl::GLfloat x, gl::GLfloat y, gl::GLfloat z)

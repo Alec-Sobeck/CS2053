@@ -4,7 +4,7 @@
 #include <vector>
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
-#include "utils/colour.h"
+#include "utils/utilities.h"
 #include "graphics/terrainpolygon.h"
 
 ///
@@ -18,7 +18,7 @@ class TerrainData
 private:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normals;
-	std::vector<Colour> colours;
+	std::vector<utils::Colour> colours;
 	std::vector<glm::vec2> textureCoords;
 	std::vector<glm::vec3> faceVerts;
 	std::vector<glm::vec3> faceNormals;
@@ -29,7 +29,7 @@ public:
 	///
 	/// Constructs a new TerrainData object with the specified initial values.
 	///
-	TerrainData(std::vector<glm::vec3> verts, std::vector<glm::vec3> normals, std::vector<Colour> colours, std::vector<glm::vec2> textureCoords,
+	TerrainData(std::vector<glm::vec3> verts, std::vector<glm::vec3> normals, std::vector<utils::Colour> colours, std::vector<glm::vec2> textureCoords,
 		std::vector<glm::vec3> faceVerts, std::vector<glm::vec3> faceNormals, std::vector<glm::vec3> faceTextures);
 	TerrainData();
 	///

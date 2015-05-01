@@ -3,27 +3,24 @@
 #include <vector>
 #include "math/gamemath.h"
 #include "terrain/grass.h"
-#include "utils/random.h"
-#include "utils/timehelper.h"
-#include "utils/fileutils.h"
-#include "graphics/gluhelper.h"
+#include "utils/utilities.h"
 #include "world/vaomeshdata.h"
 #include "graphics/terrainpolygon.h"
 
 
 Grass::Grass(int density, glm::vec3 center, glm::vec3 randomizationOffsets, float range, std::shared_ptr<Texture> texture) : texture(texture), density(density), 
 	vao(nullptr),
-    windDirection(glm::vec3(0, 0, 0)), maxTimeOfCurrentBurst(0), remainingTime(0), timeUntilNextBurst(0), previousTime(getCurrentTimeMillis()), deltaTime(0),
+	windDirection(glm::vec3(0, 0, 0)), maxTimeOfCurrentBurst(0), remainingTime(0), timeUntilNextBurst(0), previousTime(utils::getCurrentTimeMillis()), deltaTime(0),
 	grassShader(std::shared_ptr<Shader>(nullptr)), maxWindPower(0), randomizationOffsets(randomizationOffsets)
 {
-    seedRandomGenerator();
+    utils::seedRandomGenerator();
     createVBO(center, range);
 }
 
 void Grass::update()
 {
     unsigned long long previousUpdateTime = previousTime;
-    unsigned long long currentTime = getCurrentTimeMillis();
+	unsigned long long currentTime = utils::getCurrentTimeMillis();
     this->deltaTime = currentTime - previousUpdateTime;
     this->remainingTime -= static_cast<float>(deltaTime) / 1000.0f;
     this->timeUntilNextBurst -= static_cast<float>(deltaTime) / 1000.0f;
@@ -36,12 +33,12 @@ void Grass::update()
 
 void Grass::generateNewWind()
 {
-    maxTimeOfCurrentBurst = getRandomFloat() * 7.0f + 3.6f;
+	maxTimeOfCurrentBurst = utils::getRandomFloat() * 7.0f + 3.6f;
     remainingTime = maxTimeOfCurrentBurst;
-    timeUntilNextBurst = maxTimeOfCurrentBurst + (getRandomFloat() * 4.66f) + 2.4f;
-    float randomAngle = getRandomFloat() * 2 * PI;
+	timeUntilNextBurst = maxTimeOfCurrentBurst + (utils::getRandomFloat() * 4.66f) + 2.4f;
+	float randomAngle = utils::getRandomFloat() * 2 * PI;
     windDirection = glm::vec3(cos(randomAngle), 0, sin(randomAngle));
-    maxWindPower = 0.3f + (getRandomFloat() * 0.5f);
+	maxWindPower = 0.3f + (utils::getRandomFloat() * 0.5f);
 }
 
 void Grass::draw(GLState &glState, Camera *camera)
@@ -403,8 +400,8 @@ inline void putGrassCluster(float *vertices, float *normals, float *colours, flo
 
 void Grass::createVBO(glm::vec3 center, float range)
 {
-	std::string vertPath = buildPath("res/shaders/grassy_wind.vert");
-	std::string fragPath = buildPath("res/shaders/grassy_wind.frag");
+	std::string vertPath = utils::buildPath("res/shaders/grassy_wind.vert");
+	std::string fragPath = utils::buildPath("res/shaders/grassy_wind.frag");
 	this->grassShader = createShader(&vertPath, &fragPath);
 
     using namespace gl;
@@ -432,9 +429,9 @@ void Grass::createVBO(glm::vec3 center, float range)
         {
             int index = i * numberPerDimension + j;
             glm::vec3 v(
-				((range * 2) / numberPerDimension) * i + minX + randomizationOffsets.x * getRandomFloat(),
-				0 + randomizationOffsets.y * getRandomFloat(),
-				((range * 2) / numberPerDimension) * j + minZ + randomizationOffsets.z * getRandomFloat()
+				((range * 2) / numberPerDimension) * i + minX + randomizationOffsets.x * utils::getRandomFloat(),
+				0 + randomizationOffsets.y * utils::getRandomFloat(),
+				((range * 2) / numberPerDimension) * j + minZ + randomizationOffsets.z * utils::getRandomFloat()
 			);
 			putGrassCluster(vertices, normals, colours, textures, index, v);
         }

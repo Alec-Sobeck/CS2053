@@ -2,9 +2,7 @@
 #include "render/render.h"
 #include "graphics/model.h"
 #include "world/meshbuilder.h"
-#include "graphics/gluhelper.h"
 #include "render/vao.h"
-
 
 void drawSkybox(std::shared_ptr<Shader> skyboxShader, std::shared_ptr<Texture> skyboxTexture, Camera *cam)
 {

@@ -1,13 +1,5 @@
 #include "meshbuilder.h"
 
-#include <stdexcept>
-#include <string>
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include "utils/colour.h"
-#include "render/vbo.h"
-#include "world/meshdata.h"
-
 inline int fmodp(int num, int mod)
 {
 /*
@@ -33,7 +25,7 @@ std::shared_ptr<VAOMeshData> createVAOMeshFromParsedOBJ(
 	std::vector<glm::vec3> faceVerts,
 	std::vector<glm::vec3> normalData,
 	std::vector<glm::vec3> faceNormals,
-	std::vector<Colour> colourData,
+	std::vector<utils::Colour> colourData,
 	std::vector<glm::vec2> textureData,
 	std::vector<glm::vec3> faceTextures
 	)
@@ -61,10 +53,10 @@ std::shared_ptr<VAOMeshData> createVAOMeshFromParsedOBJ(
 	}
 	if (colourData.size() == 0)
 	{
-		colourData = std::vector<Colour>(vertexData.size());
+		colourData = std::vector<utils::Colour>(vertexData.size());
 		for (int i = 0; i < colourData.size(); i++)
 		{
-			colourData[i] = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+			colourData[i] = utils::Colour(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 	}
 
@@ -163,7 +155,7 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
 		std::vector<glm::vec3> faceVerts,
 		std::vector<glm::vec3> normalData,
 		std::vector<glm::vec3> faceNormals,
-		std::vector<Colour> colourData,
+		std::vector<utils::Colour> colourData,
 		std::vector<glm::vec2> textureData,
 		std::vector<glm::vec3> faceTextures)
 {
@@ -216,10 +208,10 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
 
     if(colourData.size() == 0)
     {
-		colourData = std::vector<Colour>(vertexData.size());
+		colourData = std::vector<utils::Colour>(vertexData.size());
         for(int i = 0; i < colourData.size(); i++)
         {
-            colourData[i] = Colour(1.0f, 1.0f, 1.0f, 1.0f);
+            colourData[i] = utils::Colour(1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
     int textureCoordOffset = runningOffset;

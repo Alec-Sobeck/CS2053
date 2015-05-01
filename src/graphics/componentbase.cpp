@@ -3,10 +3,9 @@
 #include <vector>
 #include "windowhelper.h"
 #include "render/glfont.h"
-#include "utils/colour.h"
 #include "graphics/rendersettingshelper.h"
 #include "componentbase.h"
-#include "utils/fileutils.h"
+#include "utils/utilities.h"
 #include "math/gamemath.h"
 
 std::shared_ptr<Shader> getDefault2DTextureShader()
@@ -14,8 +13,8 @@ std::shared_ptr<Shader> getDefault2DTextureShader()
 	static std::shared_ptr<Shader> val = nullptr;
 	if (!val)
 	{
-		std::string vert = buildPath("res/shaders/2d_textured_coloured_triangles.vert");
-		std::string frag = buildPath("res/shaders/2d_textured_coloured_triangles.frag");
+		std::string vert = utils::buildPath("res/shaders/2d_textured_coloured_triangles.vert");
+		std::string frag = utils::buildPath("res/shaders/2d_textured_coloured_triangles.frag");
 		val = createShader(&vert, &frag);
 	}
 	return val;
@@ -26,8 +25,8 @@ std::shared_ptr<Shader> getDefault2DColourShader()
 	static std::shared_ptr<Shader> val = nullptr;
 	if (!val)
 	{
-		std::string vert = buildPath("res/shaders/2d_coloured_triangles.vert");
-		std::string frag = buildPath("res/shaders/2d_coloured_triangles.frag");
+		std::string vert = utils::buildPath("res/shaders/2d_coloured_triangles.vert");
+		std::string frag = utils::buildPath("res/shaders/2d_coloured_triangles.frag");
 		val = createShader(&vert, &frag);
 	}
 	return val;

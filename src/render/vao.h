@@ -19,9 +19,7 @@ private:
 	gl::GLuint colourLoc;
 	gl::GLuint textureLoc;
 	gl::GLuint normalLoc;
-	gl::GLushort *indexes;
 	int numberOfVertices;
-	gl::GLuint elementIndex;
 
 public:
 	std::shared_ptr<Texture> tex;

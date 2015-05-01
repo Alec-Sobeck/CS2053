@@ -11,9 +11,9 @@ float FlatTerrain::getHeight(double x, double y)
     return 0.0f;
 }
 
-Colour FlatTerrain::getColour(double x, double y)
+utils::Colour FlatTerrain::getColour(double x, double y)
 {
-    return Colour(1, 1, 1, 1);
+	return utils::Colour(1, 1, 1, 1);
 }
 
 void FlatTerrain::generateTerrain(int LoD, float size)
@@ -27,7 +27,7 @@ void FlatTerrain::generateTerrain(int LoD, float size)
 	int numVerts = lod * lod;
 
 	vertices = std::vector<glm::vec3>(numVerts);
-	colours = std::vector<Colour>(numVerts);
+	colours = std::vector<utils::Colour>(numVerts);
 	uvs = std::vector<glm::vec2>(numVerts);
 	normals = std::vector<glm::vec3>(4);
 	for (int i = 0; i < lod; i++)
@@ -37,7 +37,7 @@ void FlatTerrain::generateTerrain(int LoD, float size)
 			float x = (i * step) - width / 2;
 			float z = (j * step) - width / 2;
 			vertices[i * lod + j] = glm::vec3(x, getHeight(x, z), z);
-            Colour colour = getColour(x, z);
+			utils::Colour colour = getColour(x, z);
 			colours[i * lod + j] = colour;
 		}
 	}
@@ -56,7 +56,7 @@ std::shared_ptr<TerrainData> FlatTerrain::exportToTerrainData()
 {
 	std::vector<glm::vec3> vertices = this->vertices;
 	std::vector<glm::vec3> normals;
-	std::vector<Colour> colours = this->colours;
+	std::vector<utils::Colour> colours = this->colours;
 	std::vector<glm::vec2> textureCoords = this->uvs;
 	std::vector<glm::vec3> faceVerts;
 	std::vector<glm::vec3> faceNormals;

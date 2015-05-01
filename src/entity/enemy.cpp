@@ -1,7 +1,6 @@
 ﻿
 #include <glbinding/gl/gl.h>
 #include "math/gamemath.h"
-#include "graphics/gluhelper.h"
 #include "enemy.h"
 #include "render/render.h"
 

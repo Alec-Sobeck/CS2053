@@ -4,8 +4,7 @@
 #include <glbinding/gl/gl.h>
 #include "render/texture.h"
 #include "graphics/camera.h"
-#include "graphics/gluhelper.h"
-#include "utils/textureloader.h"
+#include "utils/utilities.h"
 #include "math/physics/aabb.h"
 #include "shaders/shader.h"
 

@@ -1,11 +1,11 @@
 
 #include <sstream>
 #include "terraindata.h"
-#include "utils/fileutils.h"
+
 
 TerrainData::TerrainData(std::vector<glm::vec3> verts,
                          std::vector<glm::vec3> normals,
-                         std::vector<Colour> colours,
+                         std::vector<utils::Colour> colours,
                          std::vector<glm::vec2> textureCoords,
                          std::vector<glm::vec3> faceVerts,
                          std::vector<glm::vec3> faceNormals,
@@ -15,7 +15,7 @@ TerrainData::TerrainData(std::vector<glm::vec3> verts,
 {
 }
 
-TerrainData::TerrainData() : vertices(std::vector<glm::vec3>()), normals(std::vector<glm::vec3>()), colours(std::vector<Colour>()),
+TerrainData::TerrainData() : vertices(std::vector<glm::vec3>()), normals(std::vector<glm::vec3>()), colours(std::vector<utils::Colour>()),
                              textureCoords(std::vector<glm::vec2>()), faceVerts(std::vector<glm::vec3>()), faceNormals(std::vector<glm::vec3>()),
                              faceTextures(std::vector<glm::vec3>())
 {
@@ -168,5 +168,5 @@ void TerrainData::exportToOBJ(std::string filePath)
         ss << "\n";
     }
 
-    writeTextFile(filepath, ss.str());
+	utils::writeTextFile(filepath, ss.str());
 }

@@ -3,7 +3,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <stdexcept>
-#include "utils/fileutils.h"
+#include "utils/utilities.h"
 #include "shaders/shader.h"
 
 void _printShaderInfoLog(gl::GLuint obj);
@@ -183,7 +183,7 @@ int createShader(const std::string *filename, gl::GLenum shaderType)
             return 0;
         }
 
-        std::string fileContents = readTextFile((*filename));
+        std::string fileContents = utils::readTextFile((*filename));
         const char* val = fileContents.c_str();
         GLint len = static_cast<GLint>(fileContents.length());
         glShaderSourceARB(shader, 1, const_cast<const GLcharARB**>(&val), &len);

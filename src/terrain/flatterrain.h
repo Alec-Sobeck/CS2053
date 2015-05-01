@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utils/colour.h"
 #include "terrain/terrain.h"
 
 class FlatTerrain : public Terrain
@@ -9,7 +8,7 @@ class FlatTerrain : public Terrain
 public:
 	FlatTerrain(int size);
     float getHeight(double x, double y);
-    Colour getColour(double x, double y);
+    utils::Colour getColour(double x, double y);
     void generateTerrain(int LoD, float size);
     std::shared_ptr<TerrainData> exportToTerrainData();
 };

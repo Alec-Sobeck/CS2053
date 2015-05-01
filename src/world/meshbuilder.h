@@ -7,8 +7,7 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glbinding/gl/gl.h>
-#include "utils/colour.h"
-#include "render/vbo.h"
+#include "utils/utilities.h"
 #include "world/meshdata.h"
 #include "world/vaomeshdata.h"
 
@@ -23,7 +22,7 @@ std::shared_ptr<MeshData> createModelDataFromParsedOBJ(gl::GLenum glRenderMode,
 		std::vector<glm::vec3> faceVerts,
 		std::vector<glm::vec3> normalData,
 		std::vector<glm::vec3> faceNormals,
-		std::vector<Colour> colourData,
+		std::vector<utils::Colour> colourData,
 		std::vector<glm::vec2> textureData,
 		std::vector<glm::vec3> faceTextures);
 
@@ -39,7 +38,7 @@ std::shared_ptr<VAOMeshData> createVAOMeshFromParsedOBJ(
 	std::vector<glm::vec3> faceVerts,
 	std::vector<glm::vec3> normalData,
 	std::vector<glm::vec3> faceNormals,
-	std::vector<Colour> colourData,
+	std::vector<utils::Colour> colourData,
 	std::vector<glm::vec2> textureData,
 	std::vector<glm::vec3> faceTextures
 );
