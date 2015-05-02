@@ -75,29 +75,26 @@ GLFont::~GLFont()
 	ok = false;
 }
 
-void GLFont::TextOut(std::string String, float x, float y, float z)
+void GLFont::TextOut(GLState &glState, std::string String, float x, float y, float z)
 {
 	if (!ok)
 	{
 		throw GLFontError::InvalidFont();
 	}
-
-	this->fontTexture->bind();
-
+	
 	//Get length of string
 	int Length = String.length();
-
-	//Begin rendering quads
-	glBegin(GL_QUADS);
-
+	
 	//Loop through characters
 	for (int i = 0; i < Length; i++)
 	{
 		//Get pointer to glFont character
 		GLFontChar* Char = &characters[String[i]];
+		glState.draw2DTexturedQuad(fontTexture, x, y, Char->width, Char->height, Char->tx1, Char->ty1, Char->tx2, Char->ty2);
 
 		//Specify vertices and texture coordinates
-		glTexCoord2f(Char->tx1, Char->ty1);
+		/*
+		glTexCoord2f(, Char->ty1);
 		glVertex2i(x, y);
 		glTexCoord2f(Char->tx1, Char->ty2);
 		glVertex2i(x, y + Char->height);
@@ -105,7 +102,7 @@ void GLFont::TextOut(std::string String, float x, float y, float z)
 		glVertex2i(x + Char->width, y + Char->height);
 		glTexCoord2f(Char->tx2, Char->ty1);
 		glVertex2i(x + Char->width, y);
-
+		*/
 		//Move to next character
 		x += Char->width;
 	}

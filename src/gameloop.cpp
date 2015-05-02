@@ -456,7 +456,7 @@ bool GameLoop::drawString(std::string val, float x, float y, float z, utils::Col
         glEnable(GL_ALPHA_TEST);
 		std::stringstream ss;
 		ss << "score:" << player.score;
-        fontRenderer->TextOut(ss.str(), 20, 20, 0);
+        fontRenderer->TextOut(glState, ss.str(), 20, 20, 0);
         return true;
     }
     catch(GLFontError::InvalidFont)
@@ -804,6 +804,8 @@ void DesertLevel::draw(Camera* cam, float deltaTime)
 
 void gameUpdateTick()
 {
+
+
     using namespace gl;	
 	float deltaTime = gameLoopObject.getDeltaTime();
 	gameLoopObject.update();
@@ -898,7 +900,7 @@ void gameUpdateTick()
 	
 	
 	
-	drawUI(gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
+	drawUI(glState, gameLoopObject.player, gameLoopObject.mouseManager, gameLoopObject.fontRenderer, gameLoopObject.ammoTexture, gameLoopObject.medkitTexture);
     end2DRenderCycle();
     endRenderCycle();
 	gameLoopObject.endOfTick();

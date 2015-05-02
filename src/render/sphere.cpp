@@ -64,6 +64,11 @@ Sphere::Sphere(GLState &glState, float radius, unsigned int rings, unsigned int 
 		}
 	}
 
+	if (!vertices || !normals || !textures || !indices || !colours)
+	{
+		throw std::invalid_argument("Failure to create sphere: failure to generate float[] of data.");
+	}
+
 	vao = std::shared_ptr<TexturedNormalColouredIndexedVAO>(new TexturedNormalColouredIndexedVAO(
 		glState.default3DShader->programID, 
 		rings * sectors * 4, 

@@ -75,6 +75,8 @@ public:
 
 
 	void draw2DTexturedQuad(std::shared_ptr<Texture> tex, int xIn, int yIn, int widthIn, int heightIn);
+	void draw2DTexturedQuad(std::shared_ptr<Texture> tex, int xIn, int yIn, int widthIn, int heightIn, 
+		float textureStartX, float textureStartY, float textureEndX, float textureEndY);
 	void draw2DColouredQuad(utils::Colour colour, int xIn, int yIn, int widthIn, int heightIn);
 
 	

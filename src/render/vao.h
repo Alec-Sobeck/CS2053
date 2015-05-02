@@ -14,6 +14,7 @@
 class TexturedNormalColouredIndexedVAO
 {
 private:
+	gl::GLuint *buffers;
 	gl::GLuint id;
 	gl::GLuint vertexLoc;
 	gl::GLuint colourLoc;
@@ -47,6 +48,7 @@ public:
 	///
 	TexturedColouredVAO(gl::GLuint associatedShaderID, int numberOfVerts, float *vertices, int verticesSize, float *colours, int coloursSize, float *textures, int texturesSize);
 	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
+	~TexturedColouredVAO();
 };
 
 class TexturedNormalColouredVAO
@@ -66,6 +68,7 @@ public:
 	///
 	TexturedNormalColouredVAO(gl::GLuint associatedShaderID, int numberOfVerts, float *vertices, int verticesSize, 
 		float *normals, int normalSize, float *colours, int coloursSize, float *textures, int texturesSize);
+	~TexturedNormalColouredVAO();
 	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
 };
 
@@ -82,6 +85,7 @@ public:
 	/// Sizes are in bytes, not length of the array. for a float array, size should be the number of elements * 4 
 	///
 	ColouredVAO(gl::GLuint associatedShaderID, int numberOfVerts, float *vertices, int verticesSize, float *colours, int coloursSize);
+	~ColouredVAO();
 	void draw(gl::GLenum renderMode = gl::GL_TRIANGLES);
 };
 

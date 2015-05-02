@@ -5,6 +5,7 @@
 #include <memory>
 #include <glbinding/gl/gl.h>
 #include "render/texture.h"
+#include "graphics/glstate.h"
 
 namespace GLFontError 
 {
@@ -31,5 +32,5 @@ public:
 	bool ok;
 
 	void Create(std::shared_ptr<Texture> tex);
-	void TextOut(std::string String, float x, float y, float z);
+	void TextOut(GLState &glState, std::string String, float x, float y, float z);
 };

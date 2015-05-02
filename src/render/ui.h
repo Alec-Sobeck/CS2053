@@ -7,5 +7,5 @@
 #include "gameloop.h"
 
 
-void drawUI(Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font, 
+void drawUI(GLState &glState, Player &player, MouseManager &mouse, std::shared_ptr<GLFont> font,
 	std::shared_ptr<Texture> ammoTexture, std::shared_ptr<Texture> medkitTexture);

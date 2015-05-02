@@ -164,6 +164,7 @@ void GLState::draw2DTexturedQuad(std::shared_ptr<Texture> tex, int xIn, int yIn,
 	glBindVertexArray(vao[0]);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDeleteVertexArrays(1, vao);
+	glDeleteBuffers(2, buffers);
 }
 
 void GLState::draw2DColouredQuad(utils::Colour colour, int xIn, int yIn, int widthIn, int heightIn)
@@ -214,6 +215,59 @@ void GLState::draw2DColouredQuad(utils::Colour colour, int xIn, int yIn, int wid
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glDeleteVertexArrays(1, vao);
+	glDeleteBuffers(2, buffers);
 }
 
+void GLState::draw2DTexturedQuad(std::shared_ptr<Texture> tex, int xIn, int yIn, int widthIn, int heightIn,
+	float textureStartX, float textureStartY, float textureEndX, float textureEndY)
+{
+	using namespace gl;
+	GLuint vao[1];
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	GLuint buffers[2];
+	gl::glGenBuffers(2, buffers);
+	GLuint vertexLoc = gl::glGetAttribLocation(default2DTextureShader->programID, "position");
+	GLuint textureLoc = gl::glGetAttribLocation(default2DTextureShader->programID, "textureIn");
 
+	float x = getAdjustedX(xIn);
+	float y = getAdjustedY(yIn);
+	float width = getAdjustedWidth(widthIn);
+	float height = getAdjustedHeight(heightIn);
+	float vertices[] = {
+		x,		   y + height, 0.0f,
+		x + width, y + height, 0.0f,
+		x + width, y,		   0.0f,
+		x + width, y,		   0.0f,
+		x,		   y,		   0.0f,
+		x,		   y + height, 0.0f,
+	};
+	float textures[] = {
+		textureStartX, textureEndY, 
+		textureEndX, textureEndY,
+		textureEndX, textureStartY,
+		textureEndX, textureStartY,
+		textureStartX, textureStartY,
+		textureStartX, textureEndY,
+	};
+
+	// bind buffer for vertices and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(vertexLoc);
+	glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	// bind buffer for textures and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(textures), textures, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(textureLoc);
+	glVertexAttribPointer(textureLoc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	default2DTextureShader->bindShader();
+	default2DTextureShader->glUniform1("texture1", 0);
+	tex->bind();
+	glBindVertexArray(vao[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDeleteVertexArrays(1, vao);
+	glDeleteBuffers(2, buffers);
+
+}

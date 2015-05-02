@@ -1,4 +1,3 @@
-#include <vld.h>
 #include <cmath>
 #include <vector>
 #include "math/gamemath.h"
