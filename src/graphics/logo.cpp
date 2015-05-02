@@ -9,12 +9,12 @@ Logo::Logo(std::shared_ptr<Texture> tex, float x, float y, float width, float he
 {
 }
 
-void Logo::draw()
+void Logo::draw(GLState &glState)
 {
-	drawBackground();
+	drawBackground(glState);
 }
 
-void Logo::update(MouseManager *manager)
+void Logo::update(GLState &glState, MouseManager *manager)
 {
 
 }

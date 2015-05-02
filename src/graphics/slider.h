@@ -7,13 +7,12 @@
 class Slider : public ComponentBase
 {
 private:
-	std::shared_ptr<ColouredVAO> vao;
+	const float BAR_WIDTH = 10;
 
 public:
 	float value;	
 	Slider(std::shared_ptr<Texture> tex, float x, float y, float width, float height);
-	virtual void draw() override;	
-	virtual void update(MouseManager *manager) override;
-	void rebuildVAO();
+	virtual void draw(GLState &glState) override;
+	virtual void update(GLState &glState, MouseManager *manager) override;
 };
 

@@ -9,11 +9,11 @@ Button::Button(std::shared_ptr<Texture> tex, double x, double y, double width, d
 {
 }
 
-void Button::draw()
+void Button::draw(GLState &glState)
 {
-	drawBackground();
+	drawBackground(glState);
 }
 
-void Button::update(MouseManager *manager)
+void Button::update(GLState &glState, MouseManager *manager)
 {
 }

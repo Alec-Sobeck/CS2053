@@ -29,36 +29,40 @@ MainMenu::MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture>
 {
 }
 
-void MainMenu::draw(float deltaTime)
+void MainMenu::draw(GLState &glState, float deltaTime)
 {
-	startDesertLevel.draw();
-	startForestLevel.draw();
-	helpButton.draw();
-	optionsButton.draw();
+	startDesertLevel.draw(glState);
+	startForestLevel.draw(glState);
+	helpButton.draw(glState);
+	optionsButton.draw(glState);
 	// Force the logo to be centered, then draw it. This won't change the state of the VAO unless the window size changes, which will invalidate 
 	// it anyway.
 	mainMenuLogo.x = getWindowWidth() / 2 - 256;
 	mainMenuLogo.y = 0;
 	mainMenuLogo.width = 512;
 	mainMenuLogo.height = 512;
-	mainMenuLogo.draw();
+	mainMenuLogo.draw(glState);
 }
 
-void MainMenu::update(MouseManager *manager, float deltaTime)
+void MainMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
 {
-	if (startDesertLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, startDesertLevel.x, startDesertLevel.y, startDesertLevel.width, startDesertLevel.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		desertEvent();
 	}
-	if (startForestLevel.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, startForestLevel.x, startForestLevel.y, startForestLevel.width, startForestLevel.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		forestEvent();
 	}
-	if (helpButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, helpButton.x, helpButton.y, helpButton.width, helpButton.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		helpEvent();
 	}
-	if (optionsButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, optionsButton.x, optionsButton.y, optionsButton.width, optionsButton.height) &&
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		optionsEvent();
 	}
@@ -73,18 +77,19 @@ OptionsMenu::OptionsMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Textu
 	volumeSlider.value = volume;
 }
 
-void OptionsMenu::draw(float deltaTime)
+void OptionsMenu::draw(GLState &glState, float deltaTime)
 {
-	backButton.draw();
+	backButton.draw(glState);
 	volumeSlider.x = (getWindowWidth() / 2) - (volumeSlider.width / 2);
-	volumeSlider.draw();
+	volumeSlider.draw(glState);
 }
 
-void OptionsMenu::update(MouseManager *manager, float deltaTime)
+void OptionsMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
 {
-	volumeSlider.update(manager);
+	volumeSlider.update(glState, manager);
 	onVolumeChange(volumeSlider.value);
-	if (backButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}
@@ -98,15 +103,16 @@ HelpMenu::HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gu
 {
 }
 
-void HelpMenu::draw(float deltaTime)
+void HelpMenu::draw(GLState &glState, float deltaTime)
 {
-	backButton.draw();
-	helpLogo.draw();
+	backButton.draw(glState);
+	helpLogo.draw(glState);
 }
 
-void HelpMenu::update(MouseManager *manager, float deltaTime)
+void HelpMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
 {
-	if (backButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}
@@ -121,10 +127,10 @@ GameOverMenu::GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Tex
 {
 }
 
-void GameOverMenu::draw(float deltaTime)
+void GameOverMenu::draw(GLState &glState, float deltaTime)
 {
 	using namespace gl;
-	backButton.draw();
+	backButton.draw(glState);
 
 	// Force the logo to be centered, then draw it. This won't change the state of the VAO unless the window size changes, which will invalidate 
 	// it anyway.
@@ -132,12 +138,13 @@ void GameOverMenu::draw(float deltaTime)
 	gameOverLogo.y = 50;
 	gameOverLogo.width = 512;
 	gameOverLogo.height = 512;
-	gameOverLogo.draw();
+	gameOverLogo.draw(glState);
 }
 
-void GameOverMenu::update(MouseManager *manager, float deltaTime)
+void GameOverMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
 {
-	if (backButton.inBounds(manager->x, manager->y) && manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}

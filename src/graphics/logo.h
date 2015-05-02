@@ -7,8 +7,8 @@ class Logo : public ComponentBase
 {
 public:
 	Logo(std::shared_ptr<Texture> tex, float x, float y, float width, float height);
-	virtual void draw() override;	
-	virtual void update(MouseManager *manager) override;
+	virtual void draw(GLState &glState) override;	
+	virtual void update(GLState &glState, MouseManager *manager) override;
 };
 
 

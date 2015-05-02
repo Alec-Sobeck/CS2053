@@ -379,9 +379,7 @@ void GameLoop::loadModels()
 void GameLoop::loadWithGLContext()
 {
 	// Generic texture shader.
-	std::string vertexShaderPath = utils::buildPath("res/shaders/3d_standard_shader.vert");
-	std::string fragmentShaderPath = utils::buildPath("res/shaders/3d_standard_shader.frag");
-	glState.default3DShader = createShader(&vertexShaderPath, &fragmentShaderPath);
+	glState.initializeShaders();
 
 	loadModels();
 	int i = 0;
@@ -816,8 +814,8 @@ void gameUpdateTick()
 		startRenderCycle();
 		start2DRenderCycle();
 		std::shared_ptr<Menu> m = gameLoopObject.menus.top();
-		m->update(&gameLoopObject.mouseManager, deltaTime);
-		m->draw(deltaTime);
+		m->update(glState, &gameLoopObject.mouseManager, deltaTime);
+		m->draw(glState, deltaTime);
 		if (m->shouldPopThisMenu())
 		{
 			gameLoopObject.menus.pop();

@@ -39,28 +39,18 @@ void initializeViewport()
 void start2DRenderCycle()
 {
     using namespace gl;
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
     glOrtho(0, getWindowWidth(), getWindowHeight(), 0, -1, 1); //initialize the 2D drawing area
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
     glDisable(GL_TEXTURE_2D);
-    glDisable(GL_LIGHTING);
 }
 
 void end2DRenderCycle()
 {
-    using namespace gl;
-    glPopMatrix();
 }
 
 void end3DRenderCycle()
 {
-    using namespace gl;
-    glPopMatrix();
 }
 
 void startRenderCycle()

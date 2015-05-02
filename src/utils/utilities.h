@@ -6,7 +6,7 @@
 #include "render/texture.h"
 
 ///
-/// utilities.h defines miscellanious helpful methods. 
+/// utilities.h defines miscellanious helpful methods. All methods are namespaced in the "utils" namespace.
 ///
 
 namespace utils
