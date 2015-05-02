@@ -86,8 +86,11 @@ public:
 	///
 	/// Draw coloured circle
 	///
-
-
-
+	void drawCompleteCircle(utils::Colour colour, float radius, glm::vec2 center);
+	///
+	/// Draw coloured circle.
+	/// \param partialAngle - in degrees
+	///
+	void drawPartialCircle(utils::Colour colour, float radius, glm::vec2 center, float partialAngle);
 
 };

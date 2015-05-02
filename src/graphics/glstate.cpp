@@ -271,3 +271,143 @@ void GLState::draw2DTexturedQuad(std::shared_ptr<Texture> tex, int xIn, int yIn,
 	glDeleteBuffers(2, buffers);
 
 }
+
+void GLState::drawCompleteCircle(utils::Colour colour, float radius, glm::vec2 center)
+{
+	// Draw the inner circle.
+	int loops = 360 / 5 /*5.0f is an arbitrary degree; the size of each "sliver"*/;
+	int numberOfVerts = loops + 3;
+	float *vertices = new float[numberOfVerts * 3];
+	float *colours = new float[numberOfVerts * 4];
+
+	float radians = rad(5.0f);
+
+	vertices[0] = getAdjustedX(center.x);
+	vertices[1] = getAdjustedY(center.y);
+	vertices[2] = 0;
+	colours[0] = colour.r;
+	colours[1] = colour.g;
+	colours[2] = colour.b;
+	colours[3] = colour.a;
+
+	for (int i = 1; i < numberOfVerts - 1; i++)
+	{
+		float degInRad = i * radians;
+		vertices[i * 3 + 0] = getAdjustedX(center.x + cos(degInRad) * radius);
+		vertices[i * 3 + 1] = getAdjustedY(center.y + sin(degInRad) * radius);
+		vertices[i * 3 + 2] = 0.0f;
+
+		colours[i * 4 + 0] = colour.r;
+		colours[i * 4 + 1] = colour.g;
+		colours[i * 4 + 2] = colour.b;
+		colours[i * 4 + 2] = colour.a;
+	}
+
+	vertices[numberOfVerts * 3 - 3] = getAdjustedX(center.x);
+	vertices[numberOfVerts * 3 - 2] = getAdjustedY(center.y);
+	vertices[numberOfVerts * 3 - 1] = 0;
+	colours[numberOfVerts * 4 - 4] = colour.r;
+	colours[numberOfVerts * 4 - 3] = colour.g;
+	colours[numberOfVerts * 4 - 2] = colour.b;
+	colours[numberOfVerts * 4 - 1] = colour.a;
+
+	
+
+	using namespace gl;
+	GLuint vao[1];
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	GLuint buffers[2];
+	gl::glGenBuffers(2, buffers);
+	GLuint vertexLoc = gl::glGetAttribLocation(default2DColourShader->programID, "position");
+	GLuint colourLoc = gl::glGetAttribLocation(default2DColourShader->programID, "color");
+	// bind buffer for vertices and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(vertexLoc);
+	glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	// bind buffer for textures and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * 4 * sizeof(float), colours, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(colourLoc);
+	glVertexAttribPointer(colourLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	default2DColourShader->bindShader();
+	glBindVertexArray(vao[0]);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, numberOfVerts);
+	glDeleteVertexArrays(1, vao);
+	glDeleteBuffers(2, buffers);
+	delete[] colours;
+	delete[] vertices;
+}
+
+void GLState::drawPartialCircle(utils::Colour colour, float radius, glm::vec2 center, float partialAngle)
+{
+	// Draw the inner circle.
+	int loops = partialAngle / 5 /*5.0f is an arbitrary degree; the size of each "sliver"*/;
+	int numberOfVerts = loops + 3;
+	float *vertices = new float[numberOfVerts * 3];
+	float *colours = new float[numberOfVerts * 4];
+
+	float radians = rad(5.0f);
+
+	vertices[0] = getAdjustedX(center.x);
+	vertices[1] = getAdjustedY(center.y);
+	vertices[2] = 0;
+	colours[0] = colour.r;
+	colours[1] = colour.g;
+	colours[2] = colour.b;
+	colours[3] = colour.a;
+
+	for (int i = 1; i < numberOfVerts - 1; i++)
+	{
+		float degInRad = i * radians;
+		vertices[i * 3 + 0] = getAdjustedX(center.x + cos(degInRad) * radius);
+		vertices[i * 3 + 1] = getAdjustedY(center.y + sin(degInRad) * radius);
+		vertices[i * 3 + 2] = 0.0f;
+
+		colours[i * 4 + 0] = colour.r;
+		colours[i * 4 + 1] = colour.g;
+		colours[i * 4 + 2] = colour.b;
+		colours[i * 4 + 2] = colour.a;
+	}
+
+	vertices[numberOfVerts * 3 - 3] = getAdjustedX(center.x);
+	vertices[numberOfVerts * 3 - 2] = getAdjustedY(center.y);
+	vertices[numberOfVerts * 3 - 1] = 0;
+	colours[numberOfVerts * 4 - 4] = colour.r;
+	colours[numberOfVerts * 4 - 3] = colour.g;
+	colours[numberOfVerts * 4 - 2] = colour.b;
+	colours[numberOfVerts * 4 - 1] = colour.a;
+
+
+
+	using namespace gl;
+	GLuint vao[1];
+	glGenVertexArrays(1, vao);
+	glBindVertexArray(vao[0]);
+	GLuint buffers[2];
+	gl::glGenBuffers(2, buffers);
+	GLuint vertexLoc = gl::glGetAttribLocation(default2DColourShader->programID, "position");
+	GLuint colourLoc = gl::glGetAttribLocation(default2DColourShader->programID, "color");
+	// bind buffer for vertices and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(vertexLoc);
+	glVertexAttribPointer(vertexLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	// bind buffer for textures and copy data into buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, numberOfVerts * 4 * sizeof(float), colours, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(colourLoc);
+	glVertexAttribPointer(colourLoc, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	default2DColourShader->bindShader();
+	glBindVertexArray(vao[0]);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, numberOfVerts);
+	glDeleteVertexArrays(1, vao);
+	glDeleteBuffers(2, buffers);
+	delete[] colours;
+	delete[] vertices;
+}
+
+

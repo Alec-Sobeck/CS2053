@@ -34,32 +34,9 @@ void drawUI(GLState &glState, Player &player, MouseManager &mouse, std::shared_p
 	///
 	/// Draw the health HUD
 	/// 
-	float degree = 5.0f;
-	float radius = 40.0f;
-	float radians = rad(degree);
-	int degreeOfCircle = static_cast<int>(360 * player.getHealthPercent() / degree);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glBegin(GL_TRIANGLE_FAN);
-		glVertex2f(radius, height - radius);
-		for (int i = 0; i <= degreeOfCircle; i++)
-		{
-			float degInRad = i * radians;
-			glVertex2f(radius + cos(degInRad) * radius, height - radius + sin(degInRad) * radius);
-		}
-		glVertex2f(radius, height - radius);
-	glEnd();
-	// Draw the inner circle.
+	float radius = 40.0f;	
+	int degreeOfCircle = static_cast<int>(360 * player.getHealthPercent());
+	glState.drawPartialCircle(utils::Colour(1.0f, 0.0f, 0.0f, 1.0f), radius, glm::vec2(radius, height - radius), degreeOfCircle);
 	float smallerRadius = 35.0f;
-	glColor3f(.4f, .4f, .4f);
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex2f(radius, height - radius);
-	for (int i = 0; i <= 360 / degree; i++)
-	{
-		float degInRad = i * radians;
-		glVertex2f(radius + cos(degInRad) * smallerRadius, height - radius + sin(degInRad) * smallerRadius);
-	}
-	glVertex2f(radius, height - radius);
-	glEnd();
-
-
+	glState.drawCompleteCircle(utils::Colour(0.4f, 0.4f, 0.4f, 1.0f), smallerRadius, glm::vec2(radius, height - radius));
 }
