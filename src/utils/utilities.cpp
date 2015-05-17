@@ -108,6 +108,43 @@ int parseInt(const std::string& s)
 	return x;
 }
 
+std::string replaceAll(std::string &searchFor, std::string &replacement, std::string target)
+{
+	size_t pos = 0;
+	while ((pos = target.find(searchFor, pos)) != std::string::npos)
+	{
+		target.replace(pos, searchFor.length(), replacement);
+		pos += replacement.length();
+	}
+	return target;
+}
+
+bool endsWith(std::string const &fullString, std::string const &ending)
+{
+	if (fullString.length() >= ending.length())
+	{
+		return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+	}
+	else
+	{
+		return false;
+	}
+}
+
+std::string padNewlines(std::string target)
+{
+	static std::string searchFor = "\n";
+	static std::string replacement = "\n\t\t";
+	size_t pos = 0;
+	while ((pos = target.find(searchFor, pos)) != std::string::npos)
+	{
+		target.replace(pos, searchFor.length(), replacement);
+		pos += replacement.length();
+	}
+	return target;
+}
+
+
 /// ----------------------------------------------------------------------------------------------
 /// File utilities
 ///

@@ -49,6 +49,9 @@ std::vector<std::string> split(const std::string &s, char delim);
 double parseDouble(const std::string& s);
 float parseFloat(const std::string& s);
 int parseInt(const std::string& s);
+std::string replaceAll(std::string &searchFor, std::string &replacement, std::string target);
+std::string padNewlines(std::string target);
+bool endsWith(std::string const &fullString, std::string const &ending);
 
 /// ----------------------------------------------------------------------------------------------
 /// File utilities
