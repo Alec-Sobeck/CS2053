@@ -1,5 +1,5 @@
 
-#include "windowhelper.h"
+#include "graphics/windowhelper.h"
 #include <glbinding/gl/gl.h>
 #include "button.h"
 
@@ -14,6 +14,6 @@ void Button::draw(GLState &glState)
 	drawBackground(glState);
 }
 
-void Button::update(GLState &glState, MouseManager *manager)
+void Button::update(GLState &glState, const MouseManager &manager)
 {
 }

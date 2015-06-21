@@ -1,31 +1,31 @@
 
-#include "aabb2.h"
+#include "aabb2d.h"
 #include "math/gamemath.h"
 
-AABB2::AABB2(float xMin, float yMin, float xMax, float yMax)
+AABB2D::AABB2D(float xMin, float yMin, float xMax, float yMax)
 	: xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax)
 {
 }
 
-AABB2::AABB2(glm::vec2 origin, glm::vec2 halfSizes)
+AABB2D::AABB2D(glm::vec2 origin, glm::vec2 halfSizes)
     : xMin(origin.x - halfSizes.x), xMax(origin.x + halfSizes.x), yMin(origin.y - halfSizes.y), yMax(origin.y + halfSizes.y)
 {
 }
 
-void AABB2::moveX(float amount)
+void AABB2D::moveX(float amount)
 {
     xMax += amount;
     xMin += amount;
 }
 
-void AABB2::moveY(float amount)
+void AABB2D::moveY(float amount)
 {
     yMax += amount;
     yMin += amount;
 }
 
 
-void AABB2::move(glm::vec2 amounts)
+void AABB2D::move(glm::vec2 amounts)
 {
     xMax += amounts.x;
     xMin += amounts.x;
@@ -33,22 +33,22 @@ void AABB2::move(glm::vec2 amounts)
     yMin += amounts.y;
 }
 
-float AABB2::getYCenter()
+float AABB2D::getYCenter()
 {
 	return (yMin + yMax) / 2.0f;
 }
 
-float AABB2::getXCenter()
+float AABB2D::getXCenter()
 {
 	return (xMin + xMax) / 2.0f;
 }
 
-glm::vec2 AABB2::center()
+glm::vec2 AABB2D::center()
 {
 	return glm::vec2((xMin + xMax) / 2.0f, (yMin + yMax) / 2.0f);
 }
 
-void AABB2::moveTo(float x, float y)
+void AABB2D::moveTo(float x, float y)
 {
 	float xHalfsize = (xMax - xMin) / 2.0f;
 	float yHalfsize = (yMax - yMin) / 2.0f;

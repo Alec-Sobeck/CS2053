@@ -1,5 +1,5 @@
 
-#include "windowhelper.h"
+#include "graphics/windowhelper.h"
 #include <glbinding/gl/gl.h>
 #include "logo.h"
 
@@ -14,7 +14,7 @@ void Logo::draw(GLState &glState)
 	drawBackground(glState);
 }
 
-void Logo::update(GLState &glState, MouseManager *manager)
+void Logo::update(GLState &glState, const MouseManager &manager)
 {
 
 }

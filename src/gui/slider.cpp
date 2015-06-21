@@ -1,5 +1,5 @@
 
-#include "windowhelper.h"
+#include "graphics/windowhelper.h"
 #include <glbinding/gl/gl.h>
 #include "slider.h"
 #include "math/gamemath.h"
@@ -18,13 +18,13 @@ void Slider::draw(GLState &glState)
 	glState.draw2DColouredQuad(utils::Colour(1.0f, 1.0f, 1.0f, 1.0f), x + (width * value), y, BAR_WIDTH, height);
 }
 
-void Slider::update(GLState &glState, MouseManager *manager)
+void Slider::update(GLState &glState, const MouseManager &manager)
 {
-	if (manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
-		if (glState.inBounds(manager->x, manager->y, x, y, width, height))
+		if (glState.inBounds(manager.x, manager.y, x, y, width, height))
 		{
-			this->value = clamp((manager->x - this->x) / this->width);
+			this->value = clamp((manager.x - this->x) / this->width);
 		}
 	}
 }

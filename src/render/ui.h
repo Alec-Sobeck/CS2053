@@ -2,7 +2,7 @@
 
 #include <memory>
 #include "entity/player.h"
-#include "render/glfont.h"
+#include "gui/glfont.h"
 #include "render/texture.h"
 #include "gameloop.h"
 

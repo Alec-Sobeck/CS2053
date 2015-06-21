@@ -23,7 +23,7 @@ public:
 
 	ComponentBase(std::shared_ptr<Texture> t, float x, float y, float width, float height);
 	virtual void draw(GLState &glState) = 0;
-	virtual void update(GLState &glState, MouseManager *manager) = 0;
+	virtual void update(GLState &glState, const MouseManager &manager) = 0;
 	void rebuildVAO();
 	void drawBackground(GLState &glState);
 };

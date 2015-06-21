@@ -20,7 +20,7 @@
 #include "render/render.h"
 #include "terrain/grass.h"
 #include "utils/objparser.h"
-#include "render/glfont.h"
+#include "gui/glfont.h"
 #include "render/ui.h"
 #include "entity/projectile.h"
 #include "render/sphere.h"
@@ -29,7 +29,7 @@
 #include "utils/utilities.h"
 #include "entity/enemy.h"
 #include "entity/player.h"
-#include "render/menu.h"
+#include "gui/menu.h"
 #include "graphics/glstate.h"
 
 ///***********************************************************************

@@ -13,6 +13,6 @@ public:
 	float value;	
 	Slider(std::shared_ptr<Texture> tex, float x, float y, float width, float height);
 	virtual void draw(GLState &glState) override;
-	virtual void update(GLState &glState, MouseManager *manager) override;
+	virtual void update(GLState &glState, const MouseManager &manager) override;
 };
 

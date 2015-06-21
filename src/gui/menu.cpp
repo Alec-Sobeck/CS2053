@@ -44,25 +44,25 @@ void MainMenu::draw(GLState &glState, float deltaTime)
 	mainMenuLogo.draw(glState);
 }
 
-void MainMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
+void MainMenu::update(GLState &glState, const MouseManager &manager, float deltaTime)
 {
-	if (glState.inBounds(manager->x, manager->y, startDesertLevel.x, startDesertLevel.y, startDesertLevel.width, startDesertLevel.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, startDesertLevel.x, startDesertLevel.y, startDesertLevel.width, startDesertLevel.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		desertEvent();
 	}
-	if (glState.inBounds(manager->x, manager->y, startForestLevel.x, startForestLevel.y, startForestLevel.width, startForestLevel.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, startForestLevel.x, startForestLevel.y, startForestLevel.width, startForestLevel.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		forestEvent();
 	}
-	if (glState.inBounds(manager->x, manager->y, helpButton.x, helpButton.y, helpButton.width, helpButton.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, helpButton.x, helpButton.y, helpButton.width, helpButton.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		helpEvent();
 	}
-	if (glState.inBounds(manager->x, manager->y, optionsButton.x, optionsButton.y, optionsButton.width, optionsButton.height) &&
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, optionsButton.x, optionsButton.y, optionsButton.width, optionsButton.height) &&
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		optionsEvent();
 	}
@@ -84,12 +84,12 @@ void OptionsMenu::draw(GLState &glState, float deltaTime)
 	volumeSlider.draw(glState);
 }
 
-void OptionsMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
+void OptionsMenu::update(GLState &glState, const MouseManager &manager, float deltaTime)
 {
 	volumeSlider.update(glState, manager);
 	onVolumeChange(volumeSlider.value);
-	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}
@@ -109,10 +109,10 @@ void HelpMenu::draw(GLState &glState, float deltaTime)
 	helpLogo.draw(glState);
 }
 
-void HelpMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
+void HelpMenu::update(GLState &glState, const MouseManager &manager, float deltaTime)
 {
-	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}
@@ -141,10 +141,10 @@ void GameOverMenu::draw(GLState &glState, float deltaTime)
 	gameOverLogo.draw(glState);
 }
 
-void GameOverMenu::update(GLState &glState, MouseManager *manager, float deltaTime)
+void GameOverMenu::update(GLState &glState, const MouseManager &manager, float deltaTime)
 {
-	if (glState.inBounds(manager->x, manager->y, backButton.x, backButton.y, backButton.width, backButton.height) && 
-		manager->leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
+	if (glState.inBounds(manager.x, manager.y, backButton.x, backButton.y, backButton.width, backButton.height) && 
+		manager.leftMouseButtonState == MouseManager::MOUSE_JUST_PRESSED)
 	{
 		shouldPopMenu = true;
 	}

@@ -1,8 +1,8 @@
 
 #include <glbinding/gl/gl.h>
 #include <vector>
-#include "windowhelper.h"
-#include "render/glfont.h"
+#include "graphics/windowhelper.h"
+#include "gui/glfont.h"
 #include "graphics/rendersettingshelper.h"
 #include "componentbase.h"
 #include "utils/utilities.h"

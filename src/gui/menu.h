@@ -2,11 +2,11 @@
 
 #include <stack>
 #include <functional>
-#include "graphics/button.h"
+#include "gui/button.h"
 #include "gameloop.h"
-#include "graphics/slider.h"
+#include "gui/slider.h"
 #include "glfont.h"
-#include "graphics/logo.h"
+#include "gui/logo.h"
 
 class Menu
 {
@@ -15,7 +15,7 @@ protected:
 public: 
 	Menu();
 	virtual void draw(GLState &glState, float deltaTime) = 0;
-	virtual void update(GLState &glState, MouseManager* manager, float deltaTime) = 0;
+	virtual void update(GLState &glState, const MouseManager& manager, float deltaTime) = 0;
 	bool shouldPopThisMenu();
 };
 
@@ -36,8 +36,8 @@ public:
 	MainMenu(std::shared_ptr<Texture> desertText, std::shared_ptr<Texture> forestTex, std::shared_ptr<Texture> helpTex, std::shared_ptr<Texture> optionsTex,
 		std::function<void()> desertEvent, std::function<void()> forestEvent, std::function<void()> helpEvent, std::function<void()> optionsEvent, 
 		std::shared_ptr<Texture> logo);
-	void draw(GLState &glState, float deltaTime);
-	void update(GLState &glState, MouseManager* manager, float deltaTime);
+	void draw(GLState &glState, float deltaTime) override;
+	void update(GLState &glState, const MouseManager &manager, float deltaTime) override;
 };
 
 class OptionsMenu : public Menu
@@ -48,8 +48,8 @@ private:
 	std::function<void(float)> onVolumeChange;
 public:
 	OptionsMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> volumeTexture, float volume, std::function<void(float)> onVolumeChange);
-	void draw(GLState &glState, float deltaTime);
-	void update(GLState &glState, MouseManager* manager, float deltaTime);
+	void draw(GLState &glState, float deltaTime) override;
+	void update(GLState &glState, const MouseManager &manager, float deltaTime) override;
 };
 
 class HelpMenu : public Menu
@@ -60,8 +60,8 @@ private:
 
 public:
 	HelpMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> guide);
-	void draw(GLState &glState, float deltaTime);
-	void update(GLState &glState, MouseManager* manager, float deltaTime);
+	void draw(GLState &glState, float deltaTime) override;
+	void update(GLState &glState, const MouseManager &manager, float deltaTime) override;
 };
 
 class GameOverMenu : public Menu
@@ -74,7 +74,7 @@ private:
 
 public:
 	GameOverMenu(std::shared_ptr<Texture> backTex, std::shared_ptr<Texture> gameOverTexture, int score, std::shared_ptr<GLFont> renderer);
-	void draw(GLState &glState, float deltaTime);
-	void update(GLState &glState, MouseManager* manager, float deltaTime);
+	void draw(GLState &glState, float deltaTime) override;
+	void update(GLState &glState, const MouseManager &manager, float deltaTime) override;
 };
 
