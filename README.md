@@ -1,2 +1,2 @@
-# 3D-Game
-3D game developed using C++11 and OpenGL
+# CS2053 Project
+This is my project for CS2053 - Intro to Game Development. It is a "complete" 3D game, using OpenGL and C++11. 
