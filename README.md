@@ -1,2 +1,2 @@
 # CS2053 Project
-This is my project for CS2053 - Intro to Game Development. It is a "complete" 3D game, using OpenGL and C++11. 
+This repo contains my project for Intro to Game Development. It is a 3D First Person Shooter (FPS) game written with C++ 11 and OpenGL 
